@@ -10,7 +10,6 @@ use Housekeeper\Flow\Before;
 use Housekeeper\Flow\After;
 use Housekeeper\Flow\Reset;
 use Mockery as m;
-use PhpSpec\Event\EventInterface;
 
 /**
  * Class BaseRepositoryTest
