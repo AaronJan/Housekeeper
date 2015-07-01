@@ -1,0 +1,34 @@
+{
+    "name": "aaronjan/housekeeper",
+    "description": "Powerful, simple Repository-Pattern implementation for Laravel (>=5.1), and it come with tests.",
+    "keywords": [
+        "laravel",
+        "repository",
+        "housekeeper"
+    ],
+    "license": "Apache V2",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Aaron Jan",
+            "homepage": "https://github.com/AaronJan"
+        }
+    ],
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "mockery/mockery": "^0.9.4"
+    },
+    "autoload": {
+        "classmap": [
+        ],
+        "psr-4": {
+            "Housekeeper\\": "src/Housekeeper/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+        ]
+    }
+}

@@ -1,0 +1,17 @@
+<?php namespace {{namespace}};
+
+use Housekeeper\Eloquent\BaseRepository;
+
+class {{class}} extends BaseRepository {
+
+    /**
+     * Return the name of model that this repository used.
+     *
+     * @return string
+     */
+    protected function model()
+    {
+        //
+    }
+
+}

@@ -1,0 +1,20 @@
+<?php namespace {{namespace}};
+
+use Housekeeper\Eloquent\BaseRepository;
+use Housekeeper\Traits\Repository\Adjustable;
+
+class {{class}} extends BaseRepository {
+
+    use Adjustable;
+
+    /**
+     * Return the name of model that this repository used.
+     *
+     * @return string
+     */
+    protected function model()
+    {
+        //
+    }
+
+}
