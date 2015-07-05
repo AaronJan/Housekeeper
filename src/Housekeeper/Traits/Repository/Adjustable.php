@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Traits\Repository;
+<?php
+
+namespace Housekeeper\Traits\Repository;
 
 use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
 use Housekeeper\Injections\Adjustable\ApplyCriteriasBefore;

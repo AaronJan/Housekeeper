@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Contracts;
+<?php
+
+namespace Housekeeper\Contracts;
 
 /**
  * Interface RepositoryInterface

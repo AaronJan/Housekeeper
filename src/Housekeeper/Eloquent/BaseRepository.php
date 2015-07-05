@@ -1,18 +1,20 @@
-<?php namespace Housekeeper\Eloquent;
+<?php
 
+namespace Housekeeper\Eloquent;
+
+use Housekeeper\Action;
+use Housekeeper\Contracts\Injection\AfterInjectionInterface;
+use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
 use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\ResetInjectionInterface;
-use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Contracts\Injection\AfterInjectionInterface;
 use Housekeeper\Contracts\RepositoryInterface;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Housekeeper\Exceptions\RepositoryException;
-use Housekeeper\Flow\Reset;
-use Housekeeper\Flow\Before;
 use Housekeeper\Flow\After;
+use Housekeeper\Flow\Before;
+use Housekeeper\Flow\Reset;
 use Illuminate\Contracts\Foundation\Application;
-use Housekeeper\Action;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class BaseRepository
@@ -58,22 +60,6 @@ abstract class BaseRepository implements RepositoryInterface
      */
     protected $perPage = 15;
 
-
-    /**
-     * Specify Model class name
-     *
-     * @return string
-     */
-    abstract protected function model();
-
-    /**
-     * @return array
-     */
-    public function getConditions()
-    {
-        return $this->conditions;
-    }
-
     /**
      * @param Application $app
      */
@@ -118,55 +104,6 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * @param InjectionInterface $injection
-     * @throws RepositoryException
-     */
-    protected function inject(InjectionInterface $injection)
-    {
-        /**
-         * Add injection.
-         */
-        if ($injection instanceof ResetInjectionInterface) {
-            $this->injections['reset'][] = $injection;
-        } elseif ($injection instanceof BeforeInjectionInterface) {
-            $this->injections['before'][] = $injection;
-        } elseif ($injection instanceof AfterInjectionInterface) {
-            $this->injections['after'][] = $injection;
-        } else {
-            throw new RepositoryException('Unusable Injection.');
-        }
-
-        /**
-         * Sort injections.
-         */
-        $this->sortAllInjections();
-    }
-
-    /**
-     * Sort all event handlers by priority ASC.
-     */
-    protected function sortAllInjections()
-    {
-        foreach ($this->injections as &$handlers) {
-            usort($handlers, array($this, 'sortInjection'));
-        }
-    }
-
-    /**
-     * @param InjectionInterface $a
-     * @param InjectionInterface $b
-     * @return int
-     */
-    static protected function sortInjection(InjectionInterface $a, InjectionInterface $b)
-    {
-        if ($a->priority() == $b->priority()) {
-            return 0;
-        }
-
-        return ($a->priority() < $b->priority()) ? -1 : 1;
-    }
-
-    /**
      * @param Action $action
      * @throws RepositoryException
      */
@@ -198,14 +135,6 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * Conditions are use for identify each method call.
-     */
-    protected function resetConditons()
-    {
-        $this->conditions = [];
-    }
-
-    /**
      * @throws RepositoryException
      */
     protected function freshModel()
@@ -220,24 +149,101 @@ abstract class BaseRepository implements RepositoryInterface
     /**
      * Make a new Model instanse.
      *
-     * @return Model|Builder
+     * @return mixed
+     * @throws RepositoryException
      */
     protected function modelInstance()
     {
         $modelName = '\\' . ltrim($this->model(), '\\');
 
+        if ($modelName == '') throw new RepositoryException("You should return the name of Model in \"Model\".");
+
         return new $modelName;
     }
 
     /**
-     * @param string $type
-     * @param mixed  $condition
+     * Specify Model class name
+     *
+     * @return string
      */
-    protected function addConditon($type, $condition)
+    abstract protected function model();
+
+    /**
+     * Conditions are use for identify each method call.
+     */
+    protected function resetConditons()
     {
-        $this->conditions[] = [
-            $type => $condition
-        ];
+        $this->conditions = [];
+    }
+
+    /**
+     * @param InjectionInterface $a
+     * @param InjectionInterface $b
+     * @return int
+     */
+    static protected function sortInjection(InjectionInterface $a, InjectionInterface $b)
+    {
+        if ($a->priority() == $b->priority()) {
+            return 0;
+        }
+
+        return ($a->priority() < $b->priority()) ? -1 : 1;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * Retrieve all data of repository
+     *
+     * @param array $columns
+     * @return mixed
+     */
+    public function all($columns = ['*'])
+    {
+        return $this->wrap(function ($columns = ['*']) {
+
+            return $this->model->get($columns);
+
+        }, new Action(__METHOD__, func_get_args(), Action::READ));
+    }
+
+    /**
+     * Wrap function with event implements.
+     *
+     * @param callable $func
+     * @param Action   $action
+     * @return mixed
+     */
+    protected function wrap(callable $func, Action $action)
+    {
+        /**
+         * First it's Before Flow.
+         */
+        $beforeFlow = $this->before($action);
+        if ($beforeFlow->hasReturn()) return $beforeFlow->getReturn();
+
+        /**
+         * Than execute core function.
+         */
+        $result = call_user_func_array($func, $action->getArguments());
+
+        /**
+         * After core function executed, it's After Flow.
+         */
+        $afterFlow = $this->after($action, $result);
+
+        /**
+         * In the end, call Reset Flow.
+         */
+        $this->reset($action);
+
+        return $afterFlow->getReturn();
     }
 
     /**
@@ -284,36 +290,56 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * Wrap function with event implements.
+     * Retrieve all data of repository, paginated
      *
-     * @param callable $func
-     * @param Action   $action
+     * @param null  $limit
+     * @param array $columns
      * @return mixed
      */
-    protected function wrap(callable $func, Action $action)
+    public function paginate($limit = null, $columns = array('*'))
     {
-        /**
-         * First it's Before Flow.
-         */
-        $beforeFlow = $this->before($action);
-        if ($beforeFlow->hasReturn()) return $beforeFlow->getReturn();
+        return $this->wrap(function ($limit = null, $columns = array('*')) {
 
-        /**
-         * Than execute core function.
-         */
-        $result = call_user_func_array($func, $action->getArguments());
+            $limit = is_null($limit) ? $this->perPage : $limit;
 
-        /**
-         * After core function executed, it's After Flow.
-         */
-        $afterFlow = $this->after($action, $result);
+            return $this->model->paginate($limit, $columns);
 
-        /**
-         * In the end, call Reset Flow.
-         */
-        $this->reset($action);
+        }, new Action(__METHOD__, func_get_args(), Action::READ));
+    }
 
-        return $afterFlow->getReturn();
+    /**
+     * Find data by field and value
+     *
+     * @param       $field
+     * @param       $value
+     * @param array $columns
+     * @return mixed
+     */
+    public function findByField($field, $value = null, $columns = array('*'))
+    {
+        return $this->wrap(function ($field, $value = null, $columns = array('*')) {
+
+            return $this->model->where($field, '=', $value)->get($columns);
+
+        }, new Action(__METHOD__, func_get_args(), Action::READ));
+    }
+
+    /**
+     * Find data by multiple fields
+     *
+     * @param array $where
+     * @param array $columns
+     * @return mixed
+     */
+    public function findWhere(array $where, $columns = array('*'))
+    {
+        return $this->wrap(function ($where, $columns = array('*')) {
+
+            $this->applyWhere($where);
+
+            return $this->model->get($columns);
+
+        }, new Action(__METHOD__, func_get_args(), Action::READ));
     }
 
     /**
@@ -337,87 +363,14 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * Retrieve all data of repository
-     *
-     * @param array $columns
-     * @return mixed
+     * @param string $type
+     * @param mixed  $condition
      */
-    public function all($columns = ['*'])
+    protected function addConditon($type, $condition)
     {
-        return $this->wrap(function ($columns = ['*']) {
-
-            return $this->model->get($columns);
-
-        }, new Action(__METHOD__, func_get_args(), Action::READ));
-    }
-
-    /**
-     * Retrieve all data of repository, paginated
-     *
-     * @param null  $limit
-     * @param array $columns
-     * @return mixed
-     */
-    public function paginate($limit = null, $columns = array('*'))
-    {
-        return $this->wrap(function ($limit, $columns) {
-
-            $limit = is_null($limit) ? $this->perPage : $limit;
-
-            return $this->model->paginate($limit, $columns);
-
-        }, new Action(__METHOD__, func_get_args(), Action::READ));
-    }
-
-    /**
-     * Find data by id
-     *
-     * @param       $id
-     * @param array $columns
-     * @return mixed
-     */
-    public function find($id, $columns = array('*'))
-    {
-        return $this->wrap(function ($id, $columns) {
-
-            return $this->model->findOrFail($id, $columns);
-
-        }, new Action(__METHOD__, func_get_args(), Action::READ));
-    }
-
-    /**
-     * Find data by field and value
-     *
-     * @param       $field
-     * @param       $value
-     * @param array $columns
-     * @return mixed
-     */
-    public function findByField($field, $value = null, $columns = array('*'))
-    {
-        return $this->wrap(function ($field, $value, $columns) {
-
-            return $this->model->where($field, '=', $value)->get($columns);
-
-        }, new Action(__METHOD__, func_get_args(), Action::READ));
-    }
-
-    /**
-     * Find data by multiple fields
-     *
-     * @param array $where
-     * @param array $columns
-     * @return mixed
-     */
-    public function findWhere(array $where, $columns = array('*'))
-    {
-        return $this->wrap(function ($where, $columns) {
-
-            $this->applyWhere($where);
-
-            return $this->model->get($columns);
-
-        }, new Action(__METHOD__, func_get_args(), Action::READ));
+        $this->conditions[] = [
+            $type => $condition
+        ];
     }
 
     /**
@@ -450,7 +403,7 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function update($id, array $attributes)
     {
-        return $this->wrap(function ($id, $attributes) {
+        return $this->wrap(function ($id, array $attributes) {
 
             $model = $this->model->findOrFail($id);
             $model->fill($attributes);
@@ -469,7 +422,7 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function delete($id)
     {
-        return $this->wrap(function ($id, $attributes) {
+        return $this->wrap(function ($id) {
 
             $model = $this->find($id);
 
@@ -478,6 +431,22 @@ abstract class BaseRepository implements RepositoryInterface
             return $deleted;
 
         }, new Action(__METHOD__, func_get_args(), Action::DELETE));
+    }
+
+    /**
+     * Find data by id
+     *
+     * @param       $id
+     * @param array $columns
+     * @return mixed
+     */
+    public function find($id, $columns = array('*'))
+    {
+        return $this->wrap(function ($id, $columns = array('*')) {
+
+            return $this->model->findOrFail($id, $columns);
+
+        }, new Action(__METHOD__, func_get_args(), Action::READ));
     }
 
     /**
@@ -522,6 +491,41 @@ abstract class BaseRepository implements RepositoryInterface
         $this->model->setVisible($fields);
 
         return $this;
+    }
+
+    /**
+     * @param InjectionInterface $injection
+     * @throws RepositoryException
+     */
+    protected function inject(InjectionInterface $injection)
+    {
+        /**
+         * Add injection.
+         */
+        if ($injection instanceof ResetInjectionInterface) {
+            $this->injections['reset'][] = $injection;
+        } elseif ($injection instanceof BeforeInjectionInterface) {
+            $this->injections['before'][] = $injection;
+        } elseif ($injection instanceof AfterInjectionInterface) {
+            $this->injections['after'][] = $injection;
+        } else {
+            throw new RepositoryException('Unusable Injection.');
+        }
+
+        /**
+         * Sort injections.
+         */
+        $this->sortAllInjections();
+    }
+
+    /**
+     * Sort all event handlers by priority ASC.
+     */
+    protected function sortAllInjections()
+    {
+        foreach ($this->injections as &$handlers) {
+            usort($handlers, array($this, 'sortInjection'));
+        }
     }
 
 }

@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Injections\Cacheable;
+<?php
+
+namespace Housekeeper\Injections\Cacheable;
 
 use Illuminate\Contracts\Cache\Repository;
 use Housekeeper\Contracts\RepositoryInterface;

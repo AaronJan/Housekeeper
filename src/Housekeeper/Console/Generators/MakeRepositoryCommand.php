@@ -1,16 +1,15 @@
-<?php namespace Housekeeper\Generators\Console;
+<?php
 
-use Illuminate\Console\GeneratorCommand;
+namespace Housekeeper\Console\Generators;
+
+use Housekeeper\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Console\AppNamespaceDetectorTrait;
 
 /**
  * Class MakeRepositoryCommand
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
- * @package Housekeeper\Generators\Console
+ * @package Housekeeper\Console\Generators
  */
 class MakeRepositoryCommand extends GeneratorCommand
 {

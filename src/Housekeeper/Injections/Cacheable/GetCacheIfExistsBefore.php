@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Injections\Cacheable;
+<?php
+
+namespace Housekeeper\Injections\Cacheable;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Injection\InjectionInterface;
@@ -8,7 +10,7 @@ use Housekeeper\Flow\Before;
 /**
  * Class GetCacheIfExistsBefore
  *
- * @priority 20
+ * @priority 50
  * @author   AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package  Housekeeper\Injections\Cacheable
  */
@@ -21,7 +23,7 @@ class GetCacheIfExistsBefore extends AbstractCacheManager implements InjectionIn
      */
     public function priority()
     {
-        return 20;
+        return 50;
     }
 
     /**

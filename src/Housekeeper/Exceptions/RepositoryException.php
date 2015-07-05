@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Exceptions;
+<?php
+
+namespace Housekeeper\Exceptions;
 
 use \Exception;
 

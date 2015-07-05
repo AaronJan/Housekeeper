@@ -1,8 +1,10 @@
-<?php namespace {{namespace}};
+<?php
+
+namespace DummyNamespace;
 
 use Housekeeper\Eloquent\BaseRepository;
 
-class {{class}} extends BaseRepository {
+class DummyClass extends BaseRepository {
 
     /**
      * Return the name of model that this repository used.

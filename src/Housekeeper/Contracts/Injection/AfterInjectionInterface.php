@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Contracts\Injection;
+<?php
+
+namespace Housekeeper\Contracts\Injection;
 
 use Housekeeper\Flow\After;
 

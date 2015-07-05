@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Injections\Adjustable;
+<?php
+
+namespace Housekeeper\Injections\Adjustable;
 
 use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\BeforeInjectionInterface;

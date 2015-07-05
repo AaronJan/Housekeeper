@@ -1,12 +1,13 @@
-<?php namespace {{namespace}};
+<?php
+
+namespace DummyNamespace;
 
 use Housekeeper\Eloquent\BaseRepository;
 use Housekeeper\Traits\Repository\Adjustable;
-use Housekeeper\Traits\Repository\Cacheable;
 
-class {{class}} extends BaseRepository {
+class DummyClass extends BaseRepository {
 
-    use Adjustable, Cacheable;
+    use Adjustable;
 
     /**
      * Return the name of model that this repository used.

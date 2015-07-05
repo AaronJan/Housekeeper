@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Flow;
+<?php
+
+namespace Housekeeper\Flow;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\RepositoryInterface;

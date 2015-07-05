@@ -1,9 +1,9 @@
-<?php namespace Housekeeper\Traits\Repository;
+<?php
 
-use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Contracts\Injection\AfterInjectionInterface;
-use Housekeeper\Injections\Cacheable\GetCacheIfExistsBefore;
+namespace Housekeeper\Traits\Repository;
+
 use Housekeeper\Injections\Cacheable\CacheResultAfter;
+use Housekeeper\Injections\Cacheable\GetCacheIfExistsBefore;
 
 /**
  * Class Cacheable

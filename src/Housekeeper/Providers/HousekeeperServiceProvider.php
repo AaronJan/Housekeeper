@@ -1,4 +1,6 @@
-<?php namespace Housekeeper\Providers;
+<?php
+
+namespace Housekeeper\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -40,7 +42,7 @@ class HousekeeperServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->commands('Housekeeper\Generators\Console\MakeRepositoryCommand');
+        $this->commands('Housekeeper\Console\Generators\MakeRepositoryCommand');
     }
 
     /**
