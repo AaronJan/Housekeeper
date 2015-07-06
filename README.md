@@ -15,7 +15,7 @@ Powerful, simple `Repository-Pattern` implementation for Laravel `(>= 5.0)`, and
 - [About Repository-Pattern](#repository-pattern)
 - [About Housekeeper](#about-housekeeper)
 	- [Housekeeper Features](#housekeeper-features)
-	- [What's the Differents And How Housekeeper Works](#whats-the-differents and-how-housekeeper-works)
+	- [What's the Differents And How Housekeeper Works](#whats-the-differents-and-how-housekeeper-works)
 - [Installation(TODO)](#installation)
 - [Usage(TODO)](#usage)
 - [Credits](#credits)
