@@ -19,7 +19,6 @@ Powerful, simple `Repository-Pattern` implementation for Laravel `(>= 5.0)`, and
 
 
 ## Repository-Pattern
-pository-Pattern
 
 There are many articles about **How to implement `Repository-Pattern` in `Laravel`**, and they're a little different from one another. but in general, the idea is you only ask data from your `repository`. 
 
