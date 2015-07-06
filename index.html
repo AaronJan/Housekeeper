@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Housekeeper by AaronJan</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Housekeeper</h1>
+        <h2>Powerful, simple Repository-Pattern implementation for Laravel (&gt;=5.1), and it come with tests.</h2>
+        <a href="https://github.com/AaronJan/Housekeeper" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="housekeeper---laravel" class="anchor" href="#housekeeper---laravel" aria-hidden="true"><span class="octicon octicon-link"></span></a>Housekeeper - Laravel</h1>
+
+<p><strong>More documents and tests are still writing</strong></p>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Powerful, simple <code>Repository-Pattern</code> implementation for Laravel <code>(&gt;= 5.0)</code>, and it come with tests.</p>
+
+<h2>
+<a id="sections" class="anchor" href="#sections" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sections</h2>
+
+<ul>
+<li><a href="#repository-pattern">About Repository-Pattern</a></li>
+<li>
+<a href="#about-housekeeper">About Housekeeper</a>
+
+<ul>
+<li><a href="#housekeeper-features">Housekeeper Features</a></li>
+<li><a href="#whats-the-differents-and-how-housekeeper-works">What's the Differents And How Housekeeper Works</a></li>
+</ul>
+</li>
+<li><a href="#installation">Installation(TODO)</a></li>
+<li><a href="#usage">Usage(TODO)</a></li>
+<li><a href="#credits">Credits</a></li>
+</ul>
+
+<h2>
+<a id="repository-pattern" class="anchor" href="#repository-pattern" aria-hidden="true"><span class="octicon octicon-link"></span></a>Repository-Pattern</h2>
+
+<p>There are many articles about <strong>How to implement <code>Repository-Pattern</code> in <code>Laravel</code></strong>, and they're a little different from one another. but in general, the idea is you only ask data from your <code>repository</code>. </p>
+
+<p>If you want to caching result, you can <code>extend</code> your <code>basic repository</code>, override methods, add some caching logic to them, or using <code>Decorator-Pattern</code> to do the same, by utilizing <code>IOC</code> in <code>Laravel</code>, you can switch them easily, usage still be the same.</p>
+
+<h2>
+<a id="about-housekeeper" class="anchor" href="#about-housekeeper" aria-hidden="true"><span class="octicon octicon-link"></span></a>About Housekeeper</h2>
+
+<p>I searched <code>GitHub</code> for <code>Repository-Pattern</code> <code>PHP</code> packages, there are some, but most seems incomplete or not catching up with <code>Laravel 5</code>, but there is one stood up, it's <a href="https://github.com/prettus/l5-repository">prettus/l5-repository</a>.</p>
+
+<p>After reading the documents and codes, I'm start to wondering: <em>maybe <code>Repository-Pattern</code> could be simpler</em>? And <code>prettus/l5-repository</code> is too much for me, <code>RequestCriteria</code>, <code>Validation</code>... They are great features, but what if I don't want them in my repository? Can I just import them in on my demond? So I wrote <code>Housekeeper</code>. </p>
+
+<p>I started from the code of <code>prettus/l5-repository</code> in <code>2015/06/25</code>, but they're completely different now.</p>
+
+<h3>
+<a id="housekeeper-features" class="anchor" href="#housekeeper-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Housekeeper Features</h3>
+
+<ul>
+<li>Repository console generators</li>
+<li>Provides basic repository method: <code>create</code>, <code>find</code>, <code>update</code>, <code>delete</code>, <code>paginate</code>, <code>all</code>, <code>findByField</code>, <code>findWhere</code>, <code>with</code>, only the basics</li>
+<li>
+<code>Cache</code>, <code>Criteria</code> as class traits</li>
+<li>Easy to extending</li>
+<li>With tests</li>
+</ul>
+
+<h3>
+<a id="whats-the-differents-and-how-housekeeper-works" class="anchor" href="#whats-the-differents-and-how-housekeeper-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's the Differents And How Housekeeper Works</h3>
+
+<p>Traditional <code>Repository-Pattern</code> is all about <code>layer</code>, want to caching data, you add a layer! That's great concept, you can still do that in <code>Housekeeper</code>. But features like <code>cache</code>, <code>criteria</code> I used something like <code>middleware</code>.</p>
+
+<p>Each repository method calling in <code>Housekeeper</code> is called <code>Action</code>, it go through four <code>Flows</code>: <em>Before</em>, <em>Your method logic</em>, <em>Reset</em> and <em>After</em>, result could be returned in <em>Before</em> or <em>After</em> <code>Flows</code>. You can write <code>Injections</code> to extending any <code>Flow</code>.</p>
+
+<h4>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h4>
+
+<p>Let's talk about an example, like <code>Cache</code>.</p>
+
+<pre><code>Check if cache exists, if it's, then return the cached result, if it's not, do the logic then caching result.
+</code></pre>
+
+<p>That's <code>Cache</code> right? if you do the traditional way, you will end up with a lot of duplicated code.</p>
+
+<p>But with <code>Injection</code>, you just put the <code>cache-checking</code> in a <em>Before</em> injection, and put <code>cache-setting</code> in an <em>After</em> injection. You can identify <code>read</code>/<code>create</code>/<code>update</code>/<code>delete</code> <code>Actions</code> in the <code>Flow</code> (even get the name of method), so you write <code>cache-cleanning</code> logic in an <em>After</em> injection specify for <code>create</code>/<code>update</code>/<code>delete</code> <code>Action</code>. In the end, write a <code>Trait</code> with just one method <code>setupCache</code> like this:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-k">trait</span> <span class="pl-en">Cache</span></span>
+<span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-k">protected</span> <span class="pl-k">function</span> <span class="pl-en">setupCache</span>()</span>
+<span class="pl-s1">    {</span>
+<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>inject(<span class="pl-k">new</span> <span class="pl-c1">GetCacheIfExistsBefore</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">app</span>)); <span class="pl-c">// Your before injection</span></span>
+<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>inject(<span class="pl-k">new</span> <span class="pl-c1">CacheResultAfter</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">app</span>)); <span class="pl-c">// Your after injection</span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1">}</span></pre></div>
+
+<p>That's all done.</p>
+
+<p>Each <code>Injection</code> has a <code>priority</code> method, so if you want to add some logic before <code>Cache</code>, just return a integer that lower then <code>Cache</code>'s <code>priority</code>.</p>
+
+<h4>
+<a id="setup" class="anchor" href="#setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup</h4>
+
+<p>In repository's constructor, it will calling every method that name started with <em>setup</em>, you can inject your <code>Injections</code> in there.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>TODO</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>TODO</p>
+
+<h2>
+<a id="lisence" class="anchor" href="#lisence" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lisence</h2>
+
+<p>TODO</p>
+
+<h2>
+<a id="credits" class="anchor" href="#credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Credits</h2>
+
+<p>Thinks to <a href="https://github.com/prettus/l5-repository">prettus/l5-repository</a> for inspired me.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/AaronJan/Housekeeper/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/AaronJan/Housekeeper/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/AaronJan/Housekeeper"></a> is maintained by <a href="https://github.com/AaronJan">AaronJan</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
