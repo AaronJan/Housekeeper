@@ -9,13 +9,13 @@ Powerful, simple `Repository-Pattern` implementation for Laravel `(>= 5.0)`, and
 
 ## Sections
 
-- [About Repository-Pattern](#Repository-Pattern)
-- [About Housekeeper](#About-Housekeeper)
-	- [Housekeeper Features](#Housekeeper-Features)
-	- [What's the Differents And How Housekeeper Works](#What's-the-Differents And-How-Housekeeper-Works)
-- [Installation(TODO)](#Installation)
-- [Usage(TODO)](#Usage)
-- [Credits](#Credits)
+- [About Repository-Pattern](#repository-pattern)
+- [About Housekeeper](#about-housekeeper)
+	- [Housekeeper Features](#housekeeper-features)
+	- [What's the Differents And How Housekeeper Works](#whats-the-differents and-how-housekeeper-works)
+- [Installation(TODO)](#installation)
+- [Usage(TODO)](#usage)
+- [Credits](#credits)
 
 
 ## Repository-Pattern
