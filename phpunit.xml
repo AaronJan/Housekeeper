@@ -24,12 +24,12 @@
         </whitelist>
     </filter>
 
-    <!-- Code coverage report
+
     <logging>
         <log type="coverage-html" target="./tests/log/code-coverage"
              charset="UTF-8" yui="true" highlight="true" lowUpperBound="50"
              highLowerBound="80"/>
     </logging>
-    -->
+
 
 </phpunit>

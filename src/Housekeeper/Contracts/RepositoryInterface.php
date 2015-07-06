@@ -108,20 +108,4 @@ interface RepositoryInterface
      */
     public function with($relations);
 
-    /**
-     * Set hidden fields
-     *
-     * @param array $fields
-     * @return $this
-     */
-    public function hidden(array $fields);
-
-    /**
-     * Set visible fields
-     *
-     * @param array $fields
-     * @return $this
-     */
-    public function visible(array $fields);
-
 }

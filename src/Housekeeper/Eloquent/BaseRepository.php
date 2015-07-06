@@ -350,7 +350,7 @@ abstract class BaseRepository implements RepositoryInterface
         /**
          * Save to conditons.
          */
-        $this->addConditon('where', $where);
+        $this->addCondition('where', $where);
 
         foreach ($where as $field => $value) {
             if (is_array($value)) {
@@ -366,7 +366,7 @@ abstract class BaseRepository implements RepositoryInterface
      * @param string $type
      * @param mixed  $condition
      */
-    protected function addConditon($type, $condition)
+    protected function addCondition($type, $condition)
     {
         $this->conditions[] = [
             $type => $condition
@@ -460,35 +460,9 @@ abstract class BaseRepository implements RepositoryInterface
         /**
          * Save to conditons.
          */
-        $this->addConditon('with', $relations);
+        $this->addCondition('with', $relations);
 
         $this->model = $this->model->with($relations);
-
-        return $this;
-    }
-
-    /**
-     * Set hidden fields
-     *
-     * @param array $fields
-     * @return $this
-     */
-    public function hidden(array $fields)
-    {
-        $this->model->setHidden($fields);
-
-        return $this;
-    }
-
-    /**
-     * Set visible fields
-     *
-     * @param array $fields
-     * @return $this
-     */
-    public function visible(array $fields)
-    {
-        $this->model->setVisible($fields);
 
         return $this;
     }

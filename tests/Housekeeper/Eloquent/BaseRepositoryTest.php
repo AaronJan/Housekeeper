@@ -41,12 +41,16 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testSetup()
     {
         /**
-         * Mock custom Repository class but do not call "__construct" yet.
+         * Mock custom Repository class but do not call "__construct" yet,
+         * because "setup" method will be called.
          */
         $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
 
         /**
-         * If "setupTest" be called, then "$called" should be true.
+         * Mock a method named "setupTest", when repository initializing, it'll
+         * call "setup" method, and "setup" method will call all method that
+         * name starting with "setup", so If "setupTest" be called, then
+         * "$called" should be true.
          */
         $called = false;
         $mockRepository->shouldReceive('setupTest')
@@ -72,12 +76,21 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();;
 
+        /**
+         * Because in the "model" method we only return a model class name, so
+         * we should mock it as hard-dependency.
+         */
         $mockModel = $this->makeMockModel('overload:Test\FakeModel');
 
-
+        /**
+         * So in here, we just return the class name of mock model.
+         */
         $mockRepository->shouldReceive('model')
             ->andReturn('Test\FakeModel');
 
+        /**
+         * Check it.
+         */
         $methodModelInstance = $this->getUnaccessibleObjectMethod($mockRepository, 'modelInstance');
         $model               = $methodModelInstance->invoke($mockRepository, array());
 
@@ -92,7 +105,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $mockRepository = $this->makeMockRepository(BaseRepository::class, false);
 
         /**
-         * The model should be "null" at first.
+         * The model instance should be "null" at first.
          */
         $model = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'model');
 
@@ -104,6 +117,9 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $methodFreshModel = $this->getUnaccessibleObjectMethod($mockRepository, 'freshModel');
         $methodFreshModel->invoke($mockRepository, array());
 
+        /**
+         * Check it.
+         */
         $model = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'model');
 
         $this->assertInstanceOf('Illuminate\Database\Eloquent\Model', $model);
@@ -129,7 +145,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturn(1);
 
         /**
-         * Call "inject" function.
+         * Call "inject" function, this injection should goes to "reset"
+         * injections.
          */
         $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $resetInjection);
@@ -163,7 +180,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturn(1);
 
         /**
-         * Call "inject" function.
+         * Call "inject" function, this injection should goes to "before"
+         * injections.
          */
         $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $beforeInjection);
@@ -197,7 +215,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturn(1);
 
         /**
-         * Call "inject" function.
+         * Call "inject" function, this injection should goes to "after"
+         * injections.
          */
         $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $afterInjection);
@@ -219,7 +238,9 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $mockRepository = $this->makeMockRepository();
 
         /**
-         * Mock an injection that implements basic InjectionInterface.
+         * Mock an injection that implements basic InjectionInterface, but
+         * without any real process injection interface, so it should makes an
+         * exception.
          */
         $uselessInjection = m::mock(
             InjectionInterface::class
@@ -228,7 +249,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturn(1);
 
         /**
-         * Call "inject" function.
+         * Call "inject" function to verify that.
          */
         $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $uselessInjection);
@@ -244,8 +265,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * These should be "true" after tests completed.
          */
-        $freshModelCalled   = false;
-        $injectionCalled = false;
+        $freshModelCalled = false;
+        $injectionCalled  = false;
 
         /**
          * Mock a reset injection.
@@ -397,7 +418,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *
+     * @coversNothing
      */
     public function testWhenBeforeHasReturn()
     {
@@ -539,6 +560,81 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Housekeeper\Eloquent\BaseRepository::sortInjection
+     */
+    public function testSortInjection()
+    {
+        $mockRepository = $this->makeMockRepository();
+
+        /**
+         * Mock three injections to test sorting, equal, lesser and greater.
+         */
+        $mockInjection_1 = m::mock('Housekeeper\Contracts\Injection\InjectionInterface');
+        $mockInjection_1->shouldReceive('priority')
+            ->andReturn('1');
+
+        $mockInjection_2 = m::mock('Housekeeper\Contracts\Injection\InjectionInterface');
+        $mockInjection_2->shouldReceive('priority')
+            ->andReturn('2');
+
+        $mockInjection_3 = m::mock('Housekeeper\Contracts\Injection\InjectionInterface');
+        $mockInjection_3->shouldReceive('priority')
+            ->andReturn('1');
+
+        /**
+         * Get the "sort" method.
+         */
+        $methodSortInjection = $this->getUnaccessibleObjectMethod($mockRepository, 'sortInjection');
+
+        $this->assertEquals(
+            -1,
+            $methodSortInjection->invoke($mockRepository, $mockInjection_1, $mockInjection_2)
+        );
+
+        $this->assertEquals(
+            1,
+            $methodSortInjection->invoke($mockRepository, $mockInjection_2, $mockInjection_1)
+        );
+
+        $this->assertEquals(
+            0,
+            $methodSortInjection->invoke($mockRepository, $mockInjection_1, $mockInjection_1)
+        );
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::addCondition
+     * @covers Housekeeper\Eloquent\BaseRepository::getConditions
+     */
+    public function testConditions()
+    {
+        $mockRepository = $this->makeMockRepository();
+
+        $mockRepository->addCondition('where', [
+            'name' => 'Aaron',
+        ]);
+
+        $mockRepository->addCondition('with', [
+            'article',
+        ]);
+
+        $conditions = $mockRepository->getConditions();
+
+        $this->assertEquals([
+            [
+                'where' => [
+                    'name' => 'Aaron',
+                ]
+            ],
+            [
+                'with' => [
+                    'article'
+                ]
+            ],
+        ], $conditions);
+    }
+
+    /**
      * @covers Housekeeper\Eloquent\BaseRepository::all
      */
     public function testAll()
@@ -548,6 +644,92 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $result = $mockRepository->all();
 
         $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $result);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::find
+     */
+    public function testFind()
+    {
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('findOrFail')
+            ->with(3, ['*'])
+            ->andReturn(m::mock('Illuminate\Database\Eloquent\Model'));
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "paginate".
+         */
+        $result = $mockRepository->find(3);
+
+        $this->assertInstanceOf('Illuminate\Database\Eloquent\Model', $result);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::paginate
+     */
+    public function testPaginate()
+    {
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('paginate')
+            ->with(15, ['*'])
+            ->andReturn(m::mock('Illuminate\Contracts\Pagination\LengthAwarePaginator'));
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "paginate".
+         */
+        $result = $mockRepository->paginate(15);
+
+        $this->assertInstanceOf('Illuminate\Contracts\Pagination\LengthAwarePaginator', $result);
     }
 
 
@@ -678,12 +860,11 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $mock->shouldReceive('get')
             ->andReturn(m::mock('Illuminate\Database\Eloquent\Collection'));
 
-
         return $mock;
     }
 
     /**
-     * @return m\MockInterfaces
+     * @return m\MockInterface
      */
     protected function makeMockAction()
     {
