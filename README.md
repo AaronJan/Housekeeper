@@ -26,8 +26,9 @@ Powerful, simple `Repository-Pattern` implementation for Laravel `(>= 5.0)` and 
 		- [Cacheable](#cacheable)
 		- [Adjustable](#adjustable)
 		- [Metadata](#metadata)
-- [Lisence](#lisence)
+- [Development Logs](#development-logs)
 - [Issue](#issue)
+- [Lisence](#lisence)
 - [Credits](#credits)
 
 
@@ -303,10 +304,12 @@ Priority **30**.
 `Housekeeper` returns `Eloquent` object or `Collection` object by default, if you like `Array` a lot, use `Metadata` trait, it will converting all result to `Array` (If the result can't be converted, nothing will happen).
 
 
-## Lisence
+## Development Logs
 
 
-Licensed under the [APACHE LISENCE V2](http://www.apache.org/licenses/LICENSE-2.0)
+### v0.9.1 - 2015/07/07
+
+Documents are mostly completed, package is usable, still needs more tests.
 
 
 ## Issue
@@ -315,6 +318,12 @@ Licensed under the [APACHE LISENCE V2](http://www.apache.org/licenses/LICENSE-2.
 If you have any question for `Housekeeper`, feel free to create an issue, I'll reply you ASAP.
 
 Any useful pull request are welcomed too.
+
+
+## Lisence
+
+
+Licensed under the [APACHE LISENCE V2](http://www.apache.org/licenses/LICENSE-2.0)
 
 
 ## Credits
