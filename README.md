@@ -19,6 +19,15 @@ Powerful, simple `Repository-Pattern` implementation for Laravel `(>= 5.0)` and 
 	- [What's the Differents And How Housekeeper Works](#whats-the-differents-and-how-housekeeper-works)
 - [Installation](#installation)
 - [Usage](#usage)
+    - [Create a repository](#create-a-repository)
+	- [Write your repository method](#write-your-repository-method)
+	- [Action](#action)
+	- [Traits](#traits)
+		- [Cacheable](#cacheable)
+		- [Adjustable](#adjustable)
+		- [Metadata](#metadata)
+- [Lisence](#lisence)
+- [Issue](#issue)
 - [Credits](#credits)
 
 
@@ -287,7 +296,7 @@ Remove all `Criteria` that repository remembered.
 Returns all `Criteria` that repository remembered.
 
 
-#### Metadata
+##### Metadata
 
 Priority **30**.
 
@@ -298,6 +307,14 @@ Priority **30**.
 
 
 Licensed under the [APACHE LISENCE V2](http://www.apache.org/licenses/LICENSE-2.0)
+
+
+## Issue
+
+
+If you have any question for `Housekeeper`, feel free to create an issue, I'll reply you ASAP.
+
+Any useful pull request are welcomed too.
 
 
 ## Credits
