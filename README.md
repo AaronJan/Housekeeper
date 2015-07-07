@@ -1,7 +1,7 @@
 # Housekeeper - Laravel
 
 
-**More documents and tests are still writing**
+Here is the [Documents](https://aaronjan.github.io/Housekeeper/).
 
 
 ## Introduction
