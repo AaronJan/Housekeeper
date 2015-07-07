@@ -296,7 +296,7 @@ Remove all `Criteria` that repository remembered.
 Returns all `Criteria` that repository remembered.
 
 
-##### Metadata
+#### Metadata
 
 Priority **30**.
 
