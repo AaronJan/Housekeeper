@@ -2,7 +2,7 @@
 
 namespace Housekeeper\Contracts\Injection;
 
-use Housekeeper\Flow\Reset;
+use Housekeeper\Flows\Reset;
 
 /**
  * Interface ResetEventHandlerInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace Housekeeper\Flow;
+namespace Housekeeper\Flows;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Flow\Basic as FlowContract;

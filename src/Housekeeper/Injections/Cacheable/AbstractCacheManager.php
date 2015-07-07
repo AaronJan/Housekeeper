@@ -7,7 +7,7 @@ use Housekeeper\Contracts\RepositoryInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Housekeeper\Action;
 use Illuminate\Redis\Database;
-use Housekeeper\Flow\After;
+use Housekeeper\Flows\After;
 use Housekeeper\Contracts\Flow\Basic as FlowContract;
 
 /**

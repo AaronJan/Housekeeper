@@ -1,18 +1,18 @@
 <?php
 
-namespace Housekeeper\Flow;
+namespace Housekeeper\Flows;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\RepositoryInterface;
 use Housekeeper\Contracts\Flow\Basic as FlowContract;
 
 /**
- * Class Before
+ * Class After
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Flow
  */
-class Before implements FlowContract
+class After implements FlowContract
 {
 
     /**
@@ -34,11 +34,13 @@ class Before implements FlowContract
     /**
      * @param RepositoryInterface $repository
      * @param Action              $action
+     * @param                     $returnValue
      */
-    public function __construct(RepositoryInterface $repository, Action $action)
+    public function __construct(RepositoryInterface $repository, Action $action, $returnValue)
     {
-        $this->repository = $repository;
-        $this->action     = $action;
+        $this->repository  = $repository;
+        $this->action      = $action;
+        $this->returnValue = $returnValue;
     }
 
     /**
@@ -55,14 +57,6 @@ class Before implements FlowContract
     public function getRepository()
     {
         return $this->repository;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasReturn()
-    {
-        return ! is_null($this->returnValue);
     }
 
     /**

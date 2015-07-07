@@ -9,9 +9,9 @@ use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\ResetInjectionInterface;
 use Housekeeper\Contracts\RepositoryInterface;
 use Housekeeper\Exceptions\RepositoryException;
-use Housekeeper\Flow\After;
-use Housekeeper\Flow\Before;
-use Housekeeper\Flow\Reset;
+use Housekeeper\Flows\After;
+use Housekeeper\Flows\Before;
+use Housekeeper\Flows\Reset;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -59,6 +59,14 @@ abstract class BaseRepository implements RepositoryInterface
      * @var int
      */
     protected $perPage = 15;
+
+
+    /**
+     * Specify Model class name
+     *
+     * @return string
+     */
+    abstract protected function model();
 
     /**
      * @param Application $app
@@ -145,7 +153,6 @@ abstract class BaseRepository implements RepositoryInterface
 
         $this->model = $model;
     }
-
     /**
      * Make a new Model instanse.
      *
@@ -160,13 +167,6 @@ abstract class BaseRepository implements RepositoryInterface
 
         return new $modelName;
     }
-
-    /**
-     * Specify Model class name
-     *
-     * @return string
-     */
-    abstract protected function model();
 
     /**
      * Conditions are use for identify each method call.

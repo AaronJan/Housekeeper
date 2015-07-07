@@ -6,9 +6,9 @@ use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
 use Housekeeper\Contracts\Injection\AfterInjectionInterface;
 use Housekeeper\Contracts\Injection\ResetInjectionInterface;
-use Housekeeper\Flow\Before;
-use Housekeeper\Flow\After;
-use Housekeeper\Flow\Reset;
+use Housekeeper\Flows\Before;
+use Housekeeper\Flows\After;
+use Housekeeper\Flows\Reset;
 use Mockery as m;
 
 /**
@@ -440,7 +440,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturnUsing(function () use (&$beforeMethodCalled) {
                 $beforeMethodCalled = true;
 
-                $mockFlow = m::mock('Housekeeper\Flow\Before');
+                $mockFlow = m::mock('Housekeeper\Flows\Before');
                 $mockFlow->shouldReceive('hasReturn')
                     ->andReturn(true);
                 $mockFlow->shouldReceive('getReturn')
@@ -455,7 +455,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturnUsing(function ($methodName, $result) use (&$afterMethodCalled) {
                 $afterMethodCalled = true;
 
-                $mockFlow = m::mock('Housekeeper\Flow\After');
+                $mockFlow = m::mock('Housekeeper\Flows\After');
                 $mockFlow->shouldReceive('getReturn')
                     ->andReturn('bad');
                 $mockFlow->shouldReceive('handle')
@@ -513,7 +513,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturnUsing(function () use (&$beforeMethodCalled) {
                 $beforeMethodCalled = true;
 
-                $mockFlow = m::mock('Housekeeper\Flow\Before');
+                $mockFlow = m::mock('Housekeeper\Flows\Before');
                 $mockFlow->shouldReceive('hasReturn')
                     ->andReturn(false);
                 $mockFlow->shouldReceive('handle')
@@ -526,7 +526,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             ->andReturnUsing(function ($methodName, $result) use (&$afterMethodCalled) {
                 $afterMethodCalled = true;
 
-                $mockFlow = m::mock('Housekeeper\Flow\After');
+                $mockFlow = m::mock('Housekeeper\Flows\After');
                 $mockFlow->shouldReceive('getReturn')
                     ->andReturn($result . 'good');
                 $mockFlow->shouldReceive('handle')

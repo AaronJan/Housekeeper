@@ -2,7 +2,7 @@
 
 namespace Housekeeper\Contracts\Injection;
 
-use Housekeeper\Flow\After;
+use Housekeeper\Flows\After;
 
 /**
  * Interface AfterInjectionInterface

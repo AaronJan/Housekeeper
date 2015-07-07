@@ -4,7 +4,7 @@ namespace Housekeeper\Injections\Adjustable;
 
 use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Flow\Before;
+use Housekeeper\Flows\Before;
 use Housekeeper\Traits\Repository\Adjustable;
 use Housekeeper\Contracts\RepositoryInterface;
 

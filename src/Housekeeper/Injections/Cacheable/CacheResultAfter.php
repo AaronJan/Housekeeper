@@ -5,7 +5,7 @@ namespace Housekeeper\Injections\Cacheable;
 use Housekeeper\Action;
 use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\AfterInjectionInterface;
-use Housekeeper\Flow\After;
+use Housekeeper\Flows\After;
 
 /**
  * Class CacheResultAfter

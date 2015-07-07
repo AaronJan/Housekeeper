@@ -5,7 +5,7 @@ namespace Housekeeper\Injections\Cacheable;
 use Housekeeper\Action;
 use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Flow\Before;
+use Housekeeper\Flows\Before;
 
 /**
  * Class GetCacheIfExistsBefore

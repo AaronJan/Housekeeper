@@ -4,7 +4,7 @@ namespace Housekeeper\Injections\Metadata;
 
 use Housekeeper\Contracts\Injection\AfterInjectionInterface;
 use Housekeeper\Contracts\Injection\InjectionInterface;
-use Housekeeper\Flow\After;
+use Housekeeper\Flows\After;
 use Illuminate\Contracts\Support\Arrayable;
 
 /**
