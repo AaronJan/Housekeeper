@@ -35,7 +35,7 @@
 <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>Powerful, simple <code>Repository-Pattern</code> implementation for Laravel <code>(&gt;= 5.0)</code>, and it come with tests.</p>
+<p>Powerful, simple <code>Repository-Pattern</code> implementation for Laravel <code>(&gt;= 5.0)</code> and PHP <code>(&gt;= 5.5)</code>, and it come with tests.</p>
 
 <h2>
 <a id="sections" class="anchor" href="#sections" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sections</h2>
@@ -50,8 +50,28 @@
 <li><a href="#whats-the-differents-and-how-housekeeper-works">What's the Differents And How Housekeeper Works</a></li>
 </ul>
 </li>
-<li><a href="#installation">Installation(TODO)</a></li>
-<li><a href="#usage">Usage(TODO)</a></li>
+<li><a href="#installation">Installation</a></li>
+<li>
+<a href="#usage">Usage</a>
+
+<ul>
+<li><a href="#create-a-repository">Create a repository</a></li>
+<li><a href="#write-your-repository-method">Write your repository method</a></li>
+<li><a href="#action">Action</a></li>
+<li>
+<a href="#traits">Traits</a>
+
+<ul>
+<li><a href="#cacheable">Cacheable</a></li>
+<li><a href="#adjustable">Adjustable</a></li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#development-logs">Development Logs</a></li>
+<li><a href="#issue">Issue</a></li>
+<li><a href="#lisence">Lisence</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
 
@@ -75,27 +95,61 @@
 <a id="housekeeper-features" class="anchor" href="#housekeeper-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Housekeeper Features</h3>
 
 <ul>
-<li>Repository console generators</li>
-<li>Provides basic repository method: <code>create</code>, <code>find</code>, <code>update</code>, <code>delete</code>, <code>paginate</code>, <code>all</code>, <code>findByField</code>, <code>findWhere</code>, <code>with</code>, only the basics</li>
+<li>Laravel console generators</li>
 <li>
-<code>Cache</code>, <code>Criteria</code> as class traits</li>
-<li>Easy to extending</li>
-<li>With tests</li>
+<strong>Provides basic repository method</strong>
+
+<ul>
+<li>
+<code>create</code>, <code>find</code>, <code>update</code>, <code>delete</code>, <code>paginate</code>, <code>all</code>, <code>findByField</code>, <code>findWhere</code>, <code>with</code>, only the basics</li>
+</ul>
+</li>
+<li>
+<strong><code>Cache</code>, <code>Criteria</code> features are traits</strong>
+
+<ul>
+<li>Say bye-bye to boring duplicated code</li>
+</ul>
+</li>
+<li>
+<strong>Easy to extend</strong>
+
+<ul>
+<li>See <a href="https://github.com/AaronJan/Housekeeper/tree/master/src/Housekeeper/Traits/Repository">here</a>, really easy</li>
+</ul>
+</li>
+<li>
+<strong>Clean code</strong>
+
+<ul>
+<li>If you like the old-fashioned layer technic, <code>Housekeeper</code> will not get in your way</li>
+</ul>
+</li>
+<li>
+<strong>Comes with tests</strong>
+
+<ul>
+<li>Aim to <code>85%</code> (or even more), still adding</li>
+</ul>
+</li>
 </ul>
 
 <h3>
 <a id="whats-the-differents-and-how-housekeeper-works" class="anchor" href="#whats-the-differents-and-how-housekeeper-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's the Differents And How Housekeeper Works</h3>
 
-<p>Traditional <code>Repository-Pattern</code> is all about <code>layer</code>, want to caching data, you add a layer! That's great concept, you can still do that in <code>Housekeeper</code>. But features like <code>cache</code>, <code>criteria</code> I used something like <code>middleware</code>.</p>
+<p>Traditional <code>Repository-Pattern</code> is all about <code>layer</code>, want to caching data, you add a layer. That's great concept, and you can still do that in <code>Housekeeper</code>. But features like <code>cache</code>, <code>criteria</code> I used something like <code>middleware</code>.</p>
 
-<p>Each repository method calling in <code>Housekeeper</code> is called <code>Action</code>, it go through four <code>Flows</code>: <em>Before</em>, <em>Your method logic</em>, <em>Reset</em> and <em>After</em>, result could be returned in <em>Before</em> or <em>After</em> <code>Flows</code>. You can write <code>Injections</code> to extending any <code>Flow</code>.</p>
+<p>Each repository method calling in <code>Housekeeper</code> is called <code>Action</code>, it go through four <code>Flows</code>: <em>Before</em>, <em>Your method logic</em>, <em>Reset</em> and <em>After</em>, result could be returned in <em>Before</em> or <em>After</em> <code>Flows</code>. You can write <code>Injections</code> to extending any <code>Flow</code>'s logic.</p>
 
 <h4>
 <a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h4>
 
-<p>Let's talk about an example, like <code>Cache</code>.</p>
+<p>Talk is cheap, I'll show you some code. Let's talk about an example, like the logic of <code>Caching</code>:</p>
 
-<pre><code>Check if cache exists, if it's, then return the cached result, if it's not, do the logic then caching result.
+<pre><code>When a request coming in, Check if cache exists
+If it's, then return the cached result
+If it's not, do the logic then caching result
+When creating, updating or deleting happens, clear the cache
 </code></pre>
 
 <p>That's <code>Cache</code> right? if you do the traditional way, you will end up with a lot of duplicated code.</p>
@@ -106,39 +160,217 @@
 <span class="pl-s1">{</span>
 <span class="pl-s1">    <span class="pl-k">protected</span> <span class="pl-k">function</span> <span class="pl-en">setupCache</span>()</span>
 <span class="pl-s1">    {</span>
-<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>inject(<span class="pl-k">new</span> <span class="pl-c1">GetCacheIfExistsBefore</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">app</span>)); <span class="pl-c">// Your before injection</span></span>
-<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>inject(<span class="pl-k">new</span> <span class="pl-c1">CacheResultAfter</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">app</span>)); <span class="pl-c">// Your after injection</span></span>
+<span class="pl-s1">        <span class="pl-c">// Your before injection</span></span>
+<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>inject(<span class="pl-k">new</span> <span class="pl-c1">GetCacheIfExistsBefore</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">app</span>));</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">        <span class="pl-c">// Your after injection</span></span>
+<span class="pl-s1">        <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>inject(<span class="pl-k">new</span> <span class="pl-c1">CacheResultAfter</span>(<span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">app</span>));</span>
 <span class="pl-s1">    }</span>
 <span class="pl-s1">}</span></pre></div>
 
-<p>That's all done.</p>
+<p>That's all. And that's how <code>Housekeeper</code> did, you can check it at <a href="https://github.com/AaronJan/Housekeeper/blob/master/src/Housekeeper/Traits/Repository/Cacheable.php">here</a>.</p>
 
 <p>Each <code>Injection</code> has a <code>priority</code> method, so if you want to add some logic before <code>Cache</code>, just return a integer that lower then <code>Cache</code>'s <code>priority</code>.</p>
 
 <h4>
-<a id="setup" class="anchor" href="#setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup</h4>
+<a id="whats-this-setup" class="anchor" href="#whats-this-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's this Setup</h4>
 
-<p>In repository's constructor, it will calling every method that name started with <em>setup</em>, you can inject your <code>Injections</code> in there.</p>
+<p>In repository's constructor, it will calling every method that name started with <em>setup</em> and followed with an <code>upper-case</code> letter. you can inject your <code>Injections</code> in such method.</p>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
-<p>TODO</p>
+<p><code>Housekeeper</code> comes with a <code>Composer</code> package, you can install <code>Housekeeper</code> very easily.</p>
+
+<p>Require this package with <code>Composer</code>:</p>
+
+<div class="highlight highlight-shell"><pre>composer require aaronjan/housekeeper</pre></div>
+
+<p>After <code>Composer</code> command completed, then add the service provider to the to <code>config/app.php</code>:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">/*</span></span>
+<span class="pl-s1"><span class="pl-c"> * Housekeeper</span></span>
+<span class="pl-s1"><span class="pl-c"> */</span></span>
+<span class="pl-s1"><span class="pl-c1">\Housekeeper\Providers\</span><span class="pl-c1">HousekeeperServiceProvider</span><span class="pl-k">::</span><span class="pl-c1">class</span>,</span>
+<span class="pl-s1"></span></pre></div>
+
+<p>That's all. If you run <code>php artisan</code>, you should see something in the command list like this:</p>
+
+<pre><code> housekeeper
+   housekeeper:make:repository  Make a repository file.
+</code></pre>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>TODO</p>
+<h3>
+<a id="create-a-repository" class="anchor" href="#create-a-repository" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a repository</h3>
+
+<h4>
+<a id="prepare-your-model" class="anchor" href="#prepare-your-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prepare your model</h4>
+
+<p>First create your model anyway you like, since <code>create</code> and other some methods in <code>Housekeeper</code> used the <a href="http://laravel.com/docs/5.1/eloquent#mass-assignment"><code>Mass Assignment</code></a> feature of <code>Laravel</code>, you need to specify <code>fillable</code> variables in your model like this:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">namespace</span> <span class="pl-en">App</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">Illuminate\Database\Eloquent\Model</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">class</span> <span class="pl-en">Article</span> <span class="pl-k">extends</span> <span class="pl-e">Model</span></span>
+<span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c">     * The attributes that are mass assignable.</span></span>
+<span class="pl-s1"><span class="pl-c">     *</span></span>
+<span class="pl-s1"><span class="pl-c">     * <span class="pl-k">@var</span> array</span></span>
+<span class="pl-s1"><span class="pl-c">     */</span></span>
+<span class="pl-s1">    <span class="pl-k">protected</span> <span class="pl-smi">$fillable</span> <span class="pl-k">=</span> [<span class="pl-s"><span class="pl-pds">'</span>title<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>content<span class="pl-pds">'</span></span>];</span>
+<span class="pl-s1">}</span>
+<span class="pl-s1"></span></pre></div>
+
+<h4>
+<a id="using-repository-generator" class="anchor" href="#using-repository-generator" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using Repository Generator</h4>
+
+<p>Then you can create a repository using <code>generator</code>:</p>
+
+<div class="highlight highlight-shell"><pre>php artisan housekeeper:make:repository ArticleRepository --cacheable --adjustable</pre></div>
+
+<p>You may not need <code>--cacheable</code> or <code>--adjustable</code>, but you should keep that in mind, they're easy to use.</p>
+
+<p>After this command, a repository file named <code>ArticleRepository.php</code> should in your <code>app/Repositories/</code> folder, and looks like this:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">namespace</span> <span class="pl-en">App\Repositories</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">Housekeeper\Eloquent\BaseRepository</span>;</span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">Housekeeper\Traits\Repository\Adjustable</span>;</span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">Housekeeper\Traits\Repository\Cacheable</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">class</span> <span class="pl-en">ArticleRepository</span> <span class="pl-k">extends</span> <span class="pl-e">BaseRepository</span> {</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">use</span> <span class="pl-c1">Adjustable</span>, <span class="pl-c1">Cacheable</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c">/**</span></span>
+<span class="pl-s1"><span class="pl-c">     * Return the name of model that this repository used.</span></span>
+<span class="pl-s1"><span class="pl-c">     *</span></span>
+<span class="pl-s1"><span class="pl-c">     * <span class="pl-k">@return</span> string</span></span>
+<span class="pl-s1"><span class="pl-c">     */</span></span>
+<span class="pl-s1">    <span class="pl-k">protected</span> <span class="pl-k">function</span> <span class="pl-en">model</span>()</span>
+<span class="pl-s1">    {</span>
+<span class="pl-s1">        <span class="pl-c">//</span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">}</span></pre></div>
+
+<p>Add a line of code in the <code>model</code> method, return the model name of this repository (I put models in <code>app/Models/</code>):</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-k">protected</span> <span class="pl-k">function</span> <span class="pl-en">model</span>()</span>
+<span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-c1">\App\Models\</span><span class="pl-c1">Article</span><span class="pl-k">::</span><span class="pl-c1">class</span>;</span>
+<span class="pl-s1">}</span></pre></div>
+
+<p>Then you just created your first <code>Housekeeper</code> repository.</p>
+
+<h3>
+<a id="write-your-repository-method" class="anchor" href="#write-your-repository-method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Write your repository method</h3>
+
+<p>All methods of repository should be wrapped like this:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">yourMethod</span>(<span class="pl-smi">$argument</span>)</span>
+<span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-k">return</span> <span class="pl-smi">$this</span><span class="pl-k">-&gt;</span>wrap(<span class="pl-k">function</span> (<span class="pl-smi">$argument</span>) {</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">        <span class="pl-c">//Method logic</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1">        <span class="pl-k">return</span> <span class="pl-smi">$result</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    }, <span class="pl-k">new</span> <span class="pl-c1">Action</span>(<span class="pl-c1">__METHOD__</span>, <span class="pl-c1">func_get_args</span>(), <span class="pl-c1">Action</span><span class="pl-k">::</span><span class="pl-c1">READ</span>));</span>
+<span class="pl-s1">}</span></pre></div>
+
+<p>Looks complicated, but just two parts: first is your actual method that returns result, second is an <code>Action</code> object that represents this method, so all <code>Flows</code> could identity this method.</p>
+
+<p>First argument of <code>wrap</code> just need to be a <code>Callable</code>, means you can use things other than <code>Closure</code>.</p>
+
+<h3>
+<a id="action" class="anchor" href="#action" aria-hidden="true"><span class="octicon octicon-link"></span></a>Action</h3>
+
+<p><code>Action</code> represents a method call, whole class is <code>Housekeeper\Action</code>, it's constructor needs <strong>three</strong> parameters: <code>Method Name</code>, <code>Method Arguments</code> and <code>Method Type</code>.</p>
+
+<p><code>Method Type</code> could be any one in <code>UNKNOW</code>, <code>CREATE</code>, <code>UPDATE</code>, <code>READ</code> and <code>DELETE</code>, it's a convention for <code>Injection</code> to work with.</p>
+
+<h3>
+<a id="traits" class="anchor" href="#traits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Traits</h3>
+
+<p><code>Housekeeper</code> comes with <strong>Three</strong> traits that you can use, like <code>Cacheable</code>, simple add <code>use \Housekeeper\Traits\Repository\Cacheable;</code> to your repository is all.</p>
+
+<h4>
+<a id="cacheable" class="anchor" href="#cacheable" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cacheable</h4>
+
+<p>Priority <strong>50</strong>.</p>
+
+<p><code>Cacheable</code> works with <code>Redis</code>.</p>
+
+<p><code>Cacheable</code> trait will caching all result returned by a <code>Read Action</code>, and clear all cache of this repository when <code>Create Action</code>, <code>Update Action</code> or <code>Delete Action</code> be called.</p>
+
+<p>Notice this, every method has it's own cache key, arguments that pass to the method will change the cache key too.</p>
+
+<h4>
+<a id="adjustable" class="anchor" href="#adjustable" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adjustable</h4>
+
+<p>Priority <strong>10</strong>.</p>
+
+<p><code>Adjustable</code> allow you to pack some search conditions into a <code>Criteria</code> object, so you can reuse them, <code>Criteria</code> object should implements <code>Housekeeper\Contracts\CriteriaInterface</code>, has only one <code>apply</code> method.</p>
+
+<p><code>Adjustable</code> add <strong>Three</strong> methods to your repository.</p>
+
+<h5>
+<a id="remembercriteriacriteriainterface-criteria" class="anchor" href="#remembercriteriacriteriainterface-criteria" aria-hidden="true"><span class="octicon octicon-link"></span></a>rememberCriteria(CriteriaInterface $criteria)</h5>
+
+<p>Remember this <code>Criteria</code>, so it would be applied before all methods, this will change the cache key too.</p>
+
+<h5>
+<a id="forgetcriterias" class="anchor" href="#forgetcriterias" aria-hidden="true"><span class="octicon octicon-link"></span></a>forgetCriterias()</h5>
+
+<p>Remove all <code>Criteria</code> that repository remembered.</p>
+
+<h5>
+<a id="getcriterias" class="anchor" href="#getcriterias" aria-hidden="true"><span class="octicon octicon-link"></span></a>getCriterias()</h5>
+
+<p>Returns all <code>Criteria</code> that repository remembered.</p>
+
+<h4>
+<a id="metadata" class="anchor" href="#metadata" aria-hidden="true"><span class="octicon octicon-link"></span></a>Metadata</h4>
+
+<p>Priority <strong>30</strong>.</p>
+
+<p><code>Housekeeper</code> returns <code>Eloquent</code> object or <code>Collection</code> object by default, if you like <code>Array</code> a lot, use <code>Metadata</code> trait, it will converting all result to <code>Array</code> (If the result can't be converted, nothing will happen).</p>
+
+<h2>
+<a id="development-logs" class="anchor" href="#development-logs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development Logs</h2>
+
+<h3>
+<a id="v091---20150707" class="anchor" href="#v091---20150707" aria-hidden="true"><span class="octicon octicon-link"></span></a>v0.9.1 - 2015/07/07</h3>
+
+<p>Documents are mostly completed, package is usable, still needs more tests.</p>
+
+<h2>
+<a id="issue" class="anchor" href="#issue" aria-hidden="true"><span class="octicon octicon-link"></span></a>Issue</h2>
+
+<p>If you have any question for <code>Housekeeper</code>, feel free to create an issue, I'll reply you ASAP.</p>
+
+<p>Any useful pull request are welcomed too.</p>
 
 <h2>
 <a id="lisence" class="anchor" href="#lisence" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lisence</h2>
 
-<p>TODO</p>
+<p>Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">APACHE LISENCE V2</a></p>
 
 <h2>
 <a id="credits" class="anchor" href="#credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Credits</h2>
 
-<p>Thinks to <a href="https://github.com/prettus/l5-repository">prettus/l5-repository</a> for inspired me.</p>
+<p>Thinks to <a href="https://github.com/prettus/l5-repository">prettus/l5-repository</a> for inspiring.</p>
       </section>
     </div>
     <footer>
