@@ -23,6 +23,14 @@ interface RepositoryInterface
     public function getConditions();
 
     /**
+     * Apply where conditons
+     *
+     * @param array $where
+     * @return void
+     */
+    public function applyWhere(array $where);
+
+    /**
      * Retrieve all data of repository
      *
      * @param array $columns
@@ -91,14 +99,6 @@ interface RepositoryInterface
      * @return int
      */
     public function delete($id);
-
-    /**
-     * Apply where conditons
-     *
-     * @param array $where
-     * @return void
-     */
-    public function applyWhere(array $where);
 
     /**
      * Load relations

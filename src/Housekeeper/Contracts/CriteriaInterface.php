@@ -3,6 +3,7 @@
 namespace Housekeeper\Contracts;
 
 use Housekeeper\Contracts\RepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Interface CriteriaInterface

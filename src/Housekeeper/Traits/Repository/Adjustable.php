@@ -4,6 +4,7 @@ namespace Housekeeper\Traits\Repository;
 
 use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
 use Housekeeper\Injections\Adjustable\ApplyCriteriasBefore;
+use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\CriteriaInterface;
 
 /**
@@ -11,6 +12,8 @@ use Housekeeper\Contracts\CriteriaInterface;
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
+ *
+ * @method void inject(InjectionInterface $injection)
  */
 trait Adjustable
 {
@@ -21,6 +24,16 @@ trait Adjustable
 
 
     /**
+     * Bind injection.
+     */
+    protected function setupAdjustable()
+    {
+        $this->inject(new ApplyCriteriasBefore());
+    }
+
+    /**
+     * Save this criteria, it would be auto-applied before every method calling.
+     *
      * @param CriteriaInterface $criteria
      */
     public function rememberCriteria(CriteriaInterface $criteria)
@@ -29,7 +42,7 @@ trait Adjustable
     }
 
     /**
-     *
+     * Remove all criterias that this repository remembered.
      */
     public function forgetCriterias()
     {
@@ -37,6 +50,8 @@ trait Adjustable
     }
 
     /**
+     * Get all criterias that this repository remembered.
+     *
      * @return array
      */
     public function getCriterias()
@@ -49,15 +64,10 @@ trait Adjustable
      */
     public function applyCriteria(CriteriaInterface $criteria)
     {
+        /**
+         * @var \Housekeeper\Contracts\RepositoryInterface $this
+         */
         $criteria->apply($this);
-    }
-
-    /**
-     * Binding injection.
-     */
-    protected function setupAdjustable()
-    {
-        $this->inject(new ApplyCriteriasBefore());
     }
 
 }

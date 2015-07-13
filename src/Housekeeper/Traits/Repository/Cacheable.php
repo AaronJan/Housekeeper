@@ -4,16 +4,19 @@ namespace Housekeeper\Traits\Repository;
 
 use Housekeeper\Injections\Cacheable\CacheResultAfter;
 use Housekeeper\Injections\Cacheable\GetCacheIfExistsBefore;
+use Housekeeper\Contracts\Injection\InjectionInterface;
+use Illuminate\Contracts\Foundation\Application;
 
 /**
  * Class Cacheable
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
+ *
+ * @method void inject(InjectionInterface $injection)
  */
 trait Cacheable
 {
-
     /**
      * Binding caching injections.
      */

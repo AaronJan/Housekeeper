@@ -306,6 +306,9 @@ Priority **30**.
 
 ## Development Logs
 
+### v0.9.2 - 2015/07/13
+
+Added an "applyOrder" method and more docs, got some ideas but been very busy lately, will implating them a couple days later.
 
 ### v0.9.1 - 2015/07/07
 

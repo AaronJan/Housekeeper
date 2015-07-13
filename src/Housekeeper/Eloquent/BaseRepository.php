@@ -58,7 +58,7 @@ abstract class BaseRepository implements RepositoryInterface
      *
      * @var int
      */
-    protected $perPage = 15;
+    protected $perPage;
 
 
     /**
@@ -81,16 +81,26 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * Load configures from config file.
+     * Read configure from configure file, if it's not exists, "default" will be
+     * returned.
+     *
+     * @param      $key
+     * @param null $default
+     * @return mixed
      */
-    protected function loadConfig()
+    protected function getConfig($key, $default = null)
     {
         $config = $this->app->make('config');
 
-        /**
-         * How many entries per page.
-         */
-        $this->perPage = $config->get('housekeeper.repository.paginate.perPage', 15);
+        return $config->get($key, $default);
+    }
+
+    /**
+     * Load configures from configure file.
+     */
+    protected function loadConfig()
+    {
+        $this->perPage = $this->getConfig('housekeeper.repository.paginate.perPage', 15);
     }
 
     /**
@@ -110,38 +120,6 @@ abstract class BaseRepository implements RepositoryInterface
             }
         }
     }
-
-    /**
-     * @param Action $action
-     * @throws RepositoryException
-     */
-    public function reset(Action $action)
-    {
-        /**
-         * Need to make a fresh model every time.
-         */
-        $this->freshModel();
-
-        /**
-         * Conditions are use for identify each method call.
-         */
-        $this->resetConditons();
-
-        /**
-         * Make a Reset Flow object.
-         */
-        $flow = new Reset($this, $action);
-
-        /**
-         * Execute all Reset Injections.
-         *
-         * @var \Housekeeper\Contracts\Injection\ResetInjectionInterface $injection
-         */
-        foreach ($this->injections['reset'] as $injection) {
-            $injection->handle($flow);
-        }
-    }
-
     /**
      * @throws RepositoryException
      */
@@ -153,6 +131,7 @@ abstract class BaseRepository implements RepositoryInterface
 
         $this->model = $model;
     }
+
     /**
      * Make a new Model instanse.
      *
@@ -166,51 +145,6 @@ abstract class BaseRepository implements RepositoryInterface
         if ($modelName == '') throw new RepositoryException("You should return the name of Model in \"Model\".");
 
         return new $modelName;
-    }
-
-    /**
-     * Conditions are use for identify each method call.
-     */
-    protected function resetConditons()
-    {
-        $this->conditions = [];
-    }
-
-    /**
-     * @param InjectionInterface $a
-     * @param InjectionInterface $b
-     * @return int
-     */
-    static protected function sortInjection(InjectionInterface $a, InjectionInterface $b)
-    {
-        if ($a->priority() == $b->priority()) {
-            return 0;
-        }
-
-        return ($a->priority() < $b->priority()) ? -1 : 1;
-    }
-
-    /**
-     * @return array
-     */
-    public function getConditions()
-    {
-        return $this->conditions;
-    }
-
-    /**
-     * Retrieve all data of repository
-     *
-     * @param array $columns
-     * @return mixed
-     */
-    public function all($columns = ['*'])
-    {
-        return $this->wrap(function ($columns = ['*']) {
-
-            return $this->model->get($columns);
-
-        }, new Action(__METHOD__, func_get_args(), Action::READ));
     }
 
     /**
@@ -244,6 +178,37 @@ abstract class BaseRepository implements RepositoryInterface
         $this->reset($action);
 
         return $afterFlow->getReturn();
+    }
+
+    /**
+     * @param Action $action
+     * @throws RepositoryException
+     */
+    public function reset(Action $action)
+    {
+        /**
+         * Need to make a fresh model every time.
+         */
+        $this->freshModel();
+
+        /**
+         * Conditions are use for identify each method call.
+         */
+        $this->resetConditons();
+
+        /**
+         * Make a Reset Flow object.
+         */
+        $flow = new Reset($this, $action);
+
+        /**
+         * Execute all Reset Injections.
+         *
+         * @var \Housekeeper\Contracts\Injection\ResetInjectionInterface $injection
+         */
+        foreach ($this->injections['reset'] as $injection) {
+            $injection->handle($flow);
+        }
     }
 
     /**
@@ -287,6 +252,135 @@ abstract class BaseRepository implements RepositoryInterface
         }
 
         return $flow;
+    }
+
+    /**
+     * @param array $where
+     */
+    public function applyWhere(array $where)
+    {
+        /**
+         * Save to conditons.
+         */
+        $this->addCondition('where', $where);
+
+        foreach ($where as $field => $value) {
+            if (is_array($value)) {
+                list($field, $condition, $val) = $value;
+                $this->model = $this->model->where($field, $condition, $val);
+            } else {
+                $this->model = $this->model->where($field, '=', $value);
+            }
+        }
+    }
+
+    /**
+     * @param        $column
+     * @param string $direction
+     */
+    public function applyOrder($column, $direction = 'asc')
+    {
+        /**
+         * Save to conditons.
+         */
+        $this->addCondition('order', [$column, $direction]);
+
+        $this->model = $this->model->orderBy($column, $direction);
+    }
+
+    /**
+     * Every single action that would afftected returns, should add a condition.
+     *
+     * @param string $type
+     * @param mixed  $condition
+     */
+    protected function addCondition($type, $condition)
+    {
+        $this->conditions[] = [
+            $type => $condition
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * Conditions are use for identify each method call.
+     */
+    protected function resetConditons()
+    {
+        $this->conditions = [];
+    }
+
+    /**
+     * Inject a Flow Injection to adding custom logic.
+     *
+     * @param InjectionInterface $injection
+     * @throws RepositoryException
+     */
+    protected function inject(InjectionInterface $injection)
+    {
+        /**
+         * Add injection.
+         */
+        if ($injection instanceof ResetInjectionInterface) {
+            $this->injections['reset'][] = $injection;
+        } elseif ($injection instanceof BeforeInjectionInterface) {
+            $this->injections['before'][] = $injection;
+        } elseif ($injection instanceof AfterInjectionInterface) {
+            $this->injections['after'][] = $injection;
+        } else {
+            throw new RepositoryException('Unusable Injection.');
+        }
+
+        /**
+         * Sort injections.
+         */
+        $this->sortAllInjections();
+    }
+
+    /**
+     * Sort all event handlers by priority ASC.
+     */
+    protected function sortAllInjections()
+    {
+        foreach ($this->injections as &$handlers) {
+            usort($handlers, array($this, 'sortInjection'));
+        }
+    }
+
+    /**
+     * @param InjectionInterface $a
+     * @param InjectionInterface $b
+     * @return int
+     */
+    static protected function sortInjection(InjectionInterface $a, InjectionInterface $b)
+    {
+        if ($a->priority() == $b->priority()) {
+            return 0;
+        }
+
+        return ($a->priority() < $b->priority()) ? -1 : 1;
+    }
+
+    /**
+     * Retrieve all data of repository
+     *
+     * @param array $columns
+     * @return mixed
+     */
+    public function all($columns = ['*'])
+    {
+        return $this->wrap(function ($columns = ['*']) {
+
+            return $this->model->get($columns);
+
+        }, new Action(__METHOD__, func_get_args(), Action::READ));
     }
 
     /**
@@ -342,36 +436,6 @@ abstract class BaseRepository implements RepositoryInterface
         }, new Action(__METHOD__, func_get_args(), Action::READ));
     }
 
-    /**
-     * @param array $where
-     */
-    public function applyWhere(array $where)
-    {
-        /**
-         * Save to conditons.
-         */
-        $this->addCondition('where', $where);
-
-        foreach ($where as $field => $value) {
-            if (is_array($value)) {
-                list($field, $condition, $val) = $value;
-                $this->model = $this->model->where($field, $condition, $val);
-            } else {
-                $this->model = $this->model->where($field, '=', $value);
-            }
-        }
-    }
-
-    /**
-     * @param string $type
-     * @param mixed  $condition
-     */
-    protected function addCondition($type, $condition)
-    {
-        $this->conditions[] = [
-            $type => $condition
-        ];
-    }
 
     /**
      * Save a new entity in repository
@@ -405,6 +469,9 @@ abstract class BaseRepository implements RepositoryInterface
     {
         return $this->wrap(function ($id, array $attributes) {
 
+            /**
+             * @var Model $model
+             */
             $model = $this->model->findOrFail($id);
             $model->fill($attributes);
             $model->save();
@@ -465,41 +532,6 @@ abstract class BaseRepository implements RepositoryInterface
         $this->model = $this->model->with($relations);
 
         return $this;
-    }
-
-    /**
-     * @param InjectionInterface $injection
-     * @throws RepositoryException
-     */
-    protected function inject(InjectionInterface $injection)
-    {
-        /**
-         * Add injection.
-         */
-        if ($injection instanceof ResetInjectionInterface) {
-            $this->injections['reset'][] = $injection;
-        } elseif ($injection instanceof BeforeInjectionInterface) {
-            $this->injections['before'][] = $injection;
-        } elseif ($injection instanceof AfterInjectionInterface) {
-            $this->injections['after'][] = $injection;
-        } else {
-            throw new RepositoryException('Unusable Injection.');
-        }
-
-        /**
-         * Sort injections.
-         */
-        $this->sortAllInjections();
-    }
-
-    /**
-     * Sort all event handlers by priority ASC.
-     */
-    protected function sortAllInjections()
-    {
-        foreach ($this->injections as &$handlers) {
-            usort($handlers, array($this, 'sortInjection'));
-        }
     }
 
 }
