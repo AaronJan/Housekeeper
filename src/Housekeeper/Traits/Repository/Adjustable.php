@@ -2,26 +2,30 @@
 
 namespace Housekeeper\Traits\Repository;
 
-use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Injections\Adjustable\ApplyCriteriasBefore;
-use Housekeeper\Contracts\Injection\InjectionInterface;
 use Housekeeper\Contracts\CriteriaInterface;
+use Housekeeper\Contracts\Injection\InjectionInterface;
+use Housekeeper\Injections\Adjustable\ApplyCriteriasBefore;
 
 /**
  * Class Adjustable
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
- *
- * @method void inject(InjectionInterface $injection)
  */
 trait Adjustable
 {
+
+    /**
+     * @param InjectionInterface $injection
+     * @return mixed
+     */
+    abstract protected function inject(InjectionInterface $injection);
+
+
     /**
      * @var array
      */
     protected $criterias = [];
-
 
     /**
      * Bind injection.

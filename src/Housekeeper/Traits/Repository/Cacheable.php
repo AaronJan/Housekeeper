@@ -12,11 +12,17 @@ use Illuminate\Contracts\Foundation\Application;
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
- *
- * @method void inject(InjectionInterface $injection)
  */
 trait Cacheable
 {
+
+    /**
+     * @param InjectionInterface $injection
+     * @return mixed
+     */
+    abstract protected function inject(InjectionInterface $injection);
+
+
     /**
      * Binding caching injections.
      */

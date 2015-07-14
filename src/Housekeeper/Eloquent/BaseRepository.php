@@ -120,6 +120,7 @@ abstract class BaseRepository implements RepositoryInterface
             }
         }
     }
+
     /**
      * @throws RepositoryException
      */
@@ -255,21 +256,39 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * @param array $where
+     * @param array      $where
+     * @param bool|false $or
      */
-    public function applyWhere(array $where)
+    public function applyWhere(array $where, $or = false)
     {
+        /**
+         * Determine using "where" or "orWhere".
+         */
+        $whereFunction = $or ? 'where' : 'orWhere';
+
         /**
          * Save to conditons.
          */
-        $this->addCondition('where', $where);
+        $this->addCondition($whereFunction, $where);
 
         foreach ($where as $field => $value) {
-            if (is_array($value)) {
+            if ($value instanceof \Closure) {
+                /**
+                 * Use Closure and "orWhere" could achieve complex query search.
+                 */
+                $this->model = $this->model->$whereFunction($field, $value);
+            } elseif (is_array($value) && count($value) == 3) {
+                /**
+                 * If $value has 3 variables, then just ignore the $field, use
+                 * what's in the $value instead.
+                 */
                 list($field, $condition, $val) = $value;
-                $this->model = $this->model->where($field, $condition, $val);
+                $this->model = $this->model->$whereFunction($field, $condition, $val);
             } else {
-                $this->model = $this->model->where($field, '=', $value);
+                /**
+                 * Simple equality compare.
+                 */
+                $this->model = $this->model->$whereFunction($field, '=', $value);
             }
         }
     }

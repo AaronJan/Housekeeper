@@ -306,6 +306,12 @@ Priority **30**.
 
 ## Development Logs
 
+### v0.9.3 - 2015/07/14
+
+Enhancing `applyWhere`, now takes `orWhere` operation;
+
+There're a lot of people who think `Criteria` should take `Model` as parameter, I gave that some serious thought about that, but pass `Model` to `Criteria` that's too much, you should make a method to do such complex thing.
+
 ### v0.9.2 - 2015/07/13
 
 Added an "applyOrder" method and more docs, got some ideas but been very busy lately, will implating them a couple days later.
