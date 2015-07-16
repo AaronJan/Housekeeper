@@ -307,6 +307,10 @@ Priority **30**.
 
 ## Development Logs
 
+### v0.9.4 - 2015/07/16
+
+Fix bug, add more tests, now code coverage on `Eloquent\BaseRepository` is `85.96%`;
+
 ### v0.9.3 - 2015/07/14
 
 Enhancing `applyWhere`, now takes `orWhere` operation;
