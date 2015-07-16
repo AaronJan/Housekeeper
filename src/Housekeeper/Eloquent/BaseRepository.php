@@ -264,7 +264,7 @@ abstract class BaseRepository implements RepositoryInterface
         /**
          * Determine using "where" or "orWhere".
          */
-        $whereFunction = $or ? 'where' : 'orWhere';
+        $whereFunction = $or ? 'orWhere' : 'where';
 
         /**
          * Save to conditons.

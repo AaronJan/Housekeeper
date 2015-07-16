@@ -14,6 +14,7 @@ use Mockery as m;
 /**
  * Class BaseRepositoryTest
  *
+ * @covers  Housekeeper\Eloquent\BaseRepository
  * @package Housekeeper\Eloquent
  */
 class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
@@ -730,6 +731,384 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $result = $mockRepository->paginate(15);
 
         $this->assertInstanceOf('Illuminate\Contracts\Pagination\LengthAwarePaginator', $result);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::with
+     */
+    public function testWith()
+    {
+        /**
+         * These should be "true" after tests completed.
+         */
+        $addConditionCalled = false;
+        $modelWithCalled    = false;
+
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock `addConditon` method.
+         */
+        $mockRepository->shouldReceive('addCondition')
+            ->with('with', 'article')
+            ->andReturnUsing(function () use (&$addConditionCalled) {
+                $addConditionCalled = true;
+            });
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('with')
+            ->with('article')
+            ->andReturnUsing(function () use (&$modelWithCalled) {
+                $modelWithCalled = true;
+            });
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "with".
+         */
+        $result = $mockRepository->with('article');
+
+        $this->assertTrue($addConditionCalled);
+        $this->assertTrue($modelWithCalled);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::applyOrder
+     */
+    public function testApplyOrder()
+    {
+        /**
+         * These should be "true" after tests completed.
+         */
+        $orderByCalled      = false;
+        $modelOrderByCalled = false;
+
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock `addConditon` method.
+         */
+        $mockRepository->shouldReceive('addCondition')
+            ->with('order', ['age', 'asc'])
+            ->andReturnUsing(function () use (&$orderByCalled) {
+                $orderByCalled = true;
+            });
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('orderBy')
+            ->with('age', 'asc')
+            ->andReturnUsing(function () use (&$modelOrderByCalled) {
+                $modelOrderByCalled = true;
+            });
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "with".
+         */
+        $result = $mockRepository->applyOrder('age', 'asc');
+
+        $this->assertTrue($orderByCalled);
+        $this->assertTrue($modelOrderByCalled);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::applyWhere
+     */
+    public function testApplyWhereClosure()
+    {
+        /**
+         * These should be "true" after tests completed.
+         */
+        $whereCalled = false;
+
+        /**
+         * Closure functions that pass to `applyWhere`
+         */
+        $whereClosure = function () {
+        };
+
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('where')
+            ->once()
+            ->ordered()
+            ->with('name', $whereClosure)
+            ->andReturnUsing(function () use (&$whereCalled) {
+                $whereCalled = true;
+            });
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "applyWhere".
+         */
+        $mockRepository->applyWhere([
+            'name' => $whereClosure
+        ]);
+
+        $this->assertTrue($whereCalled);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::applyWhere
+     */
+    public function testApplyWhereCondition()
+    {
+        /**
+         * These should be "true" after tests completed.
+         */
+        $firstWhereCalled  = false;
+        $secondWhereCalled = false;
+
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('where')
+            ->once()
+            ->ordered()
+            ->with('name', '!=', 'Aaron')
+            ->andReturnUsing(function () use (&$firstWhereCalled, &$mockModel) {
+                $firstWhereCalled = true;
+
+                return $mockModel;
+            });
+
+        $mockModel->shouldReceive('where')
+            ->once()
+            ->ordered()
+            ->with('age', '<', '5')
+            ->andReturnUsing(function () use (&$secondWhereCalled) {
+                $secondWhereCalled = true;
+            });
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "applyWhere".
+         */
+        $mockRepository->applyWhere([
+            ['name', '!=', 'Aaron'],
+            ['age', '<', '5'],
+        ]);
+
+        $this->assertTrue($firstWhereCalled);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::applyWhere
+     */
+    public function testApplyWhereEqual()
+    {
+        /**
+         * These should be "true" after tests completed.
+         */
+        $firstWhereCalled  = false;
+        $secondWhereCalled = false;
+
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('where')
+            ->once()
+            ->ordered()
+            ->with('name', '=', 'Aaron')
+            ->andReturnUsing(function () use (&$firstWhereCalled, &$mockModel) {
+                $firstWhereCalled = true;
+
+                return $mockModel;
+            });
+
+        $mockModel->shouldReceive('where')
+            ->once()
+            ->ordered()
+            ->with('age', '=', '5')
+            ->andReturnUsing(function () use (&$secondWhereCalled) {
+                $secondWhereCalled = true;
+            });
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "applyWhere".
+         */
+        $mockRepository->applyWhere([
+            'name' => 'Aaron',
+            'age'  => '5',
+        ]);
+
+        $this->assertTrue($firstWhereCalled);
+    }
+
+    /**
+     * @covers Housekeeper\Eloquent\BaseRepository::findByField
+     */
+    public function testFindByField()
+    {
+        /**
+         * These should be "true" after tests completed.
+         */
+        $modelWhereCalled = false;
+        $BuilderGetCalled = false;
+
+        /**
+         * Hand-mock a repository, then we pass it customized model specific for
+         * this test.
+         */
+        $mockRepository = m::mock('Housekeeper\Eloquent\BaseRepository');
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        /**
+         *
+         */
+        $mockBuilder = m::mock('Illuminate\Database\Eloquent\Builder');
+        $mockBuilder->shouldReceive('get')
+            ->with(['id'])
+            ->andReturnUsing(function () use (&$BuilderGetCalled) {
+                $BuilderGetCalled = true;
+            });
+
+        /**
+         * Mock a customize model.
+         */
+        $mockModel = $this->makeMockModel();
+
+        $mockModel->shouldReceive('where')
+            ->with('name', '=', 'Aaron')
+            ->andReturnUsing(function () use (&$modelWhereCalled, $mockBuilder) {
+                $modelWhereCalled = true;
+
+                return $mockBuilder;
+            });
+
+        /**
+         * Inject the mock model.
+         */
+        $mockRepository->shouldReceive('modelInstance')
+            ->andReturnUsing(function () use ($mockModel) {
+                return $mockModel;
+            });
+
+        /**
+         * Call the constructor of mock repository.
+         */
+        $mockRepository->__construct($this->mockApplication());
+
+        /**
+         * Check "with".
+         */
+        $result = $mockRepository->findByField('name', 'Aaron', ['id']);
+
+        $this->assertTrue($modelWhereCalled);
+        $this->assertTrue($BuilderGetCalled);
     }
 
 
