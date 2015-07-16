@@ -1,5 +1,9 @@
 # Housekeeper - Laravel
 
+<a href="https://github.com/AaronJan/Housekeeper">
+	<img src="https://aaronjan.github.io/Housekeeper/images/logo.png" alt="Housekeeper" title="Housekeeper" align="right"/>
+</a>
+
 [![Latest Stable Version](https://poser.pugx.org/aaronjan/housekeeper/v/stable)](https://packagist.org/packages/aaronjan/housekeeper) [![Total Downloads](https://poser.pugx.org/aaronjan/housekeeper/downloads)](https://packagist.org/packages/aaronjan/housekeeper) [![Latest Unstable Version](https://poser.pugx.org/aaronjan/housekeeper/v/unstable)](https://packagist.org/packages/aaronjan/housekeeper) [![License](https://poser.pugx.org/aaronjan/housekeeper/license)](https://packagist.org/packages/aaronjan/housekeeper)
 
 Here is the [Documents](https://aaronjan.github.io/Housekeeper/).
@@ -344,4 +348,6 @@ Licensed under the [APACHE LISENCE V2](http://www.apache.org/licenses/LICENSE-2.
 
 
 Thinks to [prettus/l5-repository](https://github.com/prettus/l5-repository) for inspiring.
+
+Thinks to [egofang](https://github.com/egofang) for this awesome logo!
 
