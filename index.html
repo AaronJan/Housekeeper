@@ -1,36 +1,30 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="UTF-8">
     <title>Housekeeper by AaronJan</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-dark.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Housekeeper</h1>
-        <p>Powerful, simple Repository-Pattern implementation for Laravel (&gt;=5.1), and it come with tests.</p>
-        <p class="view"><a href="https://github.com/AaronJan/Housekeeper">View the Project on GitHub <small>AaronJan/Housekeeper</small></a></p>
-        <ul>
-          <li><a href="https://github.com/AaronJan/Housekeeper/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/AaronJan/Housekeeper/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/AaronJan/Housekeeper">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
+    <section class="page-header">
+      <h1 class="project-name">Housekeeper</h1>
+      <h2 class="project-tagline">Powerful, simple Repository-Pattern implementation for Laravel (&gt;=5.1), and it come with tests.</h2>
+      <a href="https://github.com/AaronJan/Housekeeper" class="btn">View on GitHub</a>
+      <a href="https://github.com/AaronJan/Housekeeper/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/AaronJan/Housekeeper/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
 <a id="housekeeper---laravel" class="anchor" href="#housekeeper---laravel" aria-hidden="true"><span class="octicon octicon-link"></span></a>Housekeeper - Laravel</h1>
 
-<p><strong>More documents and tests are still writing</strong></p>
+<p><a href="https://packagist.org/packages/aaronjan/housekeeper"><img src="https://poser.pugx.org/aaronjan/housekeeper/v/stable" alt="Latest Stable Version"></a> <a href="https://packagist.org/packages/aaronjan/housekeeper"><img src="https://poser.pugx.org/aaronjan/housekeeper/downloads" alt="Total Downloads"></a> <a href="https://packagist.org/packages/aaronjan/housekeeper"><img src="https://poser.pugx.org/aaronjan/housekeeper/v/unstable" alt="Latest Unstable Version"></a> <a href="https://packagist.org/packages/aaronjan/housekeeper"><img src="https://poser.pugx.org/aaronjan/housekeeper/license" alt="License"></a></p>
+
+<p>Here is the <a href="https://aaronjan.github.io/Housekeeper/">Documents</a>.</p>
 
 <h2>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
@@ -351,6 +345,23 @@ When creating, updating or deleting happens, clear the cache
 <a id="development-logs" class="anchor" href="#development-logs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Development Logs</h2>
 
 <h3>
+<a id="v094---20150716" class="anchor" href="#v094---20150716" aria-hidden="true"><span class="octicon octicon-link"></span></a>v0.9.4 - 2015/07/16</h3>
+
+<p>Fix bug, add more tests, now code coverage on <code>Eloquent\BaseRepository</code> is <code>85.96%</code>;</p>
+
+<h3>
+<a id="v093---20150714" class="anchor" href="#v093---20150714" aria-hidden="true"><span class="octicon octicon-link"></span></a>v0.9.3 - 2015/07/14</h3>
+
+<p>Enhancing <code>applyWhere</code>, now takes <code>orWhere</code> operation;</p>
+
+<p>There're a lot of people who think <code>Criteria</code> should take <code>Model</code> as parameter, I gave that some serious thought about that, but pass <code>Model</code> to <code>Criteria</code> that's too much, you should make a method to do such complex thing.</p>
+
+<h3>
+<a id="v092---20150713" class="anchor" href="#v092---20150713" aria-hidden="true"><span class="octicon octicon-link"></span></a>v0.9.2 - 2015/07/13</h3>
+
+<p>Added an "applyOrder" method and more docs, got some ideas but been very busy lately, will implating them a couple days later.</p>
+
+<h3>
 <a id="v091---20150707" class="anchor" href="#v091---20150707" aria-hidden="true"><span class="octicon octicon-link"></span></a>v0.9.1 - 2015/07/07</h3>
 
 <p>Documents are mostly completed, package is usable, still needs more tests.</p>
@@ -371,13 +382,16 @@ When creating, updating or deleting happens, clear the cache
 <a id="credits" class="anchor" href="#credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Credits</h2>
 
 <p>Thinks to <a href="https://github.com/prettus/l5-repository">prettus/l5-repository</a> for inspiring.</p>
-      </section>
-    </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/AaronJan">AaronJan</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/AaronJan/Housekeeper">Housekeeper</a> is maintained by <a href="https://github.com/AaronJan">AaronJan</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
   </body>
 </html>
+
