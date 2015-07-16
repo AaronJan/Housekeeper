@@ -116,7 +116,7 @@ abstract class BaseRepository implements RepositoryInterface
         foreach ($methods as $method) {
             $methodName = $method->getName();
             if (preg_match('/^setup[A-Z]/', $methodName)) {
-                call_user_func(array($this, $methodName));
+                call_user_func([$this, $methodName]);
             }
         }
     }
@@ -369,7 +369,7 @@ abstract class BaseRepository implements RepositoryInterface
     protected function sortAllInjections()
     {
         foreach ($this->injections as &$handlers) {
-            usort($handlers, array($this, 'sortInjection'));
+            usort($handlers, [$this, 'sortInjection']);
         }
     }
 
@@ -409,9 +409,9 @@ abstract class BaseRepository implements RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function paginate($limit = null, $columns = array('*'))
+    public function paginate($limit = null, $columns = ['*'])
     {
-        return $this->wrap(function ($limit = null, $columns = array('*')) {
+        return $this->wrap(function ($limit = null, $columns = ['*']) {
 
             $limit = is_null($limit) ? $this->perPage : $limit;
 
@@ -428,9 +428,9 @@ abstract class BaseRepository implements RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function findByField($field, $value = null, $columns = array('*'))
+    public function findByField($field, $value = null, $columns = ['*'])
     {
-        return $this->wrap(function ($field, $value = null, $columns = array('*')) {
+        return $this->wrap(function ($field, $value = null, $columns = ['*']) {
 
             return $this->model->where($field, '=', $value)->get($columns);
 
@@ -444,9 +444,9 @@ abstract class BaseRepository implements RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function findWhere(array $where, $columns = array('*'))
+    public function findWhere(array $where, $columns = ['*'])
     {
-        return $this->wrap(function ($where, $columns = array('*')) {
+        return $this->wrap(function ($where, $columns = ['*']) {
 
             $this->applyWhere($where);
 
@@ -526,9 +526,9 @@ abstract class BaseRepository implements RepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function find($id, $columns = array('*'))
+    public function find($id, $columns = ['*'])
     {
-        return $this->wrap(function ($id, $columns = array('*')) {
+        return $this->wrap(function ($id, $columns = ['*']) {
 
             return $this->model->findOrFail($id, $columns);
 
