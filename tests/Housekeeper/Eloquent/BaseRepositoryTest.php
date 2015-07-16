@@ -62,7 +62,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Call "setup" function to verify that.
          */
-        $methodSetup = $this->getUnaccessibleObjectMethod($mockRepository, 'setup');
+        $methodSetup = getUnaccessibleObjectMethod($mockRepository, 'setup');
         $methodSetup->invoke($mockRepository, array());
 
         $this->assertTrue($called);
@@ -92,7 +92,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Check it.
          */
-        $methodModelInstance = $this->getUnaccessibleObjectMethod($mockRepository, 'modelInstance');
+        $methodModelInstance = getUnaccessibleObjectMethod($mockRepository, 'modelInstance');
         $model               = $methodModelInstance->invoke($mockRepository, array());
 
         $this->assertInstanceOf('Test\FakeModel', $model);
@@ -108,20 +108,20 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * The model instance should be "null" at first.
          */
-        $model = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'model');
+        $model = getUnaccessibleObjectPropertyValue($mockRepository, 'model');
 
         $this->assertNull($model);
 
         /**
          * Call "freshModel" method to generate a new Model.
          */
-        $methodFreshModel = $this->getUnaccessibleObjectMethod($mockRepository, 'freshModel');
+        $methodFreshModel = getUnaccessibleObjectMethod($mockRepository, 'freshModel');
         $methodFreshModel->invoke($mockRepository, array());
 
         /**
          * Check it.
          */
-        $model = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'model');
+        $model = getUnaccessibleObjectPropertyValue($mockRepository, 'model');
 
         $this->assertInstanceOf('Illuminate\Database\Eloquent\Model', $model);
     }
@@ -149,13 +149,13 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Call "inject" function, this injection should goes to "reset"
          * injections.
          */
-        $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
+        $methodInject = getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $resetInjection);
 
         /**
          * Get all injections and check them.
          */
-        $injections = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'injections');
+        $injections = getUnaccessibleObjectPropertyValue($mockRepository, 'injections');
 
         $this->assertCount(1, $injections['reset']);
         $this->assertEquals($resetInjection, $injections['reset'][0]);
@@ -184,13 +184,13 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Call "inject" function, this injection should goes to "before"
          * injections.
          */
-        $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
+        $methodInject = getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $beforeInjection);
 
         /**
          * Get all injections and check them.
          */
-        $injections = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'injections');
+        $injections = getUnaccessibleObjectPropertyValue($mockRepository, 'injections');
 
         $this->assertCount(1, $injections['before']);
         $this->assertEquals($beforeInjection, $injections['before'][0]);
@@ -219,13 +219,13 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Call "inject" function, this injection should goes to "after"
          * injections.
          */
-        $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
+        $methodInject = getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $afterInjection);
 
         /**
          * Get all injections and check them.
          */
-        $injections = $this->getUnaccessibleObjectPropertyValue($mockRepository, 'injections');
+        $injections = getUnaccessibleObjectPropertyValue($mockRepository, 'injections');
 
         $this->assertCount(1, $injections['after']);
         $this->assertEquals($afterInjection, $injections['after'][0]);
@@ -252,7 +252,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Call "inject" function to verify that.
          */
-        $methodInject = $this->getUnaccessibleObjectMethod($mockRepository, 'inject');
+        $methodInject = getUnaccessibleObjectMethod($mockRepository, 'inject');
         $methodInject->invoke($mockRepository, $uselessInjection);
     }
 
@@ -294,7 +294,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Bind reset event handler directly.
          */
-        $this->setUnaccessibleObjectPropertyValue(
+        setUnaccessibleObjectPropertyValue(
             $mockRepository,
             'injections',
             [
@@ -345,7 +345,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Bind before injection directly.
          */
-        $this->setUnaccessibleObjectPropertyValue(
+        setUnaccessibleObjectPropertyValue(
             $mockRepository,
             'injections',
             [
@@ -361,7 +361,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $mockAction = $this->makeMockAction();
 
         //Call "before"
-        $methodBefore = $this->getUnaccessibleObjectMethod($mockRepository, 'before');
+        $methodBefore = getUnaccessibleObjectMethod($mockRepository, 'before');
         $methodBefore->invoke($mockRepository, $mockAction);
 
         $this->assertTrue($injectionCalled);
@@ -396,7 +396,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Bind after injection directly.
          */
-        $this->setUnaccessibleObjectPropertyValue(
+        setUnaccessibleObjectPropertyValue(
             $mockRepository,
             'injections',
             [
@@ -412,7 +412,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $mockAction = $this->makeMockAction();
 
         //Call "after"
-        $methodAfter = $this->getUnaccessibleObjectMethod($mockRepository, 'after');
+        $methodAfter = getUnaccessibleObjectMethod($mockRepository, 'after');
         $methodAfter->invoke($mockRepository, $mockAction, '');
 
         $this->assertTrue($InjectionCalled);
@@ -478,7 +478,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Call "wrap" method.
          */
-        $methodWrap = $this->getUnaccessibleObjectMethod($mockRepository, 'wrap');
+        $methodWrap = getUnaccessibleObjectMethod($mockRepository, 'wrap');
         $result     = $methodWrap->invoke($mockRepository, $closure, $mockAction);
 
         $this->assertFalse($closureCalled);
@@ -549,7 +549,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Call "wrap" method.
          */
-        $methodWrap = $this->getUnaccessibleObjectMethod($mockRepository, 'wrap');
+        $methodWrap = getUnaccessibleObjectMethod($mockRepository, 'wrap');
         $result     = $methodWrap->invoke($mockRepository, $closure, $mockAction);
 
         $this->assertTrue($closureCalled);
@@ -585,7 +585,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * Get the "sort" method.
          */
-        $methodSortInjection = $this->getUnaccessibleObjectMethod($mockRepository, 'sortInjection');
+        $methodSortInjection = getUnaccessibleObjectMethod($mockRepository, 'sortInjection');
 
         $this->assertEquals(
             -1,
@@ -1113,49 +1113,6 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
 
 
     // ========================================================================
-
-    /**
-     * @param $object
-     * @param $property
-     * @param $value
-     */
-    protected function setUnaccessibleObjectPropertyValue($object, $property, $value)
-    {
-        $relection = new \ReflectionClass($object);
-
-        $reflectionProperty = $relection->getProperty($property);
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($object, $value);
-    }
-
-    /**
-     * @param        $object
-     * @param string $property
-     * @return mixed
-     */
-    protected function getUnaccessibleObjectPropertyValue($object, $property)
-    {
-        $relection = new \ReflectionClass($object);
-
-        $reflectionProperty = $relection->getProperty($property);
-        $reflectionProperty->setAccessible(true);
-
-        return $reflectionProperty->getValue($object);
-    }
-
-    /**
-     * @param $object
-     * @param $methodName
-     * @return \ReflectionMethod
-     */
-    protected function getUnaccessibleObjectMethod($object, $methodName)
-    {
-        $relection = new \ReflectionClass($object);
-        $method    = $relection->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method;
-    }
 
     /**
      * @param string $class
