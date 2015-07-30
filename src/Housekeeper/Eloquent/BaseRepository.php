@@ -13,7 +13,9 @@ use Housekeeper\Flows\After;
 use Housekeeper\Flows\Before;
 use Housekeeper\Flows\Reset;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -33,7 +35,7 @@ abstract class BaseRepository implements RepositoryInterface
     /**
      * Model instance.
      *
-     * @var Model|Builder
+     * @var Model|Builder|EloquentBuilder
      */
     protected $model;
 
@@ -395,7 +397,7 @@ abstract class BaseRepository implements RepositoryInterface
      * Retrieve all data of repository
      *
      * @param array $columns
-     * @return mixed
+     * @return mixed|Collection
      */
     public function all($columns = ['*'])
     {
@@ -430,7 +432,7 @@ abstract class BaseRepository implements RepositoryInterface
      * @param       $field
      * @param       $value
      * @param array $columns
-     * @return mixed
+     * @return mixed|Model
      */
     public function findByField($field, $value = null, $columns = ['*'])
     {
@@ -446,7 +448,7 @@ abstract class BaseRepository implements RepositoryInterface
      *
      * @param array $where
      * @param array $columns
-     * @return mixed
+     * @return mixed|Model
      */
     public function findWhere(array $where, $columns = ['*'])
     {
@@ -464,7 +466,7 @@ abstract class BaseRepository implements RepositoryInterface
      * Save a new entity in repository
      *
      * @param array $attributes
-     * @return mixed
+     * @return mixed|Model
      */
     public function create(array $attributes)
     {
@@ -486,7 +488,7 @@ abstract class BaseRepository implements RepositoryInterface
      *
      * @param       $id
      * @param array $attributes
-     * @return mixed
+     * @return mixed|Model
      */
     public function update($id, array $attributes)
     {
@@ -528,7 +530,7 @@ abstract class BaseRepository implements RepositoryInterface
      *
      * @param       $id
      * @param array $columns
-     * @return mixed
+     * @return mixed|Model
      */
     public function find($id, $columns = ['*'])
     {
