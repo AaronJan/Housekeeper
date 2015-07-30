@@ -256,8 +256,9 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * @param array      $where
-     * @param bool|false $or
+     * @param  array      $where
+     * @param  bool|false $or
+     * @return $this
      */
     public function applyWhere(array $where, $or = false)
     {
@@ -291,11 +292,14 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->model = $this->model->$whereFunction($field, '=', $value);
             }
         }
+        
+        return $this;
     }
 
     /**
      * @param        $column
      * @param string $direction
+     * @return $this
      */
     public function applyOrder($column, $direction = 'asc')
     {

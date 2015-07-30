@@ -312,6 +312,10 @@ Priority **30**.
 
 ## Development Logs
 
+### v0.9.5 - 2015/07/30
+
+return `$this` in `applyWhere` and `applyOrder`, make them **fluent**;
+
 ### v0.9.4 - 2015/07/16
 
 Fix bug, add more tests, now code coverage on `Eloquent\BaseRepository` is `85.96%`;
