@@ -277,7 +277,7 @@ abstract class BaseRepository implements RepositoryInterface
         foreach ($where as $field => $value) {
             if ($value instanceof \Closure) {
                 /**
-                 * Use Closure and "orWhere" could achieve complex query search.
+                 * Use Closure for complex query search.
                  */
                 $this->model = $this->model->$whereFunction($field, $value);
             } elseif (is_array($value) && count($value) == 3) {
@@ -311,6 +311,8 @@ abstract class BaseRepository implements RepositoryInterface
         $this->addCondition('order', [$column, $direction]);
 
         $this->model = $this->model->orderBy($column, $direction);
+        
+        return $this;
     }
 
     /**

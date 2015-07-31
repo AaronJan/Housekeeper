@@ -314,6 +314,12 @@ Priority **30**.
 
 ### DEV-MASTER
 
+
+
+### v0.9.6 - 2015/07/31
+
+(fixed bug) return `$this` in `applyOrder`;
+
 optimized `PHP Doc`;
 
 ### v0.9.5 - 2015/07/30
