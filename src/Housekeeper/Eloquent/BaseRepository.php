@@ -168,19 +168,23 @@ abstract class BaseRepository implements RepositoryInterface
         /**
          * Than execute core function.
          */
-        $result = call_user_func_array($func, $action->getArguments());
+        try {
+            $result = call_user_func_array($func, $action->getArguments());
 
-        /**
-         * After core function executed, it's After Flow.
-         */
-        $afterFlow = $this->after($action, $result);
+            /**
+             * After core function executed, it's After Flow.
+             */
+            $afterFlow = $this->after($action, $result);
 
-        /**
-         * In the end, call Reset Flow.
-         */
-        $this->reset($action);
+            return $afterFlow->getReturn();
+        } finally {
+            /**
+             * In the end, call Reset Flow.
+             */
+            $this->reset($action);
+        }
 
-        return $afterFlow->getReturn();
+        return null;
     }
 
     /**
