@@ -50,6 +50,10 @@ class CacheResultAfter extends AbstractCacheManager implements InjectionInterfac
                 $this->rememberResult($flow);
 
                 break;
+            case Action::DELETE:
+                $this->forgetAll($flow);
+
+                break;
             default:
                 break;
         }

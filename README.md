@@ -315,6 +315,10 @@ Priority **30**.
 ### DEV-MASTER
 
 
+### v0.9.9 - 2015/08/12
+
+[Bug fix] clear cache when deleting.
+
 ### v0.9.8 - 2015/08/12
 
 Modified `Adjustable` trait, make it **fluently**, optimize docs.
