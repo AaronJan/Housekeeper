@@ -315,6 +315,10 @@ Priority **30**.
 ### DEV-MASTER
 
 
+### v0.9.8 - 2015/08/12
+
+Modified `Adjustable` trait, make it **fluently**, optimize docs.
+
 ### v0.9.7 - 2015/08/11
 
 If an exception been throwed, "reset" will still be called.

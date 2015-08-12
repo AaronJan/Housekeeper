@@ -39,18 +39,25 @@ trait Adjustable
      * Save this criteria, it would be auto-applied before every method calling.
      *
      * @param CriteriaInterface $criteria
+     * @return $this
      */
     public function rememberCriteria(CriteriaInterface $criteria)
     {
         $this->criterias[] = $criteria;
+        
+        return $this;
     }
 
     /**
      * Remove all criterias that this repository remembered.
+     *
+     * @return $this
      */
     public function forgetCriterias()
     {
         $this->criterias = [];
+        
+        return $this;
     }
 
     /**
@@ -65,6 +72,8 @@ trait Adjustable
 
     /**
      * @param CriteriaInterface $criteria
+     *
+     * @return $this
      */
     public function applyCriteria(CriteriaInterface $criteria)
     {
@@ -72,6 +81,8 @@ trait Adjustable
          * @var \Housekeeper\Contracts\RepositoryInterface $this
          */
         $criteria->apply($this);
+        
+        return $this;
     }
 
 }

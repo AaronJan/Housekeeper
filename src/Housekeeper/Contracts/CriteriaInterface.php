@@ -18,7 +18,6 @@ interface CriteriaInterface
      * Apply criteria to repository
      *
      * @param RepositoryInterface $repository
-     * @return Model
      */
     public function apply(RepositoryInterface $repository);
 
