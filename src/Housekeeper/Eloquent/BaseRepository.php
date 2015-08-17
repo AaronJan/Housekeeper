@@ -283,7 +283,7 @@ abstract class BaseRepository implements RepositoryInterface
                 /**
                  * Use Closure for complex query search.
                  */
-                $this->model = $this->model->$whereFunction($field, $value);
+                $this->model = $this->model->$whereFunction($value);
             } elseif (is_array($value) && count($value) == 3) {
                 /**
                  * If $value has 3 variables, then just ignore the $field, use

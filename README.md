@@ -315,6 +315,10 @@ Priority **30**.
 ### DEV-MASTER
 
 
+### v0.9.10 - 2015/08/17
+
+[Bug fix] When pass a closure to `applyWhere`, this entry doesn't need a `key` now.
+
 ### v0.9.9 - 2015/08/12
 
 [Bug fix] clear cache when deleting.
