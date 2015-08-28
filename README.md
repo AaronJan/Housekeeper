@@ -315,6 +315,10 @@ Priority **30**.
 ### DEV-MASTER
 
 
+### v0.9.11 - 2015/08/29
+
+[Bug fix] Thanks to [@DarKDinDoN](https://github.com/AaronJan/Housekeeper/issues/1#issuecomment-135114137), now `Cacheable` could works with `Closure` condition.
+
 ### v0.9.10 - 2015/08/17
 
 [Bug fix] When pass a closure to `applyWhere`, this entry doesn't need a `key` now.

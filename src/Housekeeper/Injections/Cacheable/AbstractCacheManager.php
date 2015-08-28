@@ -2,13 +2,12 @@
 
 namespace Housekeeper\Injections\Cacheable;
 
-use Illuminate\Contracts\Cache\Repository;
-use Housekeeper\Contracts\RepositoryInterface;
-use Illuminate\Contracts\Foundation\Application;
 use Housekeeper\Action;
-use Illuminate\Redis\Database;
-use Housekeeper\Flows\After;
 use Housekeeper\Contracts\Flow\Basic as FlowContract;
+use Housekeeper\Contracts\RepositoryInterface;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Redis\Database;
 
 /**
  * Class AbstractCacheManager
@@ -78,6 +77,27 @@ abstract class AbstractCacheManager
     }
 
     /**
+     * Hash anything, return the unique identity.
+     *
+     * @param $object
+     * @return string
+     */
+    protected function hash($object)
+    {
+        array_walk_recursive($object, function (&$item) {
+            if ($item instanceof \Closure) {
+                $reflection = new \ReflectionFunction($item);
+                $item       = $reflection->getNumberOfParameters() .
+                    $reflection->getNamespaceName() .
+                    $reflection->getStartLine() .
+                    $reflection->getEndLine();
+            }
+        });
+
+        return md5(serialize($object));
+    }
+
+    /**
      * @param RepositoryInterface $repository
      * @param Action              $action
      * @return string
@@ -86,9 +106,9 @@ abstract class AbstractCacheManager
                                   Action $action)
     {
         $id = md5(
-            serialize($repository->getConditions()) .
+            $this->hash($repository->getConditions()) .
             $action->getMethodName() .
-            json_encode($action->getArguments())
+            $this->hash($action->getArguments())
         );
 
         return $id;
