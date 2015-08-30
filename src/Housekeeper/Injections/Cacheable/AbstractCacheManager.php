@@ -87,7 +87,8 @@ abstract class AbstractCacheManager
         array_walk_recursive($object, function (&$item) {
             if ($item instanceof \Closure) {
                 $reflection = new \ReflectionFunction($item);
-                $item       = $reflection->getNumberOfParameters() .
+                $item       = serialize($reflection->getClosureThis()) .
+                    $reflection->getNumberOfParameters() .
                     $reflection->getNamespaceName() .
                     $reflection->getStartLine() .
                     $reflection->getEndLine();
