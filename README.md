@@ -314,8 +314,15 @@ Priority **30**.
 
 ### DEV-MASTER
 
-[Bug fix] `delete` in `BaseRepository` now fetch model directly from database instead of through `find` method of `BaseRepository`.
 
+
+### v0.9.13 - 2015/08/30
+
+[Bug fix] `delete` in `BaseRepository` now fetch model directly from database instead of through `find` method of `BaseRepository`;
+
+Add `startWithTrashed` and `startWithTrashedOnly` methods to `BaseRepository` for interacting model that with `softDeletes` trait;
+
+Fix a test.
 
 ### v0.9.12 - 2015/08/30
 

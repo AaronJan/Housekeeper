@@ -13,10 +13,10 @@ use Housekeeper\Flows\After;
 use Housekeeper\Flows\Before;
 use Housekeeper\Flows\Reset;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 
 /**
  * Class BaseRepository
@@ -298,7 +298,7 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->model = $this->model->$whereFunction($field, '=', $value);
             }
         }
-        
+
         return $this;
     }
 
@@ -315,7 +315,7 @@ abstract class BaseRepository implements RepositoryInterface
         $this->addCondition('order', [$column, $direction]);
 
         $this->model = $this->model->orderBy($column, $direction);
-        
+
         return $this;
     }
 
@@ -561,6 +561,34 @@ abstract class BaseRepository implements RepositoryInterface
         $this->addCondition('with', $relations);
 
         $this->model = $this->model->with($relations);
+
+        return $this;
+    }
+
+    /**
+     * Reset and includes soft deletes for following queries.
+     *
+     * @return $this
+     */
+    public function startWithTrashed()
+    {
+        $this->reset(new Action(__METHOD__, []));
+
+        $this->model = $this->model->withTrashed();
+
+        return $this;
+    }
+
+    /**
+     * Reset and only includes soft deletes for following queries.
+     *
+     * @return $this
+     */
+    public function startWithTrashedOnly()
+    {
+        $this->reset(new Action(__METHOD__, []));
+
+        $this->model = $this->model->onlyTrashed();
 
         return $this;
     }

@@ -887,7 +887,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $mockModel->shouldReceive('where')
             ->once()
             ->ordered()
-            ->with('name', $whereClosure)
+            ->with($whereClosure)
             ->andReturnUsing(function () use (&$whereCalled) {
                 $whereCalled = true;
             });
@@ -909,7 +909,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Check "applyWhere".
          */
         $mockRepository->applyWhere([
-            'name' => $whereClosure
+            $whereClosure
         ]);
 
         $this->assertTrue($whereCalled);
