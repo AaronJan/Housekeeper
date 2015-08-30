@@ -314,6 +314,8 @@ Priority **30**.
 
 ### DEV-MASTER
 
+[Bug fix] `delete` in `BaseRepository` now fetch model directly from database instead of through `find` method of `BaseRepository`.
+
 
 ### v0.9.12 - 2015/08/30
 

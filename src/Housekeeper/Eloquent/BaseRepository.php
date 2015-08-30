@@ -522,7 +522,7 @@ abstract class BaseRepository implements RepositoryInterface
     {
         return $this->wrap(function ($id) {
 
-            $model = $this->find($id);
+            $model = $this->model->findOrFail($id);
 
             $deleted = $model->delete();
 
