@@ -315,6 +315,9 @@ Priority **30**.
 ### DEV-MASTER
 
 
+### v0.9.14 - 2015/08/30
+
+Add conditions for `startWithTrashed` and `startWithTrashedOnly`.
 
 ### v0.9.13 - 2015/08/30
 

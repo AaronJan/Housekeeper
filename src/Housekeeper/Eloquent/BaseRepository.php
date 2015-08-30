@@ -574,6 +574,11 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $this->reset(new Action(__METHOD__, []));
 
+        /**
+         * Save to conditons.
+         */
+        $this->addCondition('withTrashed', 'withTrashed');
+
         $this->model = $this->model->withTrashed();
 
         return $this;
@@ -587,6 +592,11 @@ abstract class BaseRepository implements RepositoryInterface
     public function startWithTrashedOnly()
     {
         $this->reset(new Action(__METHOD__, []));
+
+        /**
+         * Save to conditons.
+         */
+        $this->addCondition('onlyTrashed', 'onlyTrashed');
 
         $this->model = $this->model->onlyTrashed();
 
