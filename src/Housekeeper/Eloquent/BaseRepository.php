@@ -163,7 +163,11 @@ abstract class BaseRepository implements RepositoryInterface
          * First it's Before Flow.
          */
         $beforeFlow = $this->before($action);
-        if ($beforeFlow->hasReturn()) return $beforeFlow->getReturn();
+        if ($beforeFlow->hasReturn()) {
+            $this->reset($action);
+
+            return $beforeFlow->getReturn();
+        }
 
         /**
          * Than execute core function.

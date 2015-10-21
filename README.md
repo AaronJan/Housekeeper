@@ -55,6 +55,8 @@ After reading the documents and codes, I'm start to wondering: *maybe `Repositor
 
 I started from the code of `prettus/l5-repository` in `2015/06/25`, but they're completely different now.
 
+As of today, `Housekeeper` have been using by multiple projects.
+
 
 ### Housekeeper Features
 
@@ -314,6 +316,10 @@ Priority **30**.
 
 ### DEV-MASTER
 
+
+### v0.9.15 - 2015/10/21
+
+[Bug fix] Execute `reset flow` when `before flow` has return value.
 
 ### v0.9.14 - 2015/08/30
 
