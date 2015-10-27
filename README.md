@@ -403,7 +403,7 @@ Licensed under the [APACHE LISENCE V2](http://www.apache.org/licenses/LICENSE-2.
 ## Credits
 
 
-Thinks to [prettus/l5-repository](https://github.com/prettus/l5-repository) for inspiring.
+Thanks to [prettus/l5-repository](https://github.com/prettus/l5-repository) for inspiring.
 
-Thinks to [egofang](https://github.com/egofang) for this awesome logo!
+Thanks to [egofang](https://github.com/egofang) for this awesome logo!
 
