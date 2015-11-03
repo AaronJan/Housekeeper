@@ -28,7 +28,7 @@ class HousekeeperServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../../config/housekeeper.php' => config_path('housekeeper.php')
-        ]);
+        ], 'config');
 
         $this->mergeConfigFrom(
             __DIR__ . '/../../config/housekeeper.php', 'housekeeper'
