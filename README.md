@@ -317,6 +317,10 @@ Priority **30**.
 ### DEV-MASTER
 
 
+### v0.9.16 - 2015/11/03
+
+[Bug fix] Fixed an issue that causing crush when hash closure in `Cacheable` trait.
+
 ### v0.9.15 - 2015/10/21
 
 [Bug fix] Execute `reset flow` when `before flow` has return value.
