@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Class GeneratorCommand
- * This class is from Laravel framework.
+ * This class is from Laravel Framework `5.1`.
  *
  * @package Housekeeper\Console
  */
@@ -54,7 +54,7 @@ abstract class GeneratorCommand extends Command
         if ($this->files->exists($path = $this->getPath($name))) {
             $this->error($this->type . ' already exists!');
 
-            return false;
+            return;
         }
 
         $this->makeDirectory($path);

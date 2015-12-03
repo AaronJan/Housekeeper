@@ -1,47 +1,41 @@
 <?php
 
-namespace Housekeeper\Traits\Repository;
+namespace Housekeeper\Abilities;
 
-use Housekeeper\Contracts\CriteriaInterface;
-use Housekeeper\Contracts\Injection\InjectionInterface;
-use Housekeeper\Injections\Adjustable\ApplyCriteriasBefore;
+use Housekeeper\Abilities\Adjustable\Contracts\Criteria;
+use Housekeeper\Abilities\Adjustable\Injections\ApplyCriteriasBefore;
 
 /**
  * Class Adjustable
+ *
+ * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
  */
 trait Adjustable
 {
-
     /**
-     * @param InjectionInterface $injection
-     * @return mixed
-     */
-    abstract protected function inject(InjectionInterface $injection);
-
-
-    /**
-     * @var array
+     * @var \Housekeeper\Abilities\Adjustable\Contracts\Criteria[]
      */
     protected $criterias = [];
+
 
     /**
      * Bind injection.
      */
-    protected function setupAdjustable()
+    public function setupAdjustable()
     {
         $this->inject(new ApplyCriteriasBefore());
     }
 
     /**
-     * Save this criteria, it would be auto-applied before every method calling.
+     * ave this criteria, it would be auto-applied before every method calling.
      *
-     * @param CriteriaInterface $criteria
+     * @param \Housekeeper\Abilities\Adjustable\Contracts\Criteria $criteria
      * @return $this
      */
-    public function rememberCriteria(CriteriaInterface $criteria)
+    public function rememberCriteria(Criteria $criteria)
     {
         $this->criterias[] = $criteria;
         
@@ -71,14 +65,13 @@ trait Adjustable
     }
 
     /**
-     * @param CriteriaInterface $criteria
-     *
+     * @param \Housekeeper\Abilities\Adjustable\Contracts\Criteria $criteria
      * @return $this
      */
-    public function applyCriteria(CriteriaInterface $criteria)
+    public function applyCriteria(Criteria $criteria)
     {
         /**
-         * @var \Housekeeper\Contracts\RepositoryInterface $this
+         * @var \Housekeeper\Contracts\Repository $this
          */
         $criteria->apply($this);
         

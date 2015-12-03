@@ -1,11 +1,13 @@
-<?php namespace Housekeeper\Traits\Repository;
+<?php
+
+namespace Housekeeper\Abilities;
 
 use Housekeeper\Exceptions\RepositoryException;
-use Housekeeper\Contracts\RepositoryInterface;
-use Housekeeper\Contracts\Injection\InjectionInterface;
-use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Contracts\Injection\AfterInjectionInterface;
-use Housekeeper\Contracts\Injection\ResetInjectionInterface;
+use Housekeeper\Contracts\Repository;
+use Housekeeper\Contracts\Injection\Basic;
+use Housekeeper\Contracts\Injection\Before;
+use Housekeeper\Contracts\Injection\After;
+use Housekeeper\Contracts\Injection\Reset;
 use Housekeeper\Flows\Before;
 use Housekeeper\Flows\After;
 use Housekeeper\Flows\Reset;
@@ -34,15 +36,6 @@ class AdjustableTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         m::close();
-    }
-
-    /**
-     *
-     */
-    public function testExample()
-    {
-        //Just a placeholder
-        $this->assertTrue(true);
     }
 
 }

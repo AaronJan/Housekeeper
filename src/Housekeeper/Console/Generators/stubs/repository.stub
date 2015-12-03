@@ -2,10 +2,11 @@
 
 namespace DummyNamespace;
 
-use Housekeeper\Eloquent\BaseRepository;
+use Housekeeper\Repository;
+use Housekeeper\Action;
 
-class DummyClass extends BaseRepository {
-
+class DummyClass extends Repository
+{
     /**
      * Return the name of model that this repository used.
      *
@@ -15,5 +16,4 @@ class DummyClass extends BaseRepository {
     {
         //
     }
-
 }

@@ -2,21 +2,19 @@
 
 namespace Housekeeper\Contracts\Injection;
 
-use Housekeeper\Flows\Before;
+use Housekeeper\Contracts\Flow\After as AfterFlow;
 
 /**
- * Interface BeforeInjectionInterface
+ * Interface After
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Contracts\Injection
  */
-interface BeforeInjectionInterface
+interface After extends Basic
 {
-
     /**
-     * @param Before $flow
+     * @param \Housekeeper\Contracts\Flow\After $afterFlow
      * @return void
      */
-    public function handle(Before $flow);
-
+    public function handle(AfterFlow $afterFlow);
 }

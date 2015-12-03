@@ -2,11 +2,12 @@
 
 namespace DummyNamespace;
 
-use Housekeeper\Eloquent\BaseRepository;
-use Housekeeper\Traits\Repository\Cacheable;
+use Housekeeper\Repository;
+use Housekeeper\Action;
+use Housekeeper\Abilities\Cacheable;
 
-class DummyClass extends BaseRepository {
-
+class DummyClass extends Repository
+{
     use Cacheable;
 
     /**
@@ -18,5 +19,4 @@ class DummyClass extends BaseRepository {
     {
         //
     }
-
 }

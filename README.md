@@ -12,7 +12,6 @@ Here is the [Documents](https://aaronjan.github.io/Housekeeper/).
 
 ## Introduction
 
-
 Powerful, simple `Repository-Pattern` implementation for Laravel `(>= 5.0)` and PHP `(>= 5.5)`, and it come with tests.
 
 

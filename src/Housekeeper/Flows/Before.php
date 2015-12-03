@@ -2,9 +2,9 @@
 
 namespace Housekeeper\Flows;
 
-use Housekeeper\Action;
-use Housekeeper\Contracts\RepositoryInterface;
-use Housekeeper\Contracts\Flow\Basic as FlowContract;
+use Housekeeper\Contracts\Action;
+use Housekeeper\Contracts\Repository;
+use Housekeeper\Contracts\Flow\Before as BeforeContract;
 
 /**
  * Class Before
@@ -12,37 +12,36 @@ use Housekeeper\Contracts\Flow\Basic as FlowContract;
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Flow
  */
-class Before implements FlowContract
+class Before implements BeforeContract
 {
-
     /**
      * @var Action
      */
     protected $action;
 
     /**
-     * @var RepositoryInterface
+     * @var Repository
      */
     protected $repository;
 
     /**
-     * @var
+     * @var mixed
      */
     protected $returnValue;
 
 
     /**
-     * @param RepositoryInterface $repository
-     * @param Action              $action
+     * @param \Housekeeper\Contracts\Repository $repository
+     * @param \Housekeeper\Contracts\Action     $action
      */
-    public function __construct(RepositoryInterface $repository, Action $action)
+    public function __construct(Repository $repository, Action $action)
     {
         $this->repository = $repository;
         $this->action     = $action;
     }
 
     /**
-     * @return Action
+     * @return \Housekeeper\Contracts\Action
      */
     public function getAction()
     {
@@ -50,7 +49,7 @@ class Before implements FlowContract
     }
 
     /**
-     * @return RepositoryInterface
+     * @return \Housekeeper\Contracts\Repository
      */
     public function getRepository()
     {
@@ -60,7 +59,7 @@ class Before implements FlowContract
     /**
      * @return bool
      */
-    public function hasReturn()
+    public function hasReturnValue()
     {
         return ! is_null($this->returnValue);
     }
@@ -68,17 +67,16 @@ class Before implements FlowContract
     /**
      * @return mixed
      */
-    public function getReturn()
+    public function getReturnValue()
     {
         return $this->returnValue;
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      */
-    public function setReturn($value)
+    public function setReturnValue($value)
     {
         $this->returnValue = $value;
     }
-
 }

@@ -2,8 +2,7 @@
 
 namespace Housekeeper\Contracts\Flow;
 
-use Housekeeper\Contracts\RepositoryInterface;
-use Housekeeper\Action;
+use Housekeeper\Contracts\Action;
 
 /**
  * Interface Basic
@@ -13,15 +12,13 @@ use Housekeeper\Action;
  */
 interface Basic
 {
-
     /**
-     * @return RepositoryInterface
+     * @return \Housekeeper\Contracts\Repository
      */
     public function getRepository();
 
     /**
-     * @return Action
+     * @return \Housekeeper\Action
      */
     public function getAction();
-
 }

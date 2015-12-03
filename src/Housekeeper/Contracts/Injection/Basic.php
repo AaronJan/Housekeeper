@@ -3,19 +3,17 @@
 namespace Housekeeper\Contracts\Injection;
 
 /**
- * Interface InjectionInterface
+ * Interface Basic
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Contracts\Injection
  */
-interface InjectionInterface
+interface Basic
 {
-
     /**
      * Lower is higher.
      *
      * @return integer
      */
     public function priority();
-
 }

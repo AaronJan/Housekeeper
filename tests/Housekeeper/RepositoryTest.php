@@ -1,23 +1,24 @@
 <?php namespace Housekeeper\Eloquent;
 
 use Housekeeper\Exceptions\RepositoryException;
-use Housekeeper\Contracts\RepositoryInterface;
-use Housekeeper\Contracts\Injection\InjectionInterface;
-use Housekeeper\Contracts\Injection\BeforeInjectionInterface;
-use Housekeeper\Contracts\Injection\AfterInjectionInterface;
-use Housekeeper\Contracts\Injection\ResetInjectionInterface;
+use Housekeeper\Contracts\Repository;
+use Housekeeper\Contracts\Injection\Basic;
+use Housekeeper\Contracts\Injection\Before;
+use Housekeeper\Contracts\Injection\After;
+use Housekeeper\Contracts\Injection\Reset;
 use Housekeeper\Flows\Before;
 use Housekeeper\Flows\After;
 use Housekeeper\Flows\Reset;
 use Mockery as m;
 
 /**
- * Class BaseRepositoryTest
+ * Class RepositoryTest
  *
- * @covers  Housekeeper\Eloquent\BaseRepository
+ * @covers  Housekeeper\Repository
+ * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Eloquent
  */
-class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
+class RepositoryTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -37,7 +38,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Housekeeper\Eloquent\BaseRepository::setup
+     * @covers Housekeeper\Eloquent\initializeSetups::setupExternal
      */
     public function testSetup()
     {
@@ -69,11 +70,11 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Housekeeper\Eloquent\BaseRepository::modelInstance
+     * @covers Housekeeper\Eloquent\createModelInstance::getNewModelInstance
      */
     public function testModelInstance()
     {
-        $mockRepository = m::mock(BaseRepository::class)
+        $mockRepository = m::mock(Repository::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();;
 
@@ -103,7 +104,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFreshModel()
     {
-        $mockRepository = $this->makeMockRepository(BaseRepository::class, false);
+        $mockRepository = $this->makeMockRepository(Repository::class, false);
 
         /**
          * The model instance should be "null" at first.
@@ -139,8 +140,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Mock an injection that implements ResetInjectionInterface.
          */
         $resetInjection = m::mock(
-            InjectionInterface::class,
-            ResetInjectionInterface::class
+            Basic::class,
+            Reset::class
         );
         $resetInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -174,8 +175,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Mock an injection that implements AfterInjectionInterface.
          */
         $beforeInjection = m::mock(
-            InjectionInterface::class,
-            BeforeInjectionInterface::class
+            Basic::class,
+            Before::class
         );
         $beforeInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -209,8 +210,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Mock an injection that implements AfterInjectionInterface.
          */
         $afterInjection = m::mock(
-            InjectionInterface::class,
-            AfterInjectionInterface::class
+            Basic::class,
+            After::class
         );
         $afterInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -244,7 +245,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * exception.
          */
         $uselessInjection = m::mock(
-            InjectionInterface::class
+            Basic::class
         );
         $uselessInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -273,8 +274,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Mock a reset injection.
          */
         $resetInjection = m::mock(
-            InjectionInterface::class,
-            ResetInjectionInterface::class
+            Basic::class,
+            Reset::class
         );
         $resetInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -300,7 +301,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             [
                 'reset'  => [$resetInjection],
                 'before' => [],
-                'after'  => []
+                'after'  => [],
             ]
         );
 
@@ -332,8 +333,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Mock a before injection.
          */
         $beforeInjection = m::mock(
-            InjectionInterface::class,
-            BeforeInjectionInterface::class
+            Basic::class,
+            Before::class
         );
         $beforeInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -351,7 +352,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             [
                 'reset'  => [],
                 'before' => [$beforeInjection],
-                'after'  => []
+                'after'  => [],
             ]
         );
 
@@ -383,8 +384,8 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Mock a after injection.
          */
         $afterInjection = m::mock(
-            InjectionInterface::class,
-            AfterInjectionInterface::class
+            Basic::class,
+            After::class
         );
         $afterInjection->shouldReceive('priority')
             ->andReturn(1);
@@ -402,7 +403,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             [
                 'reset'  => [],
                 'before' => [],
-                'after'  => [$afterInjection]
+                'after'  => [$afterInjection],
             ]
         );
 
@@ -588,7 +589,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
         $methodSortInjection = getUnaccessibleObjectMethod($mockRepository, 'sortInjection');
 
         $this->assertEquals(
-            -1,
+            - 1,
             $methodSortInjection->invoke($mockRepository, $mockInjection_1, $mockInjection_2)
         );
 
@@ -625,12 +626,12 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
             [
                 'where' => [
                     'name' => 'Aaron',
-                ]
+                ],
             ],
             [
                 'with' => [
-                    'article'
-                ]
+                    'article',
+                ],
             ],
         ], $conditions);
     }
@@ -909,7 +910,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
          * Check "applyWhere".
          */
         $mockRepository->applyWhere([
-            $whereClosure
+            $whereClosure,
         ]);
 
         $this->assertTrue($whereCalled);
@@ -1117,14 +1118,14 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string $class
      * @param bool   $concrete
-     * @return BaseRepository|m\MockInterface
+     * @return Repository|m\MockInterface
      */
     protected function makeMockRepository($class = 'Housekeeper\Eloquent\BaseRepository', $concrete = true)
     {
         /**
          * Setup some hints for variables.
          *
-         * @var \Housekeeper\Eloquent\BaseRepository|\Mockery\MockInterface $mockRepository
+         * @var \Housekeeper\Eloquent\Repository|\Mockery\MockInterface $mockRepository
          */
 
         /**
@@ -1219,7 +1220,7 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
 
 // ============================================================================
 
-class MockInjection implements InjectionInterface, ResetInjectionInterface
+class MockBasic implements Basic, Reset
 
 {
 
@@ -1240,7 +1241,7 @@ class MockInjection implements InjectionInterface, ResetInjectionInterface
  *
  * @package Housekeeper\Eloquent
  */
-class MockSetupRepository extends BaseRepository
+class MockSetupRepository extends Repository
 {
 
     /**
@@ -1256,7 +1257,7 @@ class MockSetupRepository extends BaseRepository
      */
     protected function setupTest()
     {
-        $mockInjection = new MockInjection();
+        $mockInjection = new MockBasic();
 
         $this->inject($mockInjection);
     }

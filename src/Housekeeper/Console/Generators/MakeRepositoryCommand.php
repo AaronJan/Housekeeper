@@ -13,7 +13,6 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class MakeRepositoryCommand extends GeneratorCommand
 {
-
     /**
      * The console command name.
      *
@@ -39,12 +38,11 @@ class MakeRepositoryCommand extends GeneratorCommand
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function fire()
     {
         parent::fire();
-
     }
 
     /**

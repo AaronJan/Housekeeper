@@ -1,4 +1,6 @@
-<?php namespace Housekeeper;
+<?php
+
+namespace Housekeeper;
 
 /**
  * Class Action
@@ -6,33 +8,42 @@
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper
  */
-class Action
+class Action implements Contracts\Action
 {
-
     /**
-     * Flag action as "Unknow" action.
+     * @var int
      */
-    const UNKNOW = -1;
+    const UNKNOW = - 1;
 
     /**
-     * Flag action as "Create" action.
+     * @var int
      */
     const CREATE = 1;
 
     /**
-     * Flag action as "Update" action.
+     * @var int
      */
     const UPDATE = 2;
 
     /**
-     * Flag action as "Read" action.
+     * @var int
      */
     const READ = 3;
 
     /**
-     * Flag action as "Delete" action.
+     * @var int
      */
     const DELETE = 4;
+
+    /**
+     * @var int
+     */
+    const CREATE_OR_UPDATE = 5;
+
+    /**
+     * @var int
+     */
+    const INTERNAL = 6;
 
     /**
      * @var integer
@@ -45,14 +56,17 @@ class Action
     protected $arguments;
 
     /**
-     * @var
+     * @var string
      */
     protected $methodName;
 
 
     /**
-     * @param       $methodName
-     * @param array $arguments
+     * Action constructor.
+     *
+     * @param string   $methodName
+     * @param array    $arguments
+     * @param null|int $type
      */
     public function __construct($methodName, array $arguments, $type = null)
     {
@@ -70,7 +84,7 @@ class Action
     }
 
     /**
-     * @param integer $type
+     * @param int $type
      * @return bool
      */
     public function isType($type)
@@ -87,51 +101,10 @@ class Action
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getMethodName()
     {
         return $this->methodName;
     }
-
-    /**
-     * @return bool
-     */
-    public function isUnknow()
-    {
-        return $this->type == static::UNKNOW;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCreate()
-    {
-        return $this->type == static::CREATE;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUpdate()
-    {
-        return $this->type == static::UPDATE;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRead()
-    {
-        return $this->type == static::READ;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDelete()
-    {
-        return $this->type == static::DELETE;
-    }
-
 }
