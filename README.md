@@ -9,6 +9,8 @@
 
 Here is the [Documents](https://aaronjan.github.io/Housekeeper/).
 
+**`2.0` will be available in this year (2015), even I'm very busy right now, I'm making this promise. I'm already got it half done and will work harder. I'm very excited about `2.0`, hope you will love it like I do. thank you for your supports!**
+
 
 ## Introduction
 
