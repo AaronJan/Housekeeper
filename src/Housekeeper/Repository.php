@@ -177,7 +177,7 @@ abstract class Repository implements RepositoryContract
         // Check if the class name of model is empty to prevent bug.
         if ($this->fullModelClassName == '') {
             throw new RepositoryException(
-                'You should return the name of Model in "Model".'
+                'You should return the name of a Model in "Model".'
             );
         }
 

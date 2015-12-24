@@ -59,15 +59,15 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
          */
         $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
 
-        $mockApp = $this->makeMockAction();
+        $mockApp = $this->mockApplication();
 
         $mockApp->shouldReceive('call')
             ->andReturnUsing(function ($function) use (&$called, &$pure, $method) {
-                list($repository, $method) = $function;
+                list($repository, $calledMethod) = $function;
 
                 if (
                     $repository instanceof RepositoryContract &&
-                    $method == $method
+                    $method == $calledMethod
                 ) {
                     $called = true;
                 } else {
@@ -82,10 +82,29 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
          * Call "setup" function to start the test.
          */
         $methodSetup = getUnaccessibleObjectMethod($mockRepository, 'setup');
-        $methodSetup->invoke($mockRepository, array());
+        $methodSetup->invoke($mockRepository);
 
         $this->assertTrue($called);
         $this->assertTrue($pure);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::setApp
+     * @covers Housekeeper\Repository::getApp
+     */
+    public function testSetAppAndGetApp()
+    {
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        $mockApp = $this->mockApplication();
+
+        $methodSetApp = getUnaccessibleObjectMethod($mockRepository, 'setApp');
+        $methodSetApp->invoke($mockRepository, $mockApp);
+
+        $methodSetApp    = getUnaccessibleObjectMethod($mockRepository, 'getApp');
+        $appInRepository = $methodSetApp->invoke($mockRepository);
+
+        $this->assertEquals($mockApp, $appInRepository);
     }
 
 
@@ -96,7 +115,8 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      * @param bool   $concrete
      * @return Repository|m\MockInterface
      */
-    protected function makeMockRepository($class = 'Housekeeper\Eloquent\BaseRepository', $concrete = true)
+    protected function makeMockRepository($class = 'Housekeeper\Repository',
+                                          $concrete = true)
     {
         /**
          * Setup some hints for variables.
@@ -196,6 +216,11 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
 // ============================================================================
 
+/**
+ * Class MockBasicInjection
+ *
+ * @package Housekeeper
+ */
 class MockBasicInjection implements ResetInjectionContract
 
 {
@@ -215,7 +240,7 @@ class MockBasicInjection implements ResetInjectionContract
 /**
  * Class MockSetupRepository
  *
- * @package Housekeeper\Eloquent
+ * @package Housekeeper
  */
 class MockSetupRepository extends Repository
 {
