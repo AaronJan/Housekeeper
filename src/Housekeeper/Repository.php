@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @copyright  (c) 2015, AaronJan
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package        Housekeeper
+ * @version        2.0-dev
  */
 abstract class Repository implements RepositoryContract
 {
@@ -103,7 +104,7 @@ abstract class Repository implements RepositoryContract
      */
     public function __construct(Application $app)
     {
-        $this->app = $app;
+        $this->setApp($app);
 
         $this->initialize();
 
@@ -117,11 +118,27 @@ abstract class Repository implements RepositoryContract
         // This provide an easy way to add custom logic that will be executed
         // when repository been created.
         if (method_exists($this, static::BOOT_METHOD)) {
-            $this->app->call([$this, static::BOOT_METHOD]);
+            $this->getApp()->call([$this, static::BOOT_METHOD]);
         }
 
         // Reset to prepare everything that would be used.
         $this->reset(new Action(__METHOD__, [], Action::INTERNAL));
+    }
+
+    /**
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     */
+    protected function setApp(Application $app)
+    {
+        $this->app = $app;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application
+     */
+    protected function getApp()
+    {
+        return $this->app;
     }
 
     /**
@@ -144,7 +161,7 @@ abstract class Repository implements RepositoryContract
      */
     protected function getConfig($key, $default = null)
     {
-        $config = $this->app->make('config');
+        $config = $this->getApp()->make('config');
 
         return $config->get($key, $default);
     }
@@ -193,7 +210,7 @@ abstract class Repository implements RepositoryContract
             // Method name has to start with "setup" and followed by an
             // upper-case latter.
             if (preg_match('/^setup[A-Z]/', $methodName)) {
-                $this->app->call([$this, $methodName]);
+                $this->getApp()->call([$this, $methodName]);
             }
         }
     }

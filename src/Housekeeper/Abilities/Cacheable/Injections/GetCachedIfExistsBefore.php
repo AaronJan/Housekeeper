@@ -7,7 +7,7 @@ use Housekeeper\Contracts\Flow\Before as BeforeFlowContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
 use Housekeeper\Contracts\Repository;
-use Housekeeper\Abilities\Cacheable\Cacheable;
+use Housekeeper\Abilities\Cacheable;
 
 /**
  * Class GetCacheIfExistsBefore

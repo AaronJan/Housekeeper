@@ -7,7 +7,7 @@ use Housekeeper\Contracts\Flow\After as AfterFlowContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\After as AfterInjectionContract;
 use Housekeeper\Contracts\Repository;
-use Housekeeper\Abilities\Cacheable\Cacheable;
+use Housekeeper\Abilities\Cacheable;
 
 /**
  * Class CacheResultAfter
