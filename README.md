@@ -1,5 +1,5 @@
 <a href="https://github.com/AaronJan/Housekeeper">
-	<img src="https://aaronjan.github.io/Housekeeper/images/logo.png" alt="Housekeeper" title="Housekeeper" align="right"/>
+	<img src="https://aaronjan.github.io/Housekeeper/images/logo_v2.png" alt="Housekeeper" title="Housekeeper" align="right"/>
 </a>
 
 [![Latest Stable Version](https://poser.pugx.org/aaronjan/housekeeper/v/stable)](https://packagist.org/packages/aaronjan/housekeeper) [![Total Downloads](https://poser.pugx.org/aaronjan/housekeeper/downloads)](https://packagist.org/packages/aaronjan/housekeeper) [![Latest Unstable Version](https://poser.pugx.org/aaronjan/housekeeper/v/unstable)](https://packagist.org/packages/aaronjan/housekeeper) [![License](https://poser.pugx.org/aaronjan/housekeeper/license)](https://packagist.org/packages/aaronjan/housekeeper)
