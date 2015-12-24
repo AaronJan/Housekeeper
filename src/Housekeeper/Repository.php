@@ -2,6 +2,9 @@
 
 namespace Housekeeper;
 
+use Housekeeper\Flows\Before as BeforeFlow;
+use Housekeeper\Flows\After as AfterFlow;
+use Housekeeper\Flows\Reset as ResetFlow;
 use Housekeeper\Exceptions\RepositoryException;
 use Housekeeper\Contracts\Action as ActionContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
@@ -9,9 +12,6 @@ use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
 use Housekeeper\Contracts\Injection\After as AfterInjectionContract;
 use Housekeeper\Contracts\Injection\Reset as ResetInjectionContract;
 use Housekeeper\Contracts\Repository as RepositoryContract;
-use Housekeeper\Flows\Before as BeforeFlow;
-use Housekeeper\Flows\After as AfterFlow;
-use Housekeeper\Flows\Reset as ResetFlow;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @license        Apache 2.0
  * @copyright  (c) 2015, AaronJan
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
- * @package        Housekeeper\Eloquent
+ * @package        Housekeeper
  */
 abstract class Repository implements RepositoryContract
 {
@@ -391,19 +391,39 @@ abstract class Repository implements RepositoryContract
     }
     
     /**
-     * @param $actionType
+     * @param               $actionType
+     * @param callable|null $function
      * @return mixed
      * @throws \Exception
      */
-    protected function simpleWrap($actionType)
+    protected function simpleWrap($actionType, callable $function = null)
     {
         $caller = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1];
 
         return $this->wrap(
-            $this->traceToRealMethod($caller['function']),
+            ($function ?: $this->traceToRealMethod($caller['function'])),
             $caller['args'],
             $actionType
         );
+    }
+
+    /**
+     * Get the real method that will be executed.
+     *
+     * By convention, the real method should be named start with an underscore
+     * follow by the cover method's name, for instance: cover method named
+     * "getUserName", so the real method should be "_getUserName".
+     *
+     * @param null|string $coverMethodName
+     * @return Callable|array
+     */
+    protected function traceToRealMethod($coverMethodName = null)
+    {
+        if ( ! $coverMethodName) {
+            $coverMethodName = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
+        }
+
+        return [$this, "_{$coverMethodName}"];
     }
 
     /**
@@ -461,25 +481,6 @@ abstract class Repository implements RepositoryContract
         }
 
         return ($a->priority() < $b->priority()) ? - 1 : 1;
-    }
-
-    /**
-     * Get the real method that will be executed.
-     *
-     * By convention, the real method should be named start with an underscore
-     * follow by the cover method's name, for instance: cover method named
-     * "getUserName", so the real method should be "_getUserName".
-     *
-     * @param null|string $coverMethodName
-     * @return Callable|array
-     */
-    protected function traceToRealMethod($coverMethodName = null)
-    {
-        if ( ! $coverMethodName) {
-            $coverMethodName = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
-        }
-
-        return [$this, "_{$coverMethodName}"];
     }
 
     /**
@@ -556,7 +557,7 @@ abstract class Repository implements RepositoryContract
      */
     public function exists($id, $column = null)
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_exists']);
     }
 
     /**
@@ -586,7 +587,7 @@ abstract class Repository implements RepositoryContract
      */
     public function find($id, $columns = ['*'])
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_find']);
     }
 
     /**
@@ -610,7 +611,7 @@ abstract class Repository implements RepositoryContract
      */
     public function findMany($ids, $columns = ['*'])
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_findMany']);
     }
 
     /**
@@ -633,7 +634,7 @@ abstract class Repository implements RepositoryContract
      */
     public function create(array $attributes)
     {
-        return $this->simpleWrap(Action::CREATE);
+        return $this->simpleWrap(Action::CREATE, [$this, '_create']);
     }
 
     /**
@@ -660,7 +661,7 @@ abstract class Repository implements RepositoryContract
      */
     public function delete($id)
     {
-        return $this->simpleWrap(Action::DELETE);
+        return $this->simpleWrap(Action::DELETE, [$this, '_delete']);
     }
 
     /**
@@ -684,7 +685,7 @@ abstract class Repository implements RepositoryContract
      */
     public function forceDelete($id)
     {
-        return $this->simpleWrap(Action::DELETE);
+        return $this->simpleWrap(Action::DELETE, [$this, '_forceDelete']);
     }
 
     /**
@@ -710,7 +711,7 @@ abstract class Repository implements RepositoryContract
      */
     public function update($id, array $attributes)
     {
-        return $this->simpleWrap(Action::UPDATE);
+        return $this->simpleWrap(Action::UPDATE, [$this, '_update']);
     }
 
     /**
@@ -742,7 +743,7 @@ abstract class Repository implements RepositoryContract
      */
     public function all($columns = ['*'])
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_all']);
     }
 
     /**
@@ -763,7 +764,7 @@ abstract class Repository implements RepositoryContract
      */
     public function paginate($limit = null, $columns = ['*'], $pageName = 'page', $page = null)
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_paginate']);
     }
 
     /**
@@ -788,7 +789,7 @@ abstract class Repository implements RepositoryContract
      */
     public function getByField($field, $value = null, $columns = ['*'])
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_getByField']);
     }
 
     /**
@@ -813,7 +814,7 @@ abstract class Repository implements RepositoryContract
      */
     public function findByField($field, $value = null, $columns = ['*'])
     {
-        return $this->simpleWrap(Action::READ);
+        return $this->simpleWrap(Action::READ, [$this, '_findByField']);
     }
 
     /**

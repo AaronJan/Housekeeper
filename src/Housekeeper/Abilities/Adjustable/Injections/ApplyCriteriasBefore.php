@@ -31,7 +31,7 @@ class ApplyCriteriasBefore implements BasicInjectionContract,
     public function handle(BeforeFlowContract $beforeFlow)
     {
         /**
-         * @var \Housekeeper\Contracts\Repository|\Housekeeper\Abilities\Adjustable\Adjustable $repository
+         * @var \Housekeeper\Contracts\Repository|\Housekeeper\Abilities\Adjustable $repository
          */
         $repository = $beforeFlow->getRepository();
 

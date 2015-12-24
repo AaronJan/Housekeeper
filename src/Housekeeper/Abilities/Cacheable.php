@@ -85,7 +85,7 @@ trait Cacheable
         $configRepository = $this->app->make('config');
 
         $configs = [
-            'prefix' => $configRepository->get('housekeeper.traits.cacheable.cache.prefix', 'housekeeper_'),
+            'prefix' => $configRepository->get('housekeeper.abilities.cacheable.cache.prefix', 'housekeeper_'),
         ];
 
         return $configs;

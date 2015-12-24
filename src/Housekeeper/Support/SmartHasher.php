@@ -11,7 +11,7 @@ namespace Housekeeper\Support;
 class SmartHasher
 {
     /**
-     * Hash anything.
+     * Hash anything (except PDO connection stuff, for now).
      *
      * @param mixed $object
      * @return string

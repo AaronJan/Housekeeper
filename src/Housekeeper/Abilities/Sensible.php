@@ -5,7 +5,7 @@ namespace Housekeeper\Abilities;
 /**
  * Class Sensible
  *
- * This trait provide Eloquent-Style query methods.
+ * This trait provide frequently-used Eloquent-Style query methods.
  *
  * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
  * @method $this applyWheres(array $wheres)
