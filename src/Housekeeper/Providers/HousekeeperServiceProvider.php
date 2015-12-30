@@ -41,7 +41,7 @@ class HousekeeperServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->commands('Housekeeper\Console\Generators\MakeRepositoryCommand');
+        $this->commands(\Housekeeper\Console\Generators\MakeRepositoryCommand::class);
     }
 
     /**

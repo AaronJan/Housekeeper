@@ -6,6 +6,7 @@ use Housekeeper\Abilities\Metadata\Injections\ToMetadataAfter;
 
 /**
  * Class Metadata
+ * Convert all result that implemented `Arrayable` to array automatically.
  *
  * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
  *

@@ -21,7 +21,7 @@ return [
      |
      */
 
-    'directory' => 'app/Repositories/',
+    'directory' => '/Repositories/',
 
     /*
      |--------------------------------------------------------------------------
