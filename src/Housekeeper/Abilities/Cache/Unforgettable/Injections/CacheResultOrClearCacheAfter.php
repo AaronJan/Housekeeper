@@ -1,6 +1,6 @@
 <?php
 
-namespace Housekeeper\Abilities\Cacheable\Injections;
+namespace Housekeeper\Abilities\Cache\Unforgettable\Injections;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Flow\After as AfterFlowContract;
@@ -10,22 +10,16 @@ use Housekeeper\Contracts\Repository;
 use Housekeeper\Abilities\Cacheable;
 
 /**
- * Class CacheResultAfter
+ * Class CacheResultOrClearCacheAfter
  *
  * @priority 50
  *
  * @author   AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package  Housekeeper\Injections\Cacheable
  */
-class CacheResultAfter extends AbstractBase implements BasicInjectionContract,
-                                                       AfterInjectionContract
+class CacheResultOrClearCacheAfter extends AbstractBase implements BasicInjectionContract,
+                                                                   AfterInjectionContract
 {
-    /**
-     * @var \Housekeeper\Contracts\Flow\Basic|\Housekeeper\Flows\After
-     */
-    protected $flow;
-
-
     /**
      * @return int
      */
@@ -49,31 +43,29 @@ class CacheResultAfter extends AbstractBase implements BasicInjectionContract,
             return;
         }
 
-        $this->setFlow($afterFlow);
-
         /**
          * Cache result only when action is "Read" type,
          * clear cache when action is "Create" or "Update".
          */
         switch ($afterFlow->getAction()->getType()) {
             case Action::CREATE:
-                $this->forgetAll();
+                $this->clearCache();
 
                 break;
             case Action::UPDATE:
-                $this->forgetAll();
+                $this->clearCache();
 
                 break;
             case Action::READ:
-                $this->remember();
+                $this->remember($afterFlow);
 
                 break;
             case Action::DELETE:
-                $this->forgetAll();
+                $this->clearCache();
 
                 break;
             case Action::CREATE_OR_UPDATE:
-                $this->forgetAll();
+                $this->clearCache();
 
                 break;
             default:
@@ -82,19 +74,14 @@ class CacheResultAfter extends AbstractBase implements BasicInjectionContract,
     }
 
     /**
-     *
+     * @param \Housekeeper\Contracts\Flow\After $afterFlow
      */
-    protected function forgetAll()
+    protected function remember(AfterFlowContract $afterFlow)
     {
-        $this->deleteCacheKey($this->cacheKey());
-    }
-
-    /**
-     *
-     */
-    protected function remember()
-    {
-        $this->setCache($this->cacheIdentity(), $this->flow->getReturnValue());
+        $this->setCacheForAction(
+            $afterFlow->getAction(),
+            $afterFlow->getReturnValue()
+        );
     }
 
 }

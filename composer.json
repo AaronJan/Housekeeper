@@ -6,7 +6,7 @@
         "repository",
         "housekeeper"
     ],
-    "license": "Apache V2",
+    "license": "Apache 2.0",
     "type": "library",
     "authors": [
         {

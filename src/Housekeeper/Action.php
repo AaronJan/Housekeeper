@@ -46,6 +46,11 @@ class Action implements Contracts\Action
     const INTERNAL = 6;
 
     /**
+     * @var int
+     */
+    const IGNORED = 7;
+
+    /**
      * @var integer
      */
     protected $type;

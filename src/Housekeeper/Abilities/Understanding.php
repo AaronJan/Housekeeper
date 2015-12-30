@@ -3,7 +3,7 @@
 namespace Housekeeper\Abilities;
 
 /**
- * Class Sensible
+ * Class Understanding
  *
  * This trait provide frequently-used Eloquent-Style query methods.
  *
@@ -13,7 +13,7 @@ namespace Housekeeper\Abilities;
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
  */
-trait Sensible
+trait Understanding
 {
     /**
      * @param        $column

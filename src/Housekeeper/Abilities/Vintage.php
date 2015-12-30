@@ -3,7 +3,7 @@
 namespace Housekeeper\Abilities;
 
 /**
- * Class Nostalgic
+ * Class Vintage
  *
  * This trait provide backward compatible APIs for Housekeeper `0.9.x`.
  *
@@ -14,7 +14,7 @@ namespace Housekeeper\Abilities;
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
  */
-trait Nostalgic
+trait Vintage
 {
     /**
      * @param array $wheres
