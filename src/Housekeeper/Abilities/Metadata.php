@@ -18,7 +18,7 @@ trait Metadata
     /**
      * Binding injection.
      */
-    public function setupMetadata()
+    public function bootMetadata()
     {
         $this->inject(new ToMetadataAfter());
     }

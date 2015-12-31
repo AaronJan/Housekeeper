@@ -8,6 +8,7 @@ namespace Housekeeper\Abilities\Cache\Foundation;
  * @property \Illuminate\Contracts\Foundation\Application $app
  *
  * @method \Illuminate\Contracts\Foundation\Application getApp()
+ * @method mixed getConfig($key, $default = null)
  *
  * @package Housekeeper\Abilities\Cache\Foundation
  */
@@ -80,14 +81,7 @@ trait Base
      */
     private function getCacheConfigs(array $default = [])
     {
-        $config = $this->getApp()->make('config');
-
-        $cacheConfigs = $config->get(
-            'housekeeper.abilities.cache',
-            $default
-        );
-
-        return $cacheConfigs;
+        return $this->getConfig('housekeeper.abilities.cache', $default);
     }
 
 }

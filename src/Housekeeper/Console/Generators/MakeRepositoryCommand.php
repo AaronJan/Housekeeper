@@ -118,6 +118,7 @@ class MakeRepositoryCommand extends GeneratorCommand
 
     /**
      * @param $stub
+     * @return $this
      */
     protected function replaceModel(&$stub)
     {
@@ -126,7 +127,7 @@ class MakeRepositoryCommand extends GeneratorCommand
         if ($model = ($this->option('create') ?: $this->option('model'))) {
             $rootNamespace  = $this->getLaravel()->getNamespace();
             $modelNamespace = (Str::startsWith($model, $rootNamespace) ? '\\' : '\\App\\');
-            $model          = "return {$modelNamespace}{$model}::class;\n";
+            $model          = "return {$modelNamespace}{$model}::class;";
         } else {
             $model = '//';
         }
@@ -147,7 +148,7 @@ class MakeRepositoryCommand extends GeneratorCommand
 
         $traits = [];
 
-        if ($this->option('adjustment') || $this->option('A')) {
+        if ($this->option('adjustment')) {
             $use .= "use Housekeeper\\Abilities\\Adjustment;\n";
             $traits[] = "Adjustment";
         }
@@ -157,10 +158,10 @@ class MakeRepositoryCommand extends GeneratorCommand
 
             $use .= "use Housekeeper\\Abilities\\Cache\\{$cache};\n";
             $traits[] = $cache;
-        } elseif ($this->option('CI')) {
+        } elseif ($this->option('ci')) {
             $use .= "use Housekeeper\\Abilities\\Cache\\Individual;\n";
             $traits[] = 'Individual';
-        } elseif ($this->option('CU')) {
+        } elseif ($this->option('cu')) {
             $use .= "use Housekeeper\\Abilities\\Cache\\Unforgettable;\n";
             $traits[] = 'Unforgettable';
         }
@@ -170,7 +171,7 @@ class MakeRepositoryCommand extends GeneratorCommand
             $traits[] = "Metadata";
         }
 
-        if ($this->option('understanding') || $this->option('U')) {
+        if ($this->option('understanding')) {
             $use .= "use Housekeeper\\Abilities\\Understanding;\n";
             $traits[] = "Understanding";
         }

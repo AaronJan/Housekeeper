@@ -24,7 +24,7 @@ trait Unforgettable
     /**
      * Trait constructor, Inject all injections.
      */
-    public function setupCacheUnforgettable()
+    public function bootCacheUnforgettable()
     {
         $redis   = $this->getRedis();
         $configs = $this->getCacheConfigs([

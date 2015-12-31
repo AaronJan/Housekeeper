@@ -31,7 +31,7 @@ trait Individual
     /**
      *
      */
-    public function setupCacheIndividual()
+    public function bootCacheIndividual()
     {
         $redis   = $this->getRedis();
         $configs = $this->getCacheConfigs([

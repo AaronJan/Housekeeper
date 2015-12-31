@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @copyright  (c) 2015, AaronJan
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package        Housekeeper
- * @version        2.0-dev
+ * @version        2.1-beta
  */
 abstract class Repository implements RepositoryContract
 {
@@ -108,13 +108,15 @@ abstract class Repository implements RepositoryContract
 
         $this->initialize();
 
-        $this->setup();
+        $this->inspectAndBootBootable();
+
         // All official traits for Repository are injecting Injection without
         // sorting for better performance, so when injecting finished, then sort
         // them at once.
         $this->sortAllInjections();
 
-        // Call the `Boot Method` with Dependency Injection processing if exists.
+        // Call the `Boot Method` fo the child with Dependency Injection process
+        // if that method exists.
         // This provide an easy way to add custom logic that will be executed
         // when repository been created.
         if (method_exists($this, static::BOOT_METHOD)) {
@@ -171,10 +173,10 @@ abstract class Repository implements RepositoryContract
      */
     protected function initialize()
     {
-        // Call the `model` method to get the full model class name.
+        // Call the `model` method to get the full qualified class name.
         $this->fullModelClassName = '\\' . ltrim($this->model(), '\\');
 
-        // Check if the class name of model is empty to prevent bug.
+        // Check if the class name of model is empty to prevent problem.
         if ($this->fullModelClassName == '') {
             throw new RepositoryException(
                 'You should return the name of a Model in "Model".'
@@ -183,8 +185,8 @@ abstract class Repository implements RepositoryContract
 
         $model = $this->newModelInstance();
 
-        // The model instance must be an instance of Model class from Laravel,
-        // otherwise will be a problem.
+        // The model instance must be an instance of `Model` class from
+        // `Laravel`, otherwise just throw an exception.
         if ( ! $model instanceof Model) {
             throw new RepositoryException(
                 "Class {$this->model()} must be an instance of " . Model::class
@@ -196,20 +198,20 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
-     * Call all setup methods with DI processing (methods that name start with
-     * "setup", for instance: "setupCache").
+     * Call all methods that name start with "boot" (must followed by an
+     * upper-case latter) with DI process.
      * This allow us to encapsulate injecting logics in trait.
      */
-    protected function setup()
+    protected function inspectAndBootBootable()
     {
         $reflection = new \ReflectionClass($this);
 
         foreach ($reflection->getMethods() as $method) {
             $methodName = $method->getName();
 
-            // Method name has to start with "setup" and followed by an
+            // Method name has to start with "boot" and followed by an
             // upper-case latter.
-            if (preg_match('/^setup[A-Z]/', $methodName)) {
+            if (preg_match('/^boot[A-Z]/', $methodName)) {
                 $this->getApp()->call([$this, $methodName]);
             }
         }

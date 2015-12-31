@@ -16,4 +16,12 @@ class DummyClass extends Repository
     {
         DummyModel
     }
+
+    /**
+     * This is just like the constructor.
+     */
+    public function boot()
+    {
+        //
+    }
 }

@@ -24,7 +24,7 @@ trait Adjustment
     /**
      * Bind injection.
      */
-    public function setupAdjustment()
+    public function bootAdjustment()
     {
         $this->inject(new ApplyCriteriasBefore());
     }
