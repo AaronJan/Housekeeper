@@ -22,15 +22,15 @@ class MakeRepositoryCommand extends GeneratorCommand
      */
     protected $signature = 'housekeeper:make' .
     ' {name : The name of the repository}' .
-    ' {--cache= : Chose from 2 strategies to cache result: individual, unforgettable}' .
-    ' {--CI : Short for "--cache=individual"}' .
-    ' {--CU : Short for "--cache=unforgettable"}' .
-    ' {--A|adjustment : Allow you to reuse queries}' .
+    ' {--cache= : Chose from 2 strategies to caching result: individual, unforgettable}' .
+    ' {--ci : Short for "--cache=individual"}' .
+    ' {--cu : Short for "--cache=unforgettable"}' .
+    ' {--a|adjustment : Allow you to reuse queries}' .
     ' {--metadata : Convert all result that implemented `Arrayable` to array automatically}' .
-    ' {--U|understanding : With frequently-used Eloquent-Style query methods}' .
+    ' {--u|understanding : With frequently-used Eloquent-Style query methods}' .
     ' {--vintage : With backward compatible APIs for Housekeeper `0.9.x`}' .
     ' {--create= : Create a new model file for the repository.}' .
-    ' {--M|model= : Specify the model used by the repository (Root Namespace "\App").}';
+    ' {--model= : Specify the model used by the repository (Root Namespace "\App").}';
 
     /**
      * The console command description.
