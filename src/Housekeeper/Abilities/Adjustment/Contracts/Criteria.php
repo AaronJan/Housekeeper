@@ -12,12 +12,10 @@ use Housekeeper\Contracts\Repository as RepositoryContract;
  */
 interface Criteria
 {
-
     /**
      * Apply criteria to repository
      *
      * @param RepositoryContract $repository
      */
     public function apply(RepositoryContract $repository);
-
 }
