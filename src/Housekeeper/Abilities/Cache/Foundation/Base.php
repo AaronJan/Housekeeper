@@ -17,13 +17,18 @@ trait Base
     /**
      * @var bool
      */
-    protected $cacheEnabled = true;
+    protected $cacheEnabled = false;
 
     /**
      * @var \Housekeeper\Abilities\Cache\Contracts\CacheAdapter
      */
     protected $cacheAdapter;
 
+    /**
+     * @var \Illuminate\Contracts\Redis\Database
+     */
+    protected $cacheRedis;
+    
 
     /**
      *
@@ -48,7 +53,7 @@ trait Base
     /**
      * @return bool
      */
-    public function cacheEnabled()
+    public function isCacheEnabled()
     {
         return $this->cacheEnabled;
     }
@@ -64,22 +69,26 @@ trait Base
     }
 
     /**
-     * @return \Illuminate\Contracts\Redis\Database
+     * @return \Illuminate\Contracts\Redis\Database|\Illuminate\Redis\Database
      */
-    private function getRedis()
+    protected function getRedis()
     {
-        try {
-            return $this->getApp()->make('redis');
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Cacheable trait of Housekeeper requires Redis support.');
+        if (! $this->cacheRedis) {
+            try {
+                $this->cacheRedis = $this->getApp()->make('redis');
+            } catch (\Exception $e) {
+                throw new \RuntimeException('Cacheable trait of Housekeeper requires Redis support.');
+            }
         }
+
+        return $this->cacheRedis;
     }
 
     /**
      * @param array $default
      * @return mixed
      */
-    private function getCacheConfigs(array $default = [])
+    protected function getCacheConfigs(array $default = [])
     {
         return $this->getConfig('housekeeper.abilities.cache', $default);
     }

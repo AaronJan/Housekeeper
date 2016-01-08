@@ -1,6 +1,6 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Unforgettable;
+namespace Housekeeper\Abilities\Cache\Statically;
 
 use Housekeeper\Contracts\Repository as RepositoryContract;
 use Housekeeper\Contracts\Action as ActionContract;
@@ -11,7 +11,7 @@ use Housekeeper\Abilities\Cache\Contracts\CacheAdapter as CacheAdapterContract;
 /**
  * Class CacheAdapter
  *
- * @package Housekeeper\Abilities\Cache\Unforgettable
+ * @package Housekeeper\Abilities\Cache\Statically
  */
 class CacheAdapter implements CacheAdapterContract
 {

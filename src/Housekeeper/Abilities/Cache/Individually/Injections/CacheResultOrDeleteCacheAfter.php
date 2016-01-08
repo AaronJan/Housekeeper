@@ -1,13 +1,13 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Individual\Injections;
+namespace Housekeeper\Abilities\Cache\Individually\Injections;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Flow\After as AfterFlowContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\After as AfterInjectionContract;
 use Housekeeper\Contracts\Repository;
-use Housekeeper\Abilities\Cache\Foundation\Base;
+use Housekeeper\Abilities\Cache\Individually;
 
 /**
  * Class CacheResultOrDeleteCacheAfter
@@ -36,12 +36,10 @@ class CacheResultOrDeleteCacheAfter extends AbstractBase implements BasicInjecti
         /**
          * Skip cache logic if cache has been disabled in the repository.
          *
-         * @var $repository Repository|Base
+         * @var $repository Repository|Individually
          */
-        $repository = $afterFlow->getRepository();
-        if ($repository->cacheEnabled() === false) {
-            return;
-        }
+        $repository   = $afterFlow->getRepository();
+        $cacheEnabled = $repository->isCacheEnabled();
 
         /**
          * Cache result or delete cache.
@@ -60,7 +58,7 @@ class CacheResultOrDeleteCacheAfter extends AbstractBase implements BasicInjecti
 
                 break;
             case static::FIND_BY_KEY_METHOD:
-                $this->cacheResultIfCould($afterFlow);
+                $cacheEnabled && $this->cacheResultIfCould($afterFlow);
 
                 break;
             default:

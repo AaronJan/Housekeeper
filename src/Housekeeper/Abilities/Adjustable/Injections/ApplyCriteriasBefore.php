@@ -1,6 +1,6 @@
 <?php
 
-namespace Housekeeper\Abilities\Adjustment\Injections;
+namespace Housekeeper\Abilities\Adjustable\Injections;
 
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
@@ -12,7 +12,7 @@ use Housekeeper\Contracts\Flow\Before as BeforeFlowContract;
  * @priority 10
  *
  * @author   AaronJan <https://github.com/AaronJan/Housekeeper>
- * @package  Housekeeper\Injections\Adjustment
+ * @package  Housekeeper\Injections\Adjustable
  */
 class ApplyCriteriasBefore implements BasicInjectionContract,
                                       BeforeInjectionContract
@@ -31,7 +31,7 @@ class ApplyCriteriasBefore implements BasicInjectionContract,
     public function handle(BeforeFlowContract $beforeFlow)
     {
         /**
-         * @var \Housekeeper\Contracts\Repository|\Housekeeper\Abilities\Adjustment $repository
+         * @var \Housekeeper\Contracts\Repository|\Housekeeper\Abilities\Adjustable $repository
          */
         $repository = $beforeFlow->getRepository();
 
@@ -39,7 +39,7 @@ class ApplyCriteriasBefore implements BasicInjectionContract,
 
         array_walk($criterias, function ($criteria) use ($repository) {
             /**
-             * @var \Housekeeper\Abilities\Adjustment\Contracts\Criteria $criteria
+             * @var \Housekeeper\Abilities\Adjustable\Contracts\Criteria $criteria
              */
             $repository->applyCriteria($criteria);
         });

@@ -2,13 +2,13 @@
 
 namespace Housekeeper\Abilities\Cache;
 
-use Housekeeper\Abilities\Cache\Unforgettable\CacheAdapter;
-use Housekeeper\Abilities\Cache\Unforgettable\Injections\CacheResultOrClearCacheAfter;
-use Housekeeper\Abilities\Cache\Unforgettable\Injections\GetCachedIfExistsBefore;
+use Housekeeper\Abilities\Cache\Statically\CacheAdapter;
+use Housekeeper\Abilities\Cache\Statically\Injections\CacheResultOrClearCacheAfter;
+use Housekeeper\Abilities\Cache\Statically\Injections\GetCachedIfExistsBefore;
 
 
 /**
- * Class Unforgettable
+ * Class Statically
  *
  * @property \Illuminate\Contracts\Foundation\Application $app
  *
@@ -16,7 +16,7 @@ use Housekeeper\Abilities\Cache\Unforgettable\Injections\GetCachedIfExistsBefore
  *
  * @package Housekeeper\Abilities\Cache
  */
-trait Unforgettable
+trait Statically
 {
     use Foundation\Base;
 
@@ -24,7 +24,7 @@ trait Unforgettable
     /**
      * Trait constructor, Inject all injections.
      */
-    public function bootCacheUnforgettable()
+    public function bootCacheStatically()
     {
         $redis   = $this->getRedis();
         $configs = $this->getCacheConfigs([

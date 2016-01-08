@@ -1,13 +1,13 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Unforgettable\Injections;
+namespace Housekeeper\Abilities\Cache\Statically\Injections;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Flow\Before as BeforeFlowContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
 use Housekeeper\Contracts\Repository;
-use Housekeeper\Abilities\Cache\Foundation\Base;
+use Housekeeper\Abilities\Cache\Statically;
 
 /**
  * Class GetCacheIfExistsBefore
@@ -36,7 +36,7 @@ class GetCachedIfExistsBefore extends AbstractBase implements BasicInjectionCont
         /**
          * Skip cache logic if cache has been disabled in the repository.
          *
-         * @var $repository Repository|Base
+         * @var $repository Repository|Statically
          */
         $repository = $beforeFlow->getRepository();
         if ($repository->cacheEnabled() === false) {

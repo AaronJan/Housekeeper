@@ -1,6 +1,6 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Individual;
+namespace Housekeeper\Abilities\Cache\Individually;
 
 use Housekeeper\Contracts\Repository as RepositoryContract;
 use Housekeeper\Contracts\Action as ActionContract;
@@ -11,7 +11,7 @@ use Housekeeper\Abilities\Cache\Contracts\CacheAdapter as CacheAdapterContract;
 /**
  * Class CacheAdapter
  *
- * @package Housekeeper\Abilities\Cache\Individual
+ * @package Housekeeper\Abilities\Cache\Individually
  */
 class CacheAdapter implements CacheAdapterContract
 {
@@ -106,10 +106,11 @@ class CacheAdapter implements CacheAdapterContract
 
     /**
      * @param $primaryKey
+     * @return bool
      */
     public function deleteCache($primaryKey)
     {
-        $this->getRedis()->hdel(
+        return (bool) $this->getRedis()->hdel(
             $this->cacheKey(),
             $primaryKey
         );
@@ -120,7 +121,7 @@ class CacheAdapter implements CacheAdapterContract
      */
     protected function cacheKey()
     {
-        if ( ! $this->cacheKey) {
+        if (! $this->cacheKey) {
             $this->cacheKey = $this->prefix .
                 str_replace(
                     '\\', '#',

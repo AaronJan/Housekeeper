@@ -1,6 +1,6 @@
 <?php
 
-namespace Housekeeper\Abilities\Adjustment\Contracts;
+namespace Housekeeper\Abilities\Adjustable\Contracts;
 
 use Housekeeper\Contracts\Repository as RepositoryContract;
 
@@ -8,7 +8,7 @@ use Housekeeper\Contracts\Repository as RepositoryContract;
  * Interface Criteria
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
- * @package Housekeeper\Ablities\Adjustment\Contracts
+ * @package Housekeeper\Ablities\Adjustable\Contracts
  */
 interface Criteria
 {

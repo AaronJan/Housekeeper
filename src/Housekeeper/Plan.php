@@ -55,6 +55,14 @@ class Plan implements Contracts\Plan
     }
 
     /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty($this->conditions);
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
     public function getModel()

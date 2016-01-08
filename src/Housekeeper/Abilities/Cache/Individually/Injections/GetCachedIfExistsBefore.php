@@ -1,13 +1,13 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Individual\Injections;
+namespace Housekeeper\Abilities\Cache\Individually\Injections;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Flow\Before as BeforeFlowContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
 use Housekeeper\Contracts\Repository;
-use Housekeeper\Abilities\Cache\Foundation\Base;
+use Housekeeper\Abilities\Cache\Individually;
 
 /**
  * Class GetCacheIfExistsBefore
@@ -36,19 +36,31 @@ class GetCachedIfExistsBefore extends AbstractBase implements BasicInjectionCont
         /**
          * Skip cache logic if cache has been disabled in the repository.
          *
-         * @var $repository Repository|Base
+         * @var $repository Repository|Individually
          */
         $repository = $beforeFlow->getRepository();
-        if ($repository->cacheEnabled() === false) {
+        if ($repository->isCacheEnabled() === false) {
             return;
         }
 
         /**
          * Only get cache when using "find" method.
          */
-        if ($beforeFlow->getAction()->getMethodName() == static::FIND_BY_KEY_METHOD) {
+        if ($this->shouldUseCache($beforeFlow)) {
             $this->setReturnValueIfCould($beforeFlow);
         }
+    }
+
+    /**
+     * @param \Housekeeper\Contracts\Flow\Before $beforeFlow
+     * @return bool
+     */
+    protected function shouldUseCache(BeforeFlowContract $beforeFlow)
+    {
+        return (
+            $beforeFlow->getAction()->getMethodName() == static::FIND_BY_KEY_METHOD &&
+            $beforeFlow->getRepository()->getCurrentPlan()->isEmpty()
+        );
     }
 
     /**

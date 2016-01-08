@@ -15,6 +15,11 @@ interface Plan
     public function getConditions();
 
     /**
+     * @return bool
+     */
+    public function isEmpty();
+
+    /**
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
     public function getModel();

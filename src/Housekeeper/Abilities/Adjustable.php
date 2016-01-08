@@ -2,8 +2,8 @@
 
 namespace Housekeeper\Abilities;
 
-use Housekeeper\Abilities\Adjustment\Contracts\Criteria;
-use Housekeeper\Abilities\Adjustment\Injections\ApplyCriteriasBefore;
+use Housekeeper\Abilities\Adjustable\Contracts\Criteria;
+use Housekeeper\Abilities\Adjustable\Injections\ApplyCriteriasBefore;
 
 /**
  * Class Adjustment
@@ -13,10 +13,10 @@ use Housekeeper\Abilities\Adjustment\Injections\ApplyCriteriasBefore;
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
  */
-trait Adjustment
+trait Adjustable
 {
     /**
-     * @var \Housekeeper\Abilities\Adjustment\Contracts\Criteria[]
+     * @var \Housekeeper\Abilities\Adjustable\Contracts\Criteria[]
      */
     protected $criterias = [];
 
@@ -24,7 +24,7 @@ trait Adjustment
     /**
      * Bind injection.
      */
-    public function bootAdjustment()
+    public function bootAdjustable()
     {
         $this->inject(new ApplyCriteriasBefore());
     }
@@ -32,7 +32,7 @@ trait Adjustment
     /**
      * ave this criteria, it would be auto-applied before every method calling.
      *
-     * @param \Housekeeper\Abilities\Adjustment\Contracts\Criteria $criteria
+     * @param \Housekeeper\Abilities\Adjustable\Contracts\Criteria $criteria
      * @return $this
      */
     public function rememberCriteria(Criteria $criteria)
@@ -65,7 +65,7 @@ trait Adjustment
     }
 
     /**
-     * @param \Housekeeper\Abilities\Adjustment\Contracts\Criteria $criteria
+     * @param \Housekeeper\Abilities\Adjustable\Contracts\Criteria $criteria
      * @return $this
      */
     public function applyCriteria(Criteria $criteria)

@@ -22,12 +22,12 @@ class MakeRepositoryCommand extends GeneratorCommand
      */
     protected $signature = 'housekeeper:make' .
     ' {name : The name of the repository}' .
-    ' {--cache= : Chose from 2 strategies to caching result: individual, unforgettable}' .
-    ' {--ci : Short for "--cache=individual"}' .
-    ' {--cu : Short for "--cache=unforgettable"}' .
-    ' {--a|adjustment : Allow you to reuse queries}' .
+    ' {--cache= : Chose from 2 strategies to caching result: individually, statically}' .
+    ' {--ci : Short for "--cache=individually"}' .
+    ' {--cs : Short for "--cache=statically"}' .
+    ' {--a|adjustable : Allow you to reuse queries}' .
     ' {--metadata : Convert all result that implemented `Arrayable` to array automatically}' .
-    ' {--u|understanding : With frequently-used Eloquent-Style query methods}' .
+    ' {--e|eloquently : With frequently-used Eloquent-Style query methods}' .
     ' {--vintage : With backward compatible APIs for Housekeeper `0.9.x`}' .
     ' {--create= : Create a new model file for the repository.}' .
     ' {--model= : Specify the model used by the repository (Root Namespace "\App").}';
@@ -47,7 +47,7 @@ class MakeRepositoryCommand extends GeneratorCommand
     /**
      * @var array
      */
-    protected $cacheAbilities = ['individual', 'unforgettable'];
+    protected $cacheAbilities = ['individually', 'statically'];
 
 
     /**
@@ -148,9 +148,9 @@ class MakeRepositoryCommand extends GeneratorCommand
 
         $traits = [];
 
-        if ($this->option('adjustment')) {
-            $use .= "use Housekeeper\\Abilities\\Adjustment;\n";
-            $traits[] = "Adjustment";
+        if ($this->option('adjustable')) {
+            $use .= "use Housekeeper\\Abilities\\Adjustable;\n";
+            $traits[] = "Adjustable";
         }
 
         if ($cache = $this->option('cache')) {
@@ -159,11 +159,11 @@ class MakeRepositoryCommand extends GeneratorCommand
             $use .= "use Housekeeper\\Abilities\\Cache\\{$cache};\n";
             $traits[] = $cache;
         } elseif ($this->option('ci')) {
-            $use .= "use Housekeeper\\Abilities\\Cache\\Individual;\n";
-            $traits[] = 'Individual';
-        } elseif ($this->option('cu')) {
-            $use .= "use Housekeeper\\Abilities\\Cache\\Unforgettable;\n";
-            $traits[] = 'Unforgettable';
+            $use .= "use Housekeeper\\Abilities\\Cache\\Individually;\n";
+            $traits[] = 'Individually';
+        } elseif ($this->option('cs')) {
+            $use .= "use Housekeeper\\Abilities\\Cache\\Statically;\n";
+            $traits[] = 'Statically';
         }
 
         if ($this->option('metadata')) {
@@ -171,9 +171,9 @@ class MakeRepositoryCommand extends GeneratorCommand
             $traits[] = "Metadata";
         }
 
-        if ($this->option('understanding')) {
-            $use .= "use Housekeeper\\Abilities\\Understanding;\n";
-            $traits[] = "Understanding";
+        if ($this->option('eloquently')) {
+            $use .= "use Housekeeper\\Abilities\\Eloquently;\n";
+            $traits[] = "Eloquently";
         }
 
         if ($this->option('vintage')) {

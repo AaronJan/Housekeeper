@@ -1,13 +1,13 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Unforgettable\Injections;
+namespace Housekeeper\Abilities\Cache\Statically\Injections;
 
 use Housekeeper\Action;
 use Housekeeper\Contracts\Flow\After as AfterFlowContract;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\After as AfterInjectionContract;
 use Housekeeper\Contracts\Repository;
-use Housekeeper\Abilities\Cacheable;
+use Housekeeper\Abilities\Cache\Statically;
 
 /**
  * Class CacheResultOrClearCacheAfter
@@ -36,12 +36,10 @@ class CacheResultOrClearCacheAfter extends AbstractBase implements BasicInjectio
         /**
          * Skip cache logic if cache has been disabled in the repository.
          *
-         * @var $repository Repository|Cacheable
+         * @var $repository Repository|Statically
          */
-        $repository = $afterFlow->getRepository();
-        if ($repository->cacheEnabled() === false) {
-            return;
-        }
+        $repository   = $afterFlow->getRepository();
+        $cacheEnabled = $repository->isCacheEnabled();
 
         /**
          * Cache result only when action is "Read" type,
@@ -57,7 +55,7 @@ class CacheResultOrClearCacheAfter extends AbstractBase implements BasicInjectio
 
                 break;
             case Action::READ:
-                $this->remember($afterFlow);
+                $cacheEnabled && $this->remember($afterFlow);
 
                 break;
             case Action::DELETE:

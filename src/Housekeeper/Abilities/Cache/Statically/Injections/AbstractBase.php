@@ -1,16 +1,16 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache\Unforgettable\Injections;
+namespace Housekeeper\Abilities\Cache\Statically\Injections;
 
 use Housekeeper\Contracts\Action as ActionContract;
 use Illuminate\Contracts\Redis\Database as RedisContract;
-use Housekeeper\Abilities\Cache\Unforgettable\CacheAdapter;
+use Housekeeper\Abilities\Cache\Statically\CacheAdapter;
 
 /**
  * Class AbstractBase
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
- * @package Housekeeper\Abilities\Cache\Unforgettable\Injections
+ * @package Housekeeper\Abilities\Cache\Statically\Injections
  */
 abstract class AbstractBase
 {
@@ -23,7 +23,7 @@ abstract class AbstractBase
     /**
      * AbstractBase constructor.
      *
-     * @param \Housekeeper\Abilities\Cache\Unforgettable\CacheAdapter $hashCacheAdapter
+     * @param \Housekeeper\Abilities\Cache\Statically\CacheAdapter $hashCacheAdapter
      */
     public function __construct(CacheAdapter $hashCacheAdapter)
     {

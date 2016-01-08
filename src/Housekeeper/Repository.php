@@ -142,7 +142,15 @@ abstract class Repository implements RepositoryContract
     {
         return $this->app;
     }
-
+    
+    /**
+     * @return string
+     */
+    protected function getKeyName()
+    {
+        return $this->newModelInstance()->getKeyName();
+    }
+    
     /**
      * Make a new Model instance.
      *
