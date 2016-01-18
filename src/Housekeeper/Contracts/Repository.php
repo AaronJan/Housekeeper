@@ -34,22 +34,6 @@ interface Repository
     public function with();
 
     /**
-     * @return mixed
-     */
-    public function startWithTrashed();
-
-    /**
-     * @return mixed
-     */
-    public function startWithTrashedOnly();
-
-    /**
-     * @param \Housekeeper\Contracts\Action $action
-     * @return mixed
-     */
-    public function reset(Action $action);
-
-    /**
      * @param      $id
      * @param null $column
      * @return mixed
@@ -81,12 +65,6 @@ interface Repository
      * @return mixed
      */
     public function delete($id);
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function forceDelete($id);
 
     /**
      * @param       $id

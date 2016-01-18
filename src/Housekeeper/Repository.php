@@ -283,7 +283,7 @@ abstract class Repository implements RepositoryContract
      * @param \Housekeeper\Contracts\Action $action
      * @return $this
      */
-    public function reset(ActionContract $action)
+    protected function reset(ActionContract $action)
     {
         /**
          * Conditions are use for identify each method call.
@@ -548,35 +548,6 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
-     * Include soft deletes for following use, will triggering a Reset flow.
-     *
-     * @return $this
-     */
-    public function startWithTrashed()
-    {
-        $this->reset(new Action(__METHOD__, [], Action::INTERNAL));
-
-        $this->getCurrentPlan()->startWithTrashed();
-
-        return $this;
-    }
-
-    /**
-     * Only include soft deletes for following use, will triggering a Reset
-     * flow.
-     *
-     * @return $this
-     */
-    public function startWithTrashedOnly()
-    {
-        $this->reset(new Action(__METHOD__, [], Action::INTERNAL));
-
-        $this->getCurrentPlan()->startWithTrashedOnly();
-
-        return $this;
-    }
-
-    /**
      * @param      $id
      * @param null $column
      * @return mixed
@@ -701,30 +672,6 @@ abstract class Repository implements RepositoryContract
         $model = $this->getModel()->findOrFail($id);
 
         $deleted = $model->delete();
-
-        return $deleted;
-    }
-
-    /**
-     * @param $id
-     * @return bool|null
-     * @throws ModelNotFoundException
-     */
-    public function forceDelete($id)
-    {
-        return $this->simpleWrap(Action::DELETE, [$this, '_forceDelete']);
-    }
-
-    /**
-     * @param $id
-     * @return bool|null
-     * @throws ModelNotFoundException
-     */
-    protected function _forceDelete($id)
-    {
-        $model = $this->getModel()->findOrFail($id);
-
-        $deleted = $model->forceDelete();
 
         return $deleted;
     }

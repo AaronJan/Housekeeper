@@ -22,15 +22,16 @@ class MakeRepositoryCommand extends GeneratorCommand
      */
     protected $signature = 'housekeeper:make' .
     ' {name : The name of the repository}' .
+    ' {--a|adjustable : Allow you to reuse queries}' .
     ' {--cache= : Chose from 2 strategies to caching result: individually, statically}' .
     ' {--ci : Short for "--cache=individually"}' .
     ' {--cs : Short for "--cache=statically"}' .
-    ' {--a|adjustable : Allow you to reuse queries}' .
-    ' {--metadata : Convert all result that implemented `Arrayable` to array automatically}' .
-    ' {--e|eloquently : With frequently-used Eloquent-Style query methods}' .
-    ' {--vintage : With backward compatible APIs for Housekeeper `0.9.x`}' .
     ' {--create= : Create a new model file for the repository.}' .
-    ' {--model= : Specify the model used by the repository (Root Namespace "\App").}';
+    ' {--e|eloquently : With frequently-used Eloquent-Style query methods}' .
+    ' {--metadata : Convert all result that implemented `Arrayable` to array automatically}' .
+    ' {--model= : Specify the model used by the repository (Root Namespace "\App").}' .
+    ' {--sd : Allow you to interact with the `SoftDeletes` trait of Eloquent.}' .
+    ' {--vintage : With backward compatible APIs for Housekeeper `0.9.x`}';
 
     /**
      * The console command description.
@@ -67,7 +68,7 @@ class MakeRepositoryCommand extends GeneratorCommand
             return;
         }
 
-        if ( ! $this->checkOptions()) {
+        if (! $this->checkOptions()) {
             return;
         }
 
@@ -181,7 +182,12 @@ class MakeRepositoryCommand extends GeneratorCommand
             $traits[] = "Vintage";
         }
 
-        if ( ! empty($traits)) {
+        if ($this->option('sd')) {
+            $use .= "use Housekeeper\\Abilities\\SoftDeletes;\n";
+            $traits[] = "SoftDeletes";
+        }
+
+        if (! empty($traits)) {
             $trait = "\n    use " . implode(',', $traits) . ";\n";
         }
 
