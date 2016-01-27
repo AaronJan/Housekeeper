@@ -542,7 +542,7 @@ abstract class Repository implements RepositoryContract
      */
     public function with()
     {
-        call_user_func([$this->getCurrentPlan(), 'with'], func_get_args());
+        call_user_func_array([$this->getCurrentPlan(), 'with'], func_get_args());
 
         return $this;
     }
