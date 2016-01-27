@@ -118,7 +118,7 @@ class Plan implements Contracts\Plan
          */
         $this->addCondition('with', $arguments);
 
-        call_user_func_array(array($this->model, 'with'), $arguments);
+        $this->model = call_user_func_array(array($this->model, 'with'), $arguments);
 
         return $this;
     }
