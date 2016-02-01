@@ -139,7 +139,7 @@ Before you wondering why, let's continue.
 
 This is a flowchart of method execution in `Housekeeper`:
 
-![method execution in Housekeeper](path/to/img.jpg)
+![method execution in Housekeeper](https://aaronjan.github.io/Housekeeper/2.x.x/images/method-execution.png)
 
 `Housekeeper` allows you to `Inject` logic (called `Injection`) into any `Flow`, it's close to the `Middleware` but comes with 3 types: `Before`, `After` and `Reset` (because there are 3 `Flows`). Here is an example:
 
@@ -183,7 +183,7 @@ class ArticleRepository extends \Housekeeper\Repository
 
 Here is a simple flowchart about how `Flow` works:
 
-![method execution in Housekeeper](path/to/img.jpg)
+![method execution in Housekeeper](https://aaronjan.github.io/Housekeeper/2.x.x/images/flow.png)
 
 `Housekeeper` also will calling every method in the `Repository` class that name start with `boot` (before calling `boot` method), some of the out-of-the-box `Abilities` in `Housekeeper` are took advantage of this, like in `Adjustable` trait:
 
