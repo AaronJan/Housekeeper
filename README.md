@@ -66,6 +66,8 @@ Normally `Repository` should return object (as contract between business logic t
 In common situations, the `Repository Pattern` is always used with the `Decorator Pattern`. What is it? For instance, you have a repository class to interacting with data source directly, later you decide to add cache logic on top of that. So instead of changing the repository class, you could create a new class that extending it, and write something like this:
 
 ```php
+<?php
+
 class Repository
 {
 	public function findBook($id)
@@ -73,6 +75,10 @@ class Repository
 		return Book::find($id);
 	}
 }
+```
+
+```php
+<?php
 
 use Cache;
 
@@ -94,6 +100,8 @@ That is a good approach. But `Housekeeper` wants to solving the problem with les
 `Flows` are four stages in every method which interacts with data must go through, they're: `Before`, `Core`, `After` and `Reset`. Every method in a `Housekeeper Repository` should be wrapped so it can runs that way. Let's see an example.
 
 ```php
+<?php
+
 class ArticleRepository extends \Housekeeper\Repository
 {
 	protected function model()
@@ -115,13 +123,15 @@ class ArticleRepository extends \Housekeeper\Repository
 }
 ```
 
-Why there are two methods that had similar name? Well, the `getByName` method is basically a configuration and an API hint for the core method `_getByName`, it wrapped the core method by calling the `simpleWrap` with an `Callable` which is the `[$this, '_getByName']`, and it says what the method doing is `reading` data (`Action::READ`). You don't have to worry about method arguments, `Housekeeper` will takes care of that. In fact, you don't even need to write the `[$this, '_getByName']`, since it's a convention in `Housekeeper`.
+Why there are two methods that had similar names? Well, the `getByName` method is basically a configuration and an API hint for the core method `_getByName`, it wrapped the core method by calling the `simpleWrap` with an `Callable` which is the `[$this, '_getByName']`, and it says what the method does is `reading` data (`Action::READ`). You don't have to worry about method arguments, `Housekeeper` will takes care of that. In fact, you don't even need to write the `[$this, '_getByName']`, since it's a convention in `Housekeeper`.
 
 At this point, you know 'how', but you may ask 'why': why should I do this?
 
 Let's back to the `cache logic` topic. In `Housekeeper`, if you wrapped your method like above, to add cache process, all you need to do is adding a single line of code:
 
 ```php
+<?php
+
 class ArticleRepository extends \Housekeeper\Repository
 {
 	use \Housekeeper\Abilities\Cache\Statically;  // Adding this
@@ -144,6 +154,8 @@ This is a flowchart of method execution in `Housekeeper`:
 `Housekeeper` allows you to `Inject` logic (called `Injection`) into any `Flow`, it's close to the `Middleware` but comes with 3 types: `Before`, `After` and `Reset` (because there are 3 `Flows`). Here is an example:
 
 ```php
+<?php
+
 class MyBeforeInjection implements \Housekeeper\Contracts\Injection\Before
 {
 	public function priority()
@@ -169,6 +181,8 @@ class MyBeforeInjection implements \Housekeeper\Contracts\Injection\Before
 You can inject `Injection` by using the `inject` method:
 
 ```php
+<?php
+
 class ArticleRepository extends \Housekeeper\Repository
 {
 	// `Housekeeper` will call the `boot` method automatically with `Dependency Injection` process
@@ -185,9 +199,11 @@ Here is a simple flowchart about how `Flow` works:
 
 ![method execution in Housekeeper](https://aaronjan.github.io/Housekeeper/2.x.x/images/flow.png)
 
-`Housekeeper` also will calling every method in the `Repository` class that name start with `boot` (before calling `boot` method), some of the out-of-the-box `Abilities` in `Housekeeper` are took advantage of this, like in `Adjustable` trait:
+`Housekeeper` also will calling every method in the `Repository` class that name start with `boot` (before calling `boot` method) when `Repository` instance been creating, some of the out-of-the-box `Abilities` in `Housekeeper` are took advantage of this, like in `Adjustable` trait:
 
 ```php
+<?php
+
 trait Adjustable
 {
 	// ...
@@ -207,6 +223,8 @@ trait Adjustable
 You can write your method like this in `Housekeeper 2`:
 
 ```php
+<?php
+
 use Housekeeper\Action;
 
 class ArticleRepository extends \Housekeeper\Repository
@@ -243,6 +261,8 @@ class ArticleRepository extends \Housekeeper\Repository
 ```
 
 ```php
+<?php
+
 class ArticleController
 {
 	public function getRecommendForArticle(ArticleRepository $articleRepository, $articleId)
@@ -276,6 +296,8 @@ Having two methods could be annoying, but that's a choice that `Housekeeper` mad
 However, the `simpleWrap` takes a `Callable`, so you can write the core method as a `Closure` instead (not recommended):
 
 ```php
+<?php
+
 	public function getByName($name)
     {
         return $this->simpleWrap(Action::READ, function (name) {
