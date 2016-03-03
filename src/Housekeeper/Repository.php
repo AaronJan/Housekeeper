@@ -119,14 +119,22 @@ abstract class Repository implements RepositoryContract
         // if that method exists.
         // This provide an easy way to add custom logic that will be executed
         // when repository been created.
-        if (method_exists($this, static::BOOT_METHOD)) {
-            $this->getApp()->call([$this, static::BOOT_METHOD]);
-        }
+        $this->callBootMethod();
 
         // Reset to prepare everything that would be used.
         $this->reset(new Action(__METHOD__, [], Action::INTERNAL));
     }
 
+    /**
+     *
+     */
+    private function callBootMethod()
+    {
+        if (method_exists($this, static::BOOT_METHOD)) {
+            $this->getApp()->call([$this, static::BOOT_METHOD]);
+        }
+    }
+    
     /**
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
@@ -181,21 +189,13 @@ abstract class Repository implements RepositoryContract
      */
     protected function initialize()
     {
-        // Call the `model` method to get the full qualified class name.
-        $this->fullModelClassName = '\\' . ltrim($this->model(), '\\');
-
-        // Check if the class name of model is empty to prevent problem.
-        if ($this->fullModelClassName == '') {
-            throw new RepositoryException(
-                'You should return the name of a Model in "Model".'
-            );
-        }
+        $this->fullModelClassName = $this->model();
 
         $model = $this->newModelInstance();
 
         // The model instance must be an instance of `Model` class from
         // `Laravel`, otherwise just throw an exception.
-        if ( ! $model instanceof Model) {
+        if (! $model instanceof Model) {
             throw new RepositoryException(
                 "Class {$this->model()} must be an instance of " . Model::class
             );
@@ -254,7 +254,7 @@ abstract class Repository implements RepositoryContract
     /**
      * @return int
      */
-    private function schemePlan()
+    private function makeNewPlan()
     {
         if ($this->defaultPlan) {
             $offset = $this->planStep = 0;
@@ -280,6 +280,20 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
+     * @param $group
+     * @param $flow
+     */
+    private function executeInjections($group, $flow)
+    {
+        foreach ($this->injections[$group] as $injection) {
+            /**
+             * @var $injection \Housekeeper\Contracts\Injection\Before|\Housekeeper\Contracts\Injection\After|\Housekeeper\Contracts\Injection\Reset
+             */
+            $injection->handle($flow);
+        }
+    }
+
+    /**
      * @param \Housekeeper\Contracts\Action $action
      * @return $this
      */
@@ -296,13 +310,9 @@ abstract class Repository implements RepositoryContract
         $flow = new ResetFlow($this, $action);
 
         /**
-         * Execute all Reset Injections.
-         *
-         * @var \Housekeeper\Contracts\Injection\Reset $injection
+         * Execute all `Reset` Injections.
          */
-        foreach ($this->injections['reset'] as $injection) {
-            $injection->handle($flow);
-        }
+        $this->executeInjections('reset', $flow);
 
         return $this;
     }
@@ -319,11 +329,9 @@ abstract class Repository implements RepositoryContract
         $flow = new BeforeFlow($this, $action);
 
         /**
-         * @var \Housekeeper\Contracts\Injection\Before $injection
+         * Execute all `Before` Injections.
          */
-        foreach ($this->injections['before'] as $injection) {
-            $injection->handle($flow);
-        }
+        $this->executeInjections('before', $flow);
 
         return $flow;
     }
@@ -335,17 +343,11 @@ abstract class Repository implements RepositoryContract
      */
     protected function after(Action $action, $returnValue)
     {
-        /**
-         * Make a After Flow ojbect.
-         */
+        // Make a After Flow ojbect.
         $flow = new AfterFlow($this, $action, $returnValue);
 
-        /**
-         * @var \Housekeeper\Contracts\Injection\After $injection
-         */
-        foreach ($this->injections['after'] as $injection) {
-            $injection->handle($flow);
-        }
+        // Execute all `After` Injections.
+        $this->executeInjections('after', $flow);
 
         return $flow;
     }
@@ -365,7 +367,7 @@ abstract class Repository implements RepositoryContract
         // offset. This will allow you to call another wrapped internal function
         // that even had queries like "$this->getModel()->where('name', 'kid')"
         // without any affection to each other.
-        $planOffset = $this->schemePlan();
+        $planOffset = $this->makeNewPlan();
 
         // Action indecated this method calling.
         $action = new Action(
@@ -413,7 +415,7 @@ abstract class Repository implements RepositoryContract
     private function getMethodNameOfCallable(callable $function)
     {
         return ($function instanceof \Closure) ?
-            '\Closure' :
+            '\\Closure' :
             $function[1];
     }
     
@@ -446,7 +448,7 @@ abstract class Repository implements RepositoryContract
      */
     protected function traceToRealMethod($coverMethodName = null)
     {
-        if ( ! $coverMethodName) {
+        if (! $coverMethodName) {
             $coverMethodName = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
         }
 
@@ -462,19 +464,7 @@ abstract class Repository implements RepositoryContract
      */
     protected function inject(BasicInjectionContract $injection, $sortAllInejctions = true)
     {
-        $toGroup = false;
-
-        foreach (static::$injectionClassMapToGroup as $interface => $group) {
-            if (is_a($injection, $interface)) {
-                $toGroup = $group;
-
-                break;
-            }
-        }
-
-        if ($toGroup === false) {
-            throw new RepositoryException('Unknow injection type for "' . get_class($injection) . '""');
-        }
+        $toGroup = $this->getGroupForInjection($injection);
 
         $this->injections[$toGroup][] = $injection;
 
@@ -482,6 +472,30 @@ abstract class Repository implements RepositoryContract
         if ($sortAllInejctions) {
             $this->sortAllInjections();
         }
+    }
+
+    /**
+     * @param \Housekeeper\Contracts\Injection\Basic $injection
+     * @return bool
+     * @throws \Housekeeper\Exceptions\RepositoryException
+     */
+    private function getGroupForInjection(BasicInjectionContract $injection)
+    {
+        $group = false;
+
+        foreach (static::$injectionClassMapToGroup as $interface => $asGroup) {
+            if (is_a($injection, $interface)) {
+                $group = $asGroup;
+
+                break;
+            }
+        }
+
+        if ($group === false) {
+            throw new RepositoryException('Unknow injection type for "' . get_class($injection) . '""');
+        }
+
+        return $group;
     }
 
     /**
