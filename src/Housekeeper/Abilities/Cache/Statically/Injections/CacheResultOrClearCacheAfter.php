@@ -20,12 +20,15 @@ use Housekeeper\Abilities\Cache\Statically;
 class CacheResultOrClearCacheAfter extends AbstractBase implements BasicInjectionContract,
                                                                    AfterInjectionContract
 {
+    const PRIORITY = 50;
+
+
     /**
      * @return int
      */
     public function priority()
     {
-        return 50;
+        return static::PRIORITY;
     }
 
     /**

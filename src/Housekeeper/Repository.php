@@ -108,7 +108,7 @@ abstract class Repository implements RepositoryContract
 
         $this->initialize();
 
-        $this->inspectAndBootBootable();
+        $this->callBootable();
 
         // All official traits for Repository are injecting Injection without
         // sorting for better performance, so when injecting finished, then sort
@@ -119,7 +119,7 @@ abstract class Repository implements RepositoryContract
         // if that method exists.
         // This provide an easy way to add custom logic that will be executed
         // when repository been created.
-        $this->callBootMethod();
+        $this->callBoot();
 
         // Reset to prepare everything that would be used.
         $this->reset(new Action(__METHOD__, [], Action::INTERNAL));
@@ -128,7 +128,7 @@ abstract class Repository implements RepositoryContract
     /**
      *
      */
-    private function callBootMethod()
+    private function callBoot()
     {
         if (method_exists($this, static::BOOT_METHOD)) {
             $this->getApp()->call([$this, static::BOOT_METHOD]);
@@ -197,7 +197,7 @@ abstract class Repository implements RepositoryContract
         // `Laravel`, otherwise just throw an exception.
         if (! $model instanceof Model) {
             throw new RepositoryException(
-                "Class {$this->model()} must be an instance of " . Model::class
+                "Class \"{$this->model()}\" must be an instance of " . Model::class
             );
         }
 
@@ -210,7 +210,7 @@ abstract class Repository implements RepositoryContract
      * upper-case latter) with DI process.
      * This allow us to encapsulate injecting logics in trait.
      */
-    protected function inspectAndBootBootable()
+    protected function callBootable()
     {
         $reflection = new \ReflectionClass($this);
 
@@ -254,7 +254,7 @@ abstract class Repository implements RepositoryContract
     /**
      * @return int
      */
-    private function makeNewPlan()
+    private function newPlan()
     {
         if ($this->defaultPlan) {
             $offset = $this->planStep = 0;
@@ -367,7 +367,7 @@ abstract class Repository implements RepositoryContract
         // offset. This will allow you to call another wrapped internal function
         // that even had queries like "$this->getModel()->where('name', 'kid')"
         // without any affection to each other.
-        $planOffset = $this->makeNewPlan();
+        $planOffset = $this->newPlan();
 
         // Action indecated this method calling.
         $action = new Action(
@@ -483,9 +483,9 @@ abstract class Repository implements RepositoryContract
     {
         $group = false;
 
-        foreach (static::$injectionClassMapToGroup as $interface => $asGroup) {
+        foreach (static::$injectionClassMapToGroup as $interface => $expectGroup) {
             if (is_a($injection, $interface)) {
-                $group = $asGroup;
+                $group = $expectGroup;
 
                 break;
             }
@@ -515,7 +515,7 @@ abstract class Repository implements RepositoryContract
      * @param \Housekeeper\Contracts\Injection\Basic $b
      * @return int
      */
-    static protected function sortInjection(BasicInjectionContract $a, BasicInjectionContract $b)
+    static private function sortInjection(BasicInjectionContract $a, BasicInjectionContract $b)
     {
         if ($a->priority() == $b->priority()) {
             return 0;
@@ -525,12 +525,12 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
-     *
+     * This is more semantic than `applyWheres`.
      *
      * @param array $wheres
      * @return $this
      */
-    public function applyWheres(array $wheres)
+    public function whereAre(array $wheres)
     {
         $this->getCurrentPlan()->applyWheres($wheres);
 
@@ -538,15 +538,36 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
+     * @param array $wheres
+     * @return $this
+     */
+    public function applyWheres(array $wheres)
+    {
+        return $this->whereAre($wheres);
+    }
+
+    /**
+     * @param        $column
+     * @param string $direction
+     * @return $this
+     */
+    public function orderBy($column, $direction = 'asc')
+    {
+        $this->getCurrentPlan()->applyOrderBy($column, $direction);
+
+        return $this;
+    }
+
+    /**
+     * Same as the `orderBy`.
+     *
      * @param        $column
      * @param string $direction
      * @return $this
      */
     public function applyOrderBy($column, $direction = 'asc')
     {
-        $this->getCurrentPlan()->applyOrderBy($column, $direction);
-
-        return $this;
+        return $this->orderBy($column, $direction);
     }
 
     /**
@@ -556,7 +577,18 @@ abstract class Repository implements RepositoryContract
      */
     public function with()
     {
-        call_user_func_array([$this->getCurrentPlan(), 'with'], func_get_args());
+        call_user_func_array([$this->getCurrentPlan(), 'applyWith'], func_get_args());
+
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function limit($value)
+    {
+        $this->getCurrentPlan()->applyLimit($value);
 
         return $this;
     }

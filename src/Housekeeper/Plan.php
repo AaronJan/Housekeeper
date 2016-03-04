@@ -88,6 +88,22 @@ class Plan implements Contracts\Plan
     }
 
     /**
+     * @param $value
+     * @return $this
+     */
+    public function applyLimit($value)
+    {
+        /**
+         * Save to conditons.
+         */
+        $this->addCondition('limit', $value);
+
+        $this->model = $this->model->limit($value);
+
+        return $this;
+    }
+
+    /**
      * @param array $wheres
      * @return $this
      */
@@ -109,7 +125,7 @@ class Plan implements Contracts\Plan
      * @param  mixed $relations
      * @return $this
      */
-    public function with()
+    public function applyWith()
     {
         $arguments = func_get_args();
 

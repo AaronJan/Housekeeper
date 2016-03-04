@@ -18,12 +18,15 @@ use Illuminate\Contracts\Support\Arrayable;
 class ToMetadataAfter implements BasicInjectionContract,
                                  AfterInjectionContract
 {
+    const PRIORITY = 10;
+
+
     /**
      * @return int
      */
     public function priority()
     {
-        return 30;
+        return static::PRIORITY;
     }
 
     /**

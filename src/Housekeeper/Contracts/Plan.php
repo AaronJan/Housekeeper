@@ -32,6 +32,12 @@ interface Plan
     public function applyOrderBy($column, $direction = 'asc');
 
     /**
+     * @param $value
+     * @return $this
+     */
+    public function applyLimit($value);
+
+    /**
      * @param array $wheres
      * @return $this
      */
@@ -41,7 +47,7 @@ interface Plan
      * @param  mixed $relations
      * @return $this
      */
-    public function with();
+    public function applyWith();
 
     /**
      * @return $this

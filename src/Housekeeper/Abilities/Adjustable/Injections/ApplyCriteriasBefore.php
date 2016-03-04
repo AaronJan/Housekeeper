@@ -9,20 +9,21 @@ use Housekeeper\Contracts\Flow\Before as BeforeFlowContract;
 /**
  * Class ApplyCriteriasBefore
  *
- * @priority 10
- *
  * @author   AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package  Housekeeper\Injections\Adjustable
  */
 class ApplyCriteriasBefore implements BasicInjectionContract,
                                       BeforeInjectionContract
 {
+    const PRIORITY = 10;
+
+
     /**
      * @return int
      */
     public function priority()
     {
-        return 10;
+        return static::PRIORITY;
     }
 
     /**
