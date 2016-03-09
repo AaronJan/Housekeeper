@@ -40,73 +40,25 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Housekeeper\Repository::setup
-     */
-    public function testSetup()
-    {
-        // Name of the mock Setup-Method
-        $method = 'setupTest';
-
-        // Indicates whether the mock Setup-Method has been called
-        $called = false;
-
-        // Only the mock Setup-Method has been called
-        $pure = true;
-
-        /**
-         * Mock custom Repository class but do not call "__construct" yet,
-         * because "setup" method will be called.
-         */
-        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
-
-        $mockApp = $this->mockApplication();
-
-        $mockApp->shouldReceive('call')
-            ->andReturnUsing(function ($function) use (&$called, &$pure, $method) {
-                list($repository, $calledMethod) = $function;
-
-                if (
-                    $repository instanceof RepositoryContract &&
-                    $method == $calledMethod
-                ) {
-                    $called = true;
-                } else {
-                    $pure = false;
-                }
-            });
-
-        $mockRepository->shouldReceive('getApp')
-            ->andReturn($mockApp);
-
-        /**
-         * Call "setup" function to start the test.
-         */
-        $methodSetup = getUnaccessibleObjectMethod($mockRepository, 'setup');
-        $methodSetup->invoke($mockRepository);
-
-        $this->assertTrue($called);
-        $this->assertTrue($pure);
-    }
-
-    /**
      * @covers Housekeeper\Repository::setApp
      * @covers Housekeeper\Repository::getApp
      */
     public function testSetAppAndGetApp()
     {
-        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, true);
 
         $mockApp = $this->mockApplication();
 
         $methodSetApp = getUnaccessibleObjectMethod($mockRepository, 'setApp');
+        $methodGetApp = getUnaccessibleObjectMethod($mockRepository, 'getApp');
+
+        $appFromRepository = $methodGetApp->invoke($mockRepository);
+        $this->assertInstanceOf('Illuminate\Contracts\Foundation\Application', $appFromRepository);
+
         $methodSetApp->invoke($mockRepository, $mockApp);
-
-        $methodSetApp    = getUnaccessibleObjectMethod($mockRepository, 'getApp');
-        $appInRepository = $methodSetApp->invoke($mockRepository);
-
-        $this->assertEquals($mockApp, $appInRepository);
+        $appFromRepositoryLater = $methodGetApp->invoke($mockRepository);
+        $this->assertEquals($mockApp, $appFromRepositoryLater);
     }
-
 
     // ========================================================================
 

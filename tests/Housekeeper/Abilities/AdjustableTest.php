@@ -40,12 +40,4 @@ class AdjustableTest extends \PHPUnit_Framework_TestCase
         m::close();
     }
 
-    /**
-     * @covers Housekeeper\Abilities\Adjustable::setupAdjustable
-     */
-    public function testSetupAdjustable()
-    {
-        $this->assertTrue(true);
-    }
-
 }
