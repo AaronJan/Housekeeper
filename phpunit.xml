@@ -8,6 +8,8 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
          syntaxCheck="false">
     <testsuites>
         <testsuite name="Test Suite">

@@ -39,5 +39,11 @@ class AdjustableTest extends \PHPUnit_Framework_TestCase
     {
         m::close();
     }
-
+    
+    public function testAssertion()
+    {
+        $this->assertEquals(1, 1);
+    }
+    
+    
 }
