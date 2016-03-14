@@ -166,6 +166,10 @@ abstract class Repository implements RepositoryContract
      */
     protected function newModelInstance()
     {
+        if (is_null($this->fullModelClassName)) {
+            $this->fullModelClassName = $this->model();
+        }
+
         return new $this->fullModelClassName;
     }
 
@@ -189,8 +193,6 @@ abstract class Repository implements RepositoryContract
      */
     protected function initialize()
     {
-        $this->fullModelClassName = $this->model();
-
         $model = $this->newModelInstance();
 
         // The model instance must be an instance of `Model` class from
@@ -503,8 +505,8 @@ abstract class Repository implements RepositoryContract
      */
     protected function sortAllInjections()
     {
-        foreach ($this->injections as $handlers) {
-            usort($handlers, [$this, 'sortInjection']);
+        foreach ($this->injections as $group) {
+            usort($group, [$this, 'sortInjection']);
         }
     }
 
