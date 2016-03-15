@@ -133,12 +133,11 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Housekeeper\Repository::initialize
      */
-    public function testInitialize()
+    public function testInitializeInNormal()
     {
         $methodNewModelInstanceCalled = false;
 
-        $fakeModelClass = 'FakeModel';
-        $fakeConfigs    = [
+        $fakeConfigs = [
             'housekeeper.paginate.per_page' => 10,
         ];
 
@@ -161,6 +160,38 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         $attributePerPage = getUnaccessibleObjectPropertyValue($mockRepository, 'perPage');
         $this->assertEquals($fakeConfigs['housekeeper.paginate.per_page'], $attributePerPage);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::initialize
+     * @expectedException \Housekeeper\Exceptions\RepositoryException
+     */
+    public function testInitializeExpectException()
+    {
+        $methodNewModelInstanceCalled = false;
+
+        $fakeConfigs = [
+            'housekeeper.paginate.per_page' => 10,
+        ];
+
+        $mockRepository = m::mock(MockSetupRepository::class);
+        $mockRepository->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $mockRepository->shouldReceive('newModelInstance')
+            ->andReturnUsing(function () use (&$methodNewModelInstanceCalled) {
+                $methodNewModelInstanceCalled = true;
+
+                return new \stdClass();
+            });
+
+        $mockRepository->shouldReceive('getConfig')
+            ->andReturnUsing(function ($key, $default) use ($fakeConfigs) {
+                return $fakeConfigs[$key];
+            });
+
+        $methodInitialize = getUnaccessibleObjectMethod($mockRepository, 'initialize');
+        $methodInitialize->invoke($mockRepository);
     }
 
     /**
@@ -195,38 +226,16 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Housekeeper\Repository::sortAllInjections
+     * @covers Housekeeper\Repository::sortAllInjections
      */
     public function testSortAllInjections()
     {
         // mock Injections for Repository to sort
-        $mockInjections = [
-            'reset'  => [],
-            'before' => [],
-            'after'  => [],
-        ];
-        $priorities = [
-            3, 3, 4, 5, 1,
-            2, 1, 5, 4, 6,
-            100, 1, 99, 2, 66,
-        ];
-        foreach (['reset', 'before', 'after'] as $group) {
-            for ($i = 0; $i < 5; $i ++) {
-                $priority = array_pop($priorities);
-
-                $mockInjection = m::mock(MockBasicInjection::class);
-                $mockInjection->shouldReceive('priority')
-                    ->andReturnUsing(function () use ($priority) {
-                        return $priority;
-                    });
-
-                $mockInjections[$group][] = $mockInjection;
-            }
-        }
+        $mockInjections = $this->makeMockInjections();
 
         $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
 
-        // Mock `sortInjection` method
+        // Mock `sortInjection` method (same as the original method) because it's private
         $methodSortInjection = getUnaccessibleObjectMethod($mockRepository, 'sortInjection');
         $mockRepository->shouldReceive('sortInjection')
             ->andReturnUsing(function ($a, $b) use ($methodSortInjection, $mockRepository) {
@@ -249,11 +258,46 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
             $lastPriority = - 1;
 
             foreach ($group as $injection) {
-                // ascend
+                // ascending order
                 $this->assertGreaterThanOrEqual($lastPriority, $injection->priority());
             }
         }
     }
+
+    /**
+     * @return array
+     */
+    protected function makeMockInjections()
+    {
+        $mockInjections = [
+            'reset'  => [],
+            'before' => [],
+            'after'  => [],
+        ];
+        $priorities     = [
+            3, 3, 4, 5, 1,
+            2, 1, 5, 4, 6,
+            100, 1, 99, 2, 66,
+        ];
+        foreach (['reset', 'before', 'after'] as $group) {
+            for ($i = 0; $i < 5; $i ++) {
+                $priority = array_pop($priorities);
+
+                $mockInjection = m::mock(MockBasicInjection::class);
+                $mockInjection->shouldReceive('priority')
+                    ->andReturnUsing(function () use ($priority) {
+                        return $priority;
+                    });
+
+                $mockInjections[$group][] = $mockInjection;
+            }
+        }
+
+        return $mockInjections;
+    }
+
+
+
 
     // ========================================================================
 
