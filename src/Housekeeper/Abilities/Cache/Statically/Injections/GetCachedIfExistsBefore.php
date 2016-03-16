@@ -42,7 +42,7 @@ class GetCachedIfExistsBefore extends AbstractBase implements BasicInjectionCont
          * @var $repository Repository|Statically
          */
         $repository = $beforeFlow->getRepository();
-        if ($repository->cacheEnabled() === false) {
+        if ($repository->isCacheEnabled() === false) {
             return;
         }
 
