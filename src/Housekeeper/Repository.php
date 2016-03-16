@@ -355,15 +355,15 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
-     * @param callable $function
-     * @param array    $args
-     * @param int      $actionType
+     * @param callable           $function
+     * @param array              $args
+     * @param int|ActionContract $actionType
      * @return mixed
      * @throws \Exception
      */
     protected function wrap(callable $function,
                             array $args,
-                            $actionType = Action::UNKNOW)
+                            $actionType = ActionContract::UNKNOW)
     {
         // Prepare a Plan object for this wrapped function and returns the
         // offset. This will allow you to call another wrapped internal function
@@ -372,11 +372,14 @@ abstract class Repository implements RepositoryContract
         $planOffset = $this->newPlan();
 
         // Action indecated this method calling.
-        $action = new Action(
-            $this->getMethodNameOfCallable($function),
-            $args,
-            $actionType
-        );
+        $action = ($actionType instanceof ActionContract) ?
+            $actionType :
+            new Action(
+                $actionType,
+                [],
+                $this->getMethodNameOfCallable($function),
+                $args
+            );
 
         // First it's the Before Flow, if there has any returned in this Flow,
         // then use it as the final returns, jump to the Reset Flow and return
@@ -422,8 +425,8 @@ abstract class Repository implements RepositoryContract
     }
     
     /**
-     * @param               $actionType
-     * @param callable|null $function
+     * @param int|ActionContract $actionType
+     * @param callable|null      $function
      * @return mixed
      * @throws \Exception
      */

@@ -2,82 +2,91 @@
 
 namespace Housekeeper;
 
+use Housekeeper\Contracts\Action as ActionContract;
+
 /**
  * Class Action
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper
  */
-class Action implements Contracts\Action
+class Action implements ActionContract
 {
-    /**
-     * @var int
-     */
-    const UNKNOW = - 1;
-
-    /**
-     * @var int
-     */
-    const CREATE = 1;
-
-    /**
-     * @var int
-     */
-    const UPDATE = 2;
-
-    /**
-     * @var int
-     */
-    const READ = 3;
-
-    /**
-     * @var int
-     */
-    const DELETE = 4;
-
-    /**
-     * @var int
-     */
-    const CREATE_OR_UPDATE = 5;
-
-    /**
-     * @var int
-     */
-    const INTERNAL = 6;
-
-    /**
-     * @var int
-     */
-    const IGNORED = 7;
-
     /**
      * @var integer
      */
     protected $type;
 
     /**
-     * @var array
+     * @var null|array
      */
     protected $arguments;
 
     /**
-     * @var string
+     * @var null|string
      */
     protected $methodName;
 
+    /**
+     * @var array
+     */
+    protected $discriptions;
 
     /**
      * Action constructor.
      *
-     * @param string   $methodName
-     * @param array    $arguments
-     * @param null|int $type
+     * @param int        $type
+     * @param array      $discriptions
+     * @param null       $methodName
+     * @param array|null $arguments
      */
-    public function __construct($methodName, array $arguments, $type = null)
+    public function __construct($type = ActionContract::UNKNOW,
+                                array $discriptions = [],
+                                $methodName = null,
+                                array $arguments = null)
+    {
+        $this->type         = is_null($type) ? static::UNKNOW : $type;
+        $this->discriptions = $discriptions;
+
+        if ($methodName) {
+            $this->setMethodName($methodName);
+        }
+
+        if (! is_null($arguments)) {
+            $this->setArguments($arguments);
+        }
+    }
+
+    /**
+     * @param string $methodName
+     */
+    public function setMethodName($methodName)
     {
         $this->methodName = $methodName;
-        $this->arguments  = $arguments;
-        $this->type       = is_null($type) ? static::UNKNOW : $type;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getMethodName()
+    {
+        return $this->methodName;
+    }
+
+    /**
+     * @param array $arguments
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = $arguments;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 
     /**
@@ -98,18 +107,19 @@ class Action implements Contracts\Action
     }
 
     /**
-     * @return array
+     * @param $discription
      */
-    public function getArguments()
+    public function describeAs($discription)
     {
-        return $this->arguments;
+        $this->discriptions[] = $discription;
     }
 
     /**
-     * @return string
+     * @param $discription
+     * @return bool
      */
-    public function getMethodName()
+    public function isDescribedAs($discription)
     {
-        return $this->methodName;
+        return in_array($discription, $this->discriptions);
     }
 }
