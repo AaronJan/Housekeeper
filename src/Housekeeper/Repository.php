@@ -524,6 +524,19 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
+     * Apply whereIn to the query builder
+     *
+     * @param array $wheres
+     * @return $this
+     */
+    public function applyWheresIn(array $wheres)
+    {
+        $this->getCurrentPlan()->applyWheres($wheres, true);
+
+        return $this;
+    }
+
+    /**
      * @param        $column
      * @param string $direction
      * @return $this

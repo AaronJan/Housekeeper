@@ -89,17 +89,20 @@ class Plan implements Contracts\Plan
 
     /**
      * @param array $wheres
+     * @param bool $useWhereIn
      * @return $this
      */
-    public function applyWheres(array $wheres)
+    public function applyWheres(array $wheres, $useWhereIn = false)
     {
+        $whereFunction = $useWhereIn ? 'whereIn' : 'where';
+
         /**
          * Save to conditons.
          */
         $this->addCondition('wheres', $wheres);
 
         foreach ($wheres as $key => $where) {
-            $this->model = call_user_func_array([$this->model, 'where'], $where);
+            $this->model = call_user_func_array([$this->model, $whereFunction], $where);
         }
 
         return $this;
