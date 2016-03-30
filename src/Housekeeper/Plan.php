@@ -105,13 +105,11 @@ class Plan implements Contracts\Plan
 
     /**
      * @param array $wheres
-     * @param bool $useWhereIn
+     * @param string $whereFunction
      * @return $this
      */
-    public function applyWheres(array $wheres, $useWhereIn = false)
+    public function applyWheres(array $wheres, $whereFunction = 'where')
     {
-        $whereFunction = $useWhereIn ? 'whereIn' : 'where'
-
         /**
          * Save to conditons.
          */
