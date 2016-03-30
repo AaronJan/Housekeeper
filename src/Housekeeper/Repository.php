@@ -533,11 +533,12 @@ abstract class Repository implements RepositoryContract
      * This is more semantic than `applyWheres`.
      *
      * @param array $wheres
+     * @param bool $useWhereIn
      * @return $this
      */
-    public function whereAre(array $wheres)
+    public function whereAre(array $wheres, $useWhereIn = false)
     {
-        $this->getCurrentPlan()->applyWheres($wheres);
+        $this->getCurrentPlan()->applyWheres($wheres, $useWhereIn);
 
         return $this;
     }
@@ -549,6 +550,15 @@ abstract class Repository implements RepositoryContract
     public function applyWheres(array $wheres)
     {
         return $this->whereAre($wheres);
+    }
+
+    /**
+     * @param array $wheres
+     * @return $this
+     */
+    public function applyWheresIn(array $wheres)
+    {
+        return $this->whereAre($wheres, true);
     }
 
     /**
