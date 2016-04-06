@@ -105,9 +105,10 @@ class Plan implements Contracts\Plan
 
     /**
      * @param array $wheres
+     * @param string $whereFunction
      * @return $this
      */
-    public function applyWheres(array $wheres)
+    public function applyWheres(array $wheres, $whereFunction = 'where')
     {
         /**
          * Save to conditons.
@@ -115,7 +116,7 @@ class Plan implements Contracts\Plan
         $this->addCondition('wheres', $wheres);
 
         foreach ($wheres as $key => $where) {
-            $this->model = call_user_func_array([$this->model, 'where'], $where);
+            $this->model = call_user_func_array([$this->model, $whereFunction], $where);
         }
 
         return $this;
