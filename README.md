@@ -3,7 +3,6 @@
 </a>
 
 [![Latest Stable Version](https://poser.pugx.org/aaronjan/housekeeper/v/stable)](https://packagist.org/packages/aaronjan/housekeeper) 
-[![Total Downloads](https://poser.pugx.org/aaronjan/housekeeper/downloads)](https://packagist.org/packages/aaronjan/housekeeper) 
 [![License](https://poser.pugx.org/aaronjan/housekeeper/license)](https://packagist.org/packages/aaronjan/housekeeper)
 
 
