@@ -16,10 +16,25 @@ interface Repository
     public function getCurrentPlan();
 
     /**
+     * This is more semantic than `applyWheres`.
+     *
+     * @param array $wheres
+     * @return $this
+     */
+    public function whereAre(array $wheres);
+
+    /**
      * @param array $wheres
      * @return mixed
      */
     public function applyWheres(array $wheres);
+
+    /**
+     * @param        $column
+     * @param string $direction
+     * @return mixed
+     */
+    public function orderBy($column, $direction = 'asc');
 
     /**
      * @param        $column
@@ -32,6 +47,12 @@ interface Repository
      * @return mixed
      */
     public function with();
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function limit($value);
 
     /**
      * @param      $id

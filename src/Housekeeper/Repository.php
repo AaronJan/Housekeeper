@@ -47,7 +47,7 @@ abstract class Repository implements RepositoryContract
     /**
      * @var int
      */
-    private $planStep;
+    protected $planStep;
 
     /**
      * @var \Housekeeper\Plan[]
@@ -122,13 +122,13 @@ abstract class Repository implements RepositoryContract
         $this->callBoot();
 
         // Reset to prepare everything that would be used.
-        $this->reset(new Action(__METHOD__, [], Action::INTERNAL));
+        $this->reset(new Action(Action::INTERNAL, [], __METHOD__));
     }
 
     /**
      *
      */
-    private function callBoot()
+    protected function callBoot()
     {
         if (method_exists($this, static::BOOT_METHOD)) {
             $this->getApp()->call([$this, static::BOOT_METHOD]);
@@ -199,7 +199,7 @@ abstract class Repository implements RepositoryContract
         // `Laravel`, otherwise just throw an exception.
         if (! $model instanceof Model) {
             throw new RepositoryException(
-                "Class \"{$this->model()}\" must be an instance of " . Model::class
+                "Class \"" . get_class($model) . "\" must be an instance of " . Model::class
             );
         }
 
@@ -248,7 +248,7 @@ abstract class Repository implements RepositoryContract
     /**
      * @param $offset
      */
-    private function dropPlan($offset)
+    protected function dropPlan($offset)
     {
         unset($this->plans[$offset]);
     }
@@ -256,7 +256,7 @@ abstract class Repository implements RepositoryContract
     /**
      * @return int
      */
-    private function newPlan()
+    protected function newPlan()
     {
         if ($this->defaultPlan) {
             $offset = $this->planStep = 0;
@@ -852,5 +852,11 @@ abstract class Repository implements RepositoryContract
     protected function _findByField($field, $value = null, $columns = ['*'])
     {
         return $this->getModel()->where($field, '=', $value)->firstOrFail($columns);
+    }
+
+
+    protected function debugMock($method, $arguments)
+    {
+        return call_user_func([$this, $method], $arguments);
     }
 }

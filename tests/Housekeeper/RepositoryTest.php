@@ -1,5 +1,6 @@
 <?php namespace Housekeeper;
 
+use Housekeeper\Contracts\Action;
 use Housekeeper\Contracts\Repository as RepositoryContract;
 use Housekeeper\Exceptions\RepositoryException;
 use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
@@ -17,7 +18,6 @@ use Mockery as m;
 /**
  * Class RepositoryTest
  *
- * @runTestsInSeparateProcesses
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Eloquent
  */
@@ -40,6 +40,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @runInSeparateProcess
      * @covers Housekeeper\Repository::setApp
      * @covers Housekeeper\Repository::getApp
      */
@@ -61,6 +62,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @runInSeparateProcess
      * @covers Housekeeper\Repository::getConfig
      */
     public function testGetConfig()
@@ -195,6 +197,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @runInSeparateProcess
      * @covers Housekeeper\Repository::callBootable
      */
     public function testCallBootable()
@@ -226,7 +229,28 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @runInSeparateProcess
+     * @covers Housekeeper\Repository::callBoot
+     */
+    public function testCallBoot()
+    {
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        $mockApplication = $this->makeMockApplication();
+        $mockApplication->shouldReceive('call');
+
+        $mockRepository->shouldReceive('getApp')->andReturn($mockApplication);
+
+        $methodCallBoot = getUnaccessibleObjectMethod($mockRepository, 'callBoot');
+        $methodCallBoot->invoke($mockRepository);
+
+        $mockApplication->shouldHaveReceived('call')->withAnyArgs()->once();
+    }
+    
+    /**
+     * @runInSeparateProcess
      * @covers Housekeeper\Repository::sortAllInjections
+     * @covers Housekeeper\Repository::sortInjection
      */
     public function testSortAllInjections()
     {
@@ -296,7 +320,447 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         return $mockInjections;
     }
 
+    /**
+     * @runInSeparateProcess
+     * @depends testSetAppAndGetApp
+     * @depends testCallBoot
+     * @depends testCallBootable
+     * @depends testInitializeInNormal
+     * @depends testInitializeExpectException
+     * @depends testSortAllInjections
+     * @covers  Housekeeper\Repository::__construct
+     */
+    public function testConstruct()
+    {
+        $methodsWillBeCalledByOrder = [
+            'setApp',
+            'initialize',
+            'callBootable',
+            'sortAllInjections',
+            'callBoot',
+            'reset',
+        ];
+        $methodsCalledByOrder       = [];
 
+        $mockApplication = $this->makeMockApplication();
+        $mockRepository  = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        // `__construct` method will call these methods
+        $mockRepository->shouldReceive('setApp')
+            ->andReturnUsing(function ($app) use (&$mockApplication, &$methodsCalledByOrder) {
+                $method = array_push($methodsCalledByOrder, 'setApp');
+
+                $this->assertEquals($mockApplication, $app);
+            });
+        $mockRepository->shouldReceive('initialize')
+            ->andReturnUsing(function () use (&$methodsCalledByOrder) {
+                array_push($methodsCalledByOrder, 'initialize');
+            });
+        $mockRepository->shouldReceive('callBootable')
+            ->andReturnUsing(function () use (&$methodsCalledByOrder) {
+                array_push($methodsCalledByOrder, 'callBootable');
+            });
+        $mockRepository->shouldReceive('sortAllInjections')
+            ->andReturnUsing(function () use (&$methodsCalledByOrder) {
+                array_push($methodsCalledByOrder, 'sortAllInjections');
+            });
+        $mockRepository->shouldReceive('callBoot')
+            ->andReturnUsing(function () use (&$methodsCalledByOrder) {
+                array_push($methodsCalledByOrder, 'callBoot');
+            });
+        $mockRepository->shouldReceive('reset')
+            ->andReturnUsing(function ($action) use (&$methodsCalledByOrder) {
+                array_push($methodsCalledByOrder, 'reset');
+
+                $this->assertInstanceOf(Action::class, $action);
+
+                $this->assertEquals(Action::INTERNAL, $action->getType());
+            });
+
+        $mockRepository->__construct($mockApplication);
+
+        $this->assertEquals($methodsWillBeCalledByOrder, $methodsCalledByOrder);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::getKeyName
+     */
+    public function testGetKeyName()
+    {
+        /**
+         * @var $mockModel m\MockInterface
+         */
+        $mockRepository = m::mock(MockSetupRepository::class);
+        $mockRepository->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $mockModel = $this->makeMockModel();
+        $mockModel->shouldReceive('getKeyName')->withNoArgs();
+
+        $mockRepository->shouldReceive('newModelInstance')
+            ->andReturnUsing(function () use (&$mockModel) {
+                return $mockModel;
+            });
+
+        $methodGetKeyName = getUnaccessibleObjectMethod($mockRepository, 'getKeyName');
+        $methodGetKeyName->invoke($mockRepository);
+
+        $mockModel->shouldHaveReceived('getKeyName', [])->once();
+    }
+    
+    /**
+     * @runInSeparateProcess
+     * @covers Housekeeper\Repository::resetPlan
+     */
+    public function testResetPlan()
+    {
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        // `resetPlan` method will change these properties, these should be `null` now
+        $propertyDefaultPlan = getUnaccessibleObjectPropertyValue($mockRepository, 'defaultPlan');
+        $propertyPlans       = getUnaccessibleObjectPropertyValue($mockRepository, 'plans');
+        $propertyPlanStep    = getUnaccessibleObjectPropertyValue($mockRepository, 'planStep');
+        $this->assertNull($propertyDefaultPlan);
+        $this->assertNull($propertyPlans);
+        $this->assertNull($propertyPlanStep);
+
+        $methodResetPlan = getUnaccessibleObjectMethod($mockRepository, 'resetPlan');
+        $methodResetPlan->invoke($mockRepository);
+
+        // properties should be changed
+        $propertyDefaultPlan = getUnaccessibleObjectPropertyValue($mockRepository, 'defaultPlan');
+        $this->assertInstanceOf(\Housekeeper\Plan::class, $propertyDefaultPlan);
+
+        $propertyPlans = getUnaccessibleObjectPropertyValue($mockRepository, 'plans');
+        $this->assertInternalType('array', $propertyPlans);
+        $this->assertEmpty($propertyPlans);
+
+        $propertyPlanStep = getUnaccessibleObjectPropertyValue($mockRepository, 'planStep');
+        $this->assertNull($propertyPlanStep);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::reset
+     */
+    public function testReset()
+    {
+
+    }
+    
+    /**
+     * @covers Housekeeper\Repository::getCurrentPlan
+     */
+    public function testGetCurrentPlanWhenDefault()
+    {
+        $randomNumber = mt_rand(1, 1000);
+
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        setUnaccessibleObjectPropertyValue($mockRepository, 'defaultPlan', $randomNumber);
+
+        $actualValue = $mockRepository->getCurrentPlan();
+
+        $this->assertEquals($randomNumber, $actualValue);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::getCurrentPlan
+     */
+    public function testGetCurrentPlanWhenNotDefault()
+    {
+        $randomNumber = mt_rand(1, 1000);
+
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        setUnaccessibleObjectPropertyValue($mockRepository, 'plans', [$randomNumber]);
+        setUnaccessibleObjectPropertyValue($mockRepository, 'planStep', 0);
+
+        $actualValue = $mockRepository->getCurrentPlan();
+
+        $this->assertEquals($randomNumber, $actualValue);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::dropPlan
+     */
+    public function testDropPlan()
+    {
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        setUnaccessibleObjectPropertyValue($mockRepository, 'plans', [1]);
+        $propertyPlans = getUnaccessibleObjectPropertyValue($mockRepository, 'plans');
+        $this->assertEquals([1], $propertyPlans);
+
+        // Execute `dropPlan` to remove the value setted before
+        $methodDropPlan = getUnaccessibleObjectMethod($mockRepository, 'dropPlan');
+        $methodDropPlan->invoke($mockRepository, 0);
+
+        $propertyPlans = getUnaccessibleObjectPropertyValue($mockRepository, 'plans');
+        $this->assertEquals([], $propertyPlans);
+    }
+
+    /**
+     * @covers Housekeeper\Repository::newPlan
+     */
+    public function testNewPlanWhenHaveDefault()
+    {
+        $expectDefaultPlan = mt_rand(1, 1000);
+
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        setUnaccessibleObjectPropertyValue($mockRepository, 'defaultPlan', $expectDefaultPlan);
+        setUnaccessibleObjectPropertyValue($mockRepository, 'plans', []);
+
+        $methodNewPlan = getUnaccessibleObjectMethod($mockRepository, 'newPlan');
+        $offset        = $methodNewPlan->invoke($mockRepository);
+
+        $propertyPlanStep    = getUnaccessibleObjectPropertyValue($mockRepository, 'planStep');
+        $propertyDefaultPlan = getUnaccessibleObjectPropertyValue($mockRepository, 'defaultPlan');
+        $propertyPlans       = getUnaccessibleObjectPropertyValue($mockRepository, 'plans');
+
+        $this->assertEquals(0, $offset);
+        $this->assertEquals(0, $propertyPlanStep);
+        $this->assertNull($propertyDefaultPlan);
+        $this->assertEquals([$expectDefaultPlan], $propertyPlans);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @covers Housekeeper\Repository::newPlan
+     */
+    public function testNewPlanWhenDoNotHaveDefault()
+    {
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
+
+        setUnaccessibleObjectPropertyValue($mockRepository, 'defaultPlan', null);
+        setUnaccessibleObjectPropertyValue($mockRepository, 'plans', [1]);
+        setUnaccessibleObjectPropertyValue($mockRepository, 'planStep', 0);
+
+        $methodNewPlan = getUnaccessibleObjectMethod($mockRepository, 'newPlan');
+        $offset        = $methodNewPlan->invoke($mockRepository);
+
+        $propertyPlanStep = getUnaccessibleObjectPropertyValue($mockRepository, 'planStep');
+        $propertyPlans    = getUnaccessibleObjectPropertyValue($mockRepository, 'plans');
+
+        $this->assertEquals(1, $offset);
+        $this->assertEquals(1, $propertyPlanStep);
+        $this->assertCount(2, $propertyPlans);
+
+        $plan = $propertyPlans[1];
+        $this->assertInstanceOf(\Housekeeper\Plan::class, $plan);
+    }
+
+    /**
+     * TODO
+     * @covers Housekeeper\Repository::getModel
+     */
+    public function testGetModel()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::executeInjections
+     */
+    public function testExecuteInjections()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::before
+     */
+    public function testBefore()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::after
+     */
+    public function testAfter()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::wrap
+     */
+    public function testWrap()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::getMethodNameofCallable
+     */
+    public function testGetMethodNameOfCallable()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::simpleWrap
+     */
+    public function testSimpleWrap()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::traceToRealMethod
+     */
+    public function testTraceToRealMethod()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::inject
+     */
+    public function testInject()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::getGroupForInjection
+     */
+    public function testGetGroupForInjection()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::whereAre
+     * @covers Housekeeper\Repository::applyWheres
+     */
+    public function testWhereAre()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::orderBy
+     * @covers Housekeeper\Repository::applyOrderBy
+     */
+    public function testOrderBy()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::with
+     */
+    public function testWith()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::limit
+     */
+    public function testLimit()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::exists
+     */
+    public function testExists()
+    {
+
+    }
+
+    /**
+     * @covers Housekeeper\Repository::find
+     * @covers Housekeeper\Repository::_find
+     */
+    public function testFind()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::findMany
+     * @covers Housekeeper\Repository::_findMany
+     */
+    public function testFindMany()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::create
+     * @covers Housekeeper\Repository::_create
+     */
+    public function testCreate()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::delete
+     * @covers Housekeeper\Repository::_delete
+     */
+    public function testDelete()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::update
+     * @covers Housekeeper\Repository::_update
+     */
+    public function testUpdate()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::all
+     * @covers Housekeeper\Repository::_all
+     */
+    public function testAll()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::paginate
+     * @covers Housekeeper\Repository::_paginate
+     */
+    public function testPaginate()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::getByField
+     * @covers Housekeeper\Repository::_getByField
+     */
+    public function testGetByField()
+    {
+        
+    }
+
+    /**
+     * @covers Housekeeper\Repository::findByField
+     * @covers Housekeeper\Repository::_findByField
+     */
+    public function testFindByField()
+    {
+
+    }
+    
+    /**
+     * Internal method calling should creating different layer to isolate
+     * outcome from each other.
+     */
+    public function testIsolationWhenCallingInternalMethod()
+    {
+
+    }
 
 
     // ========================================================================
@@ -438,6 +902,11 @@ class MockSetupRepository extends Repository
      *
      */
     protected function model()
+    {
+
+    }
+    
+    public function boot()
     {
 
     }
