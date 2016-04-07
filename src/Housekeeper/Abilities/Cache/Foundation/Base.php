@@ -28,7 +28,6 @@ trait Base
      * @var \Illuminate\Contracts\Redis\Database
      */
     protected $cacheRedis;
-    
 
     /**
      *

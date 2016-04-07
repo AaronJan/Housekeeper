@@ -157,14 +157,14 @@ class MakeRepositoryCommand extends GeneratorCommand
         if ($cache = $this->option('cache')) {
             $cache = ucfirst($cache);
 
-            $use .= "use Housekeeper\\Abilities\\Cache\\{$cache};\n";
-            $traits[] = $cache;
+            $use .= "use Housekeeper\\Abilities\\Cache{$cache};\n";
+            $traits[] = "Cache$cache";
         } elseif ($this->option('ci')) {
-            $use .= "use Housekeeper\\Abilities\\Cache\\Individually;\n";
-            $traits[] = 'Individually';
+            $use .= "use Housekeeper\\Abilities\\CacheIndividually;\n";
+            $traits[] = 'CacheIndividually';
         } elseif ($this->option('cs')) {
-            $use .= "use Housekeeper\\Abilities\\Cache\\Statically;\n";
-            $traits[] = 'Statically';
+            $use .= "use Housekeeper\\Abilities\\CacheStatically;\n";
+            $traits[] = 'CacheStatically';
         }
 
         if ($this->option('metadata')) {

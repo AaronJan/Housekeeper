@@ -314,9 +314,33 @@ However, the `simpleWrap` takes a `Callable`, so you can write the core method a
 
 -----------------------------
 
-#### wheres(array $wheres)
+#### whereAre(array $wheres)
 
-**TODO**
+Add an array of where clauses to the query.
+
+__Arguments__
+
+* `$wheres` - An array of `where` conditions.
+
+__Example__
+
+```php
+<?php
+
+$UserRepository
+	->wheres([
+		['age', '>', 40],
+		['area', 'west']
+	])
+	->all();
+```
+
+
+-----------------------------
+
+#### applyWheres(array $wheres)
+
+Alias for the `whereAre` method.
 
 __Arguments__
 
@@ -325,42 +349,78 @@ __Arguments__
 
 -----------------------------
 
-#### applyWheres(array $wheres)
-
-**TODO**
-
-__Arguments__
-
-* Alias for the `wheres` method.
-
-
------------------------------
-
 #### orderBy($column, $direction = 'asc')
 
+Add an "order by" clause to the query.
+
 __Arguments__
 
-* `$column` -
-* `$direction` -
+* `$column`
+* `$direction`
+
+__Example__
+
+```php
+<?php
+
+$UserRepository
+	->orderBy('age', 'desc')
+	->all();
+```
 
 
 -----------------------------
 
 #### applyOrderBy($column, $direction = 'asc')
 
+Alias for the `orderBy` method.
+
 __Arguments__
 
-* `$column` - 
-* `$direction` - 
+* `$column`
+* `$direction`
+
+
+-----------------------------
+
+#### offset($value)
+
+Set the "offset" value of the query.
+
+__Arguments__
+
+* `$value` - The specified offset of the first row to return.
+
+__Example__
+
+```php
+<?php
+
+$UserRepository
+	->limit(10)
+	->all();
+```
 
 
 -----------------------------
 
 #### limit($value)
 
+Set the "limit" value of the query.
+
 __Arguments__
 
-* `$value` -
+* `$value` - The maximum number of rows to return.
+
+__Example__
+
+```php
+<?php
+
+$UserRepository
+	->limit(10)
+	->all();
+```
 
 
 -----------------------------

@@ -9,8 +9,7 @@ use Illuminate\Database\Query\Builder;
  *
  * This trait provide frequently-used Eloquent-Style query methods.
  *
- * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
- * @method $this applyWheres(array $wheres)
+ * @method $this whereAre(array $wheres)
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
@@ -26,7 +25,7 @@ trait Eloquently
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and')
     {
-        $this->applyWheres([
+        $this->whereAre([
             [$column, $operator, $value, $boolean],
         ]);
 
@@ -41,7 +40,7 @@ trait Eloquently
      */
     public function orWhere($column, $operator = null, $value = null)
     {
-        $this->applyWheres([
+        $this->whereAre([
             [$column, $operator, $value, 'or'],
         ]);
 
@@ -58,7 +57,7 @@ trait Eloquently
      */
     public function has($relation, $operator = '>=', $count = 1, $boolean = 'and', \Closure $callback = null)
     {
-        $this->applyWheres([
+        $this->whereAre([
             function ($query) use (&$relation, &$operator, &$count, &$boolean, &$callback) {
                 /**
                  * @var $query \Illuminate\Database\Eloquent\Builder
@@ -113,7 +112,7 @@ trait Eloquently
      */
     public function whereIn($column, $values, $boolean = 'and', $not = false)
     {
-        return $this->applyWheres([
+        return $this->whereAre([
             function ($query) use ($column, $values, $boolean, $not) {
                 /**
                  * @var $query Builder
@@ -154,7 +153,7 @@ trait Eloquently
     {
         $type = $not ? 'NotNull' : 'Null';
 
-        return $this->applyWheres([
+        return $this->whereAre([
             compact('type', 'column', 'boolean'),
         ]);
     }

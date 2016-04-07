@@ -249,79 +249,6 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @runInSeparateProcess
-     * @covers Housekeeper\Repository::sortAllInjections
-     * @covers Housekeeper\Repository::sortInjection
-     */
-    public function testSortAllInjections()
-    {
-        // mock Injections for Repository to sort
-        $mockInjections = $this->makeMockInjections();
-
-        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
-
-        // Mock `sortInjection` method (same as the original method) because it's private
-        $methodSortInjection = getUnaccessibleObjectMethod($mockRepository, 'sortInjection');
-        $mockRepository->shouldReceive('sortInjection')
-            ->andReturnUsing(function ($a, $b) use ($methodSortInjection, $mockRepository) {
-                return $methodSortInjection->invoke($mockRepository, $a, $b);
-            });
-
-        // Replace `injections` property with mock `injections`
-        $mockRepositoryReflection     = new \ReflectionClass($mockRepository);
-        $propertyInjectionsReflection = $mockRepositoryReflection->getProperty('injections');
-        $propertyInjectionsReflection->setAccessible(true);
-        $propertyInjectionsReflection->setValue($mockRepository, $mockInjections);
-
-        // Execute `sortAllInjections` method
-        $methodSortAllInjections = getUnaccessibleObjectMethod($mockRepository, 'sortAllInjections');
-        $methodSortAllInjections->invoke($mockRepository);
-
-        // Verify results
-        $sortedInjections = $propertyInjectionsReflection->getValue($mockRepository);
-        foreach ($sortedInjections as $group) {
-            $lastPriority = - 1;
-
-            foreach ($group as $injection) {
-                // ascending order
-                $this->assertGreaterThanOrEqual($lastPriority, $injection->priority());
-            }
-        }
-    }
-
-    /**
-     * @return array
-     */
-    protected function makeMockInjections()
-    {
-        $mockInjections = [
-            'reset'  => [],
-            'before' => [],
-            'after'  => [],
-        ];
-        $priorities     = [
-            3, 3, 4, 5, 1,
-            2, 1, 5, 4, 6,
-            100, 1, 99, 2, 66,
-        ];
-        foreach (['reset', 'before', 'after'] as $group) {
-            for ($i = 0; $i < 5; $i ++) {
-                $priority = array_pop($priorities);
-
-                $mockInjection = m::mock(MockBasicInjection::class);
-                $mockInjection->shouldReceive('priority')
-                    ->andReturnUsing(function () use ($priority) {
-                        return $priority;
-                    });
-
-                $mockInjections[$group][] = $mockInjection;
-            }
-        }
-
-        return $mockInjections;
-    }
-
-    /**
-     * @runInSeparateProcess
      * @depends testSetAppAndGetApp
      * @depends testCallBoot
      * @depends testCallBootable
@@ -550,20 +477,23 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * TODO
      * @covers Housekeeper\Repository::getModel
      */
     public function testGetModel()
     {
+        $mockPlan = m::mock();
+        $mockPlan->shouldReceive('getModel')
+            ->andReturn('');
 
-    }
+        $mockRepository = $this->makeMockRepository(MockSetupRepository::class, false);
 
-    /**
-     * @covers Housekeeper\Repository::executeInjections
-     */
-    public function testExecuteInjections()
-    {
-        
+        $mockRepository->shouldReceive('getCurrentPlan')
+            ->andReturn($mockPlan);
+
+        $methodGetModel = getUnaccessibleObjectMethod($mockRepository, 'getModel');
+        $methodGetModel->invoke($mockRepository);
+
+        $mockPlan->shouldHaveReceived('getModel')->once();
     }
 
     /**
@@ -615,22 +545,6 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Housekeeper\Repository::inject
-     */
-    public function testInject()
-    {
-
-    }
-
-    /**
-     * @covers Housekeeper\Repository::getGroupForInjection
-     */
-    public function testGetGroupForInjection()
-    {
-
-    }
-
-    /**
      * @covers Housekeeper\Repository::whereAre
      * @covers Housekeeper\Repository::applyWheres
      */
@@ -656,6 +570,14 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @covers Housekeeper\Repository::offset
+     */
+    public function testOffset()
+    {
+
+    }
+    
     /**
      * @covers Housekeeper\Repository::limit
      */

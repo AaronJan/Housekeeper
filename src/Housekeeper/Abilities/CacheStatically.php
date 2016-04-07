@@ -1,27 +1,24 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache;
+namespace Housekeeper\Abilities;
 
 use Housekeeper\Abilities\Cache\Statically\CacheAdapter;
 use Housekeeper\Abilities\Cache\Statically\Injections\CacheResultOrClearCacheAfter;
 use Housekeeper\Abilities\Cache\Statically\Injections\GetCachedIfExistsBefore;
 
-
 /**
- * @deprecated use Housekeeper\Ability\CacheStatically instead
- *
- * Class Statically
+ * Class CacheStatically
  *
  * @property \Illuminate\Contracts\Foundation\Application $app
  *
- * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
+ * @method void injectIntoBefore(\Housekeeper\Contracts\Injection\Before $injection, $sort = true)
+ * @method void injectIntoAfter(\Housekeeper\Contracts\Injection\After $injection, $sort = true)
  *
- * @package    Housekeeper\Abilities\Cache
+ * @package Housekeeper\Abilities\Cache
  */
-trait Statically
+trait CacheStatically
 {
-    use Foundation\Base;
-
+    use Cache\Foundation\Base;
 
     /**
      * Trait constructor, Inject all injections.
@@ -34,12 +31,12 @@ trait Statically
         ]);
 
         /**
-         * @var $this \Housekeeper\Contracts\Repository|$this
+         * @var $this CacheStatically|\Housekeeper\Contracts\Repository
          */
         $this->cacheAdapter = new CacheAdapter($this, $redis, $configs);
 
-        $this->inject(new GetCachedIfExistsBefore($this->cacheAdapter), false);
-        $this->inject(new CacheResultOrClearCacheAfter($this->cacheAdapter));
+        $this->injectIntoBefore(new GetCachedIfExistsBefore($this->cacheAdapter), false);
+        $this->injectIntoAfter(new CacheResultOrClearCacheAfter($this->cacheAdapter));
     }
 
 }

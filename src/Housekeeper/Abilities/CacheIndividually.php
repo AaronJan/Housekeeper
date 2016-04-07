@@ -1,19 +1,15 @@
 <?php
 
-namespace Housekeeper\Abilities\Cache;
+namespace Housekeeper\Abilities;
 
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Housekeeper\Abilities\Cache\Individually\CacheAdapter;
 use Housekeeper\Abilities\Cache\Individually\Injections\GetCachedIfExistsBefore;
 use Housekeeper\Abilities\Cache\Individually\Injections\CacheResultOrDeleteCacheAfter;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 /**
- * @deprecated use Housekeeper\Ability\CacheIndividually instead
- *
- * Class Individually
+ * Class CacheIndividually
  *
  * @property \Illuminate\Contracts\Foundation\Application           $app
  * @property integer                                                $perPage
@@ -22,15 +18,15 @@ use Illuminate\Database\Eloquent\Model;
  * @method string getKeyName()
  * @method \Illuminate\Database\Eloquent\Collection findMany($id, $columns = ['*'])
  * @method \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder getModel()
- * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
+ * @method void injectIntoBefore(\Housekeeper\Contracts\Injection\Before $injection, $sort = true)
+ * @method void injectIntoAfter(\Housekeeper\Contracts\Injection\After $injection, $sort = true)
  * @method mixed find($id, $columns = ['*'])
  *
- * @package    Housekeeper\Abilities\Cache
+ * @package Housekeeper\Abilities\Cache
  */
-trait Individually
+trait CacheIndividually
 {
-    use Foundation\Base;
-
+    use Cache\Foundation\Base;
 
     /**
      *
@@ -43,12 +39,12 @@ trait Individually
         ]);
 
         /**
-         * @var $this \Housekeeper\Contracts\Repository|$this
+         * @var $this \Housekeeper\Contracts\Repository|CacheIndividually
          */
         $this->cacheAdapter = new CacheAdapter($this, $redis, $configs);
 
-        $this->inject(new GetCachedIfExistsBefore($this->cacheAdapter), false);
-        $this->inject(new CacheResultOrDeleteCacheAfter($this->cacheAdapter));
+        $this->injectIntoBefore(new GetCachedIfExistsBefore($this->cacheAdapter), false);
+        $this->injectIntoAfter(new CacheResultOrDeleteCacheAfter($this->cacheAdapter));
     }
     
     /**

@@ -8,7 +8,7 @@ use Housekeeper\Abilities\Adjustable\Injections\ApplyCriteriasBefore;
 /**
  * Class Adjustment
  *
- * @method void inject(\Housekeeper\Contracts\Injection\Basic $injection, $sortAllInejctions = false)
+ * @method void injectIntoBefore(\Housekeeper\Contracts\Injection\Before $injection, $sort = true)
  *
  * @author  AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package Housekeeper\Traits\Repository
@@ -26,7 +26,7 @@ trait Adjustable
      */
     public function bootAdjustable()
     {
-        $this->inject(new ApplyCriteriasBefore());
+        $this->injectIntoBefore(new ApplyCriteriasBefore());
     }
 
     /**

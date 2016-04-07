@@ -12,6 +12,7 @@ use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
 use Housekeeper\Contracts\Injection\After as AfterInjectionContract;
 use Housekeeper\Contracts\Injection\Reset as ResetInjectionContract;
 use Housekeeper\Contracts\Repository as RepositoryContract;
+use Housekeeper\Support\InjectionContainer;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -22,10 +23,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * Class Repository
  *
  * @license        Apache 2.0
- * @copyright  (c) 2015, AaronJan
+ * @copyright  (c) 2016, AaronJan
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package        Housekeeper
- * @version        2.1-beta
+ * @version        2.2-beta
  */
 abstract class Repository implements RepositoryContract
 {
@@ -60,26 +61,9 @@ abstract class Repository implements RepositoryContract
     protected $defaultPlan;
 
     /**
-     * An array that maps Injection Interface to Injection Group Name.
-     *
-     * @var array
+     * @var InjectionContainer
      */
-    static $injectionClassMapToGroup = [
-        BeforeInjectionContract::class => 'before',
-        AfterInjectionContract::class  => 'after',
-        ResetInjectionContract::class  => 'reset',
-    ];
-
-    /**
-     * All method injections.
-     *
-     * @var array
-     */
-    protected $injections = [
-        'reset'  => [],
-        'before' => [],
-        'after'  => [],
-    ];
+    protected $injectionContainer;
 
     /**
      * Page size for pagination.
@@ -193,6 +177,8 @@ abstract class Repository implements RepositoryContract
      */
     protected function initialize()
     {
+        $this->injectionContainer = new InjectionContainer();
+
         $model = $this->newModelInstance();
 
         // The model instance must be an instance of `Model` class from
@@ -205,6 +191,14 @@ abstract class Repository implements RepositoryContract
 
         // Load configures from `housekeeper.php` or just use default settings.
         $this->perPage = $this->getConfig('housekeeper.paginate.per_page', 15);
+    }
+
+    /**
+     * @return \Housekeeper\Support\InjectionContainer
+     */
+    protected function getInjectionContainer()
+    {
+        return $this->injectionContainer;
     }
 
     /**
@@ -282,20 +276,6 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
-     * @param $group
-     * @param $flow
-     */
-    private function executeInjections($group, $flow)
-    {
-        foreach ($this->injections[$group] as $injection) {
-            /**
-             * @var $injection \Housekeeper\Contracts\Injection\Before|\Housekeeper\Contracts\Injection\After|\Housekeeper\Contracts\Injection\Reset
-             */
-            $injection->handle($flow);
-        }
-    }
-
-    /**
      * @param \Housekeeper\Contracts\Action $action
      * @return $this
      */
@@ -314,7 +294,7 @@ abstract class Repository implements RepositoryContract
         /**
          * Execute all `Reset` Injections.
          */
-        $this->executeInjections('reset', $flow);
+        $this->getInjectionContainer()->handleResetFlow($flow);
 
         return $this;
     }
@@ -333,7 +313,7 @@ abstract class Repository implements RepositoryContract
         /**
          * Execute all `Before` Injections.
          */
-        $this->executeInjections('before', $flow);
+        $this->getInjectionContainer()->handleBeforeFlow($flow);
 
         return $flow;
     }
@@ -349,7 +329,7 @@ abstract class Repository implements RepositoryContract
         $flow = new AfterFlow($this, $action, $returnValue);
 
         // Execute all `After` Injections.
-        $this->executeInjections('after', $flow);
+        $this->getInjectionContainer()->handleAfterFlow($flow);
 
         return $flow;
     }
@@ -385,6 +365,7 @@ abstract class Repository implements RepositoryContract
         // then use it as the final returns, jump to the Reset Flow and return
         // the result.
         $beforeFlow = $this->before($action);
+
         if ($beforeFlow->hasReturnValue()) {
             $this->reset($action);
 
@@ -461,46 +442,30 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
-     * Inject a Flow Injection.
-     *
-     * @param \Housekeeper\Contracts\Injection\Basic $injection
-     * @param bool                                   $sortAllInejctions
-     * @throws \Housekeeper\Exceptions\RepositoryException
+     * @param \Housekeeper\Contracts\Injection\Before $injection
+     * @param bool                                    $sort
      */
-    protected function inject(BasicInjectionContract $injection, $sortAllInejctions = true)
+    protected function injectIntoBefore(BeforeInjectionContract $injection, $sort = true)
     {
-        $toGroup = $this->getGroupForInjection($injection);
-
-        $this->injections[$toGroup][] = $injection;
-
-        // If need to sort all injections after inject.
-        if ($sortAllInejctions) {
-            $this->sortAllInjections();
-        }
+        $this->getInjectionContainer()->addBeforeInjection($injection, $sort);
     }
 
     /**
-     * @param \Housekeeper\Contracts\Injection\Basic $injection
-     * @return bool
-     * @throws \Housekeeper\Exceptions\RepositoryException
+     * @param \Housekeeper\Contracts\Injection\After $injection
+     * @param bool                                   $sort
      */
-    private function getGroupForInjection(BasicInjectionContract $injection)
+    protected function injectIntoAfter(AfterInjectionContract $injection, $sort = true)
     {
-        $group = false;
+        $this->getInjectionContainer()->addAfterInjection($injection, $sort);
+    }
 
-        foreach (static::$injectionClassMapToGroup as $interface => $expectGroup) {
-            if (is_a($injection, $interface)) {
-                $group = $expectGroup;
-
-                break;
-            }
-        }
-
-        if ($group === false) {
-            throw new RepositoryException('Unknow injection type for "' . get_class($injection) . '""');
-        }
-
-        return $group;
+    /**
+     * @param \Housekeeper\Contracts\Injection\Reset $injection
+     * @param bool                                   $sort
+     */
+    protected function injectIntoReset(ResetInjectionContract $injection, $sort = true)
+    {
+        $this->getInjectionContainer()->addResetInjection($injection, $sort);
     }
 
     /**
@@ -508,25 +473,7 @@ abstract class Repository implements RepositoryContract
      */
     protected function sortAllInjections()
     {
-        foreach ($this->injections as $group) {
-            usort($group, [$this, 'sortInjection']);
-        }
-    }
-
-    /**
-     * Custom function for "usort" used by "sortAllInjections".
-     *
-     * @param \Housekeeper\Contracts\Injection\Basic $a
-     * @param \Housekeeper\Contracts\Injection\Basic $b
-     * @return int
-     */
-    static private function sortInjection(BasicInjectionContract $a, BasicInjectionContract $b)
-    {
-        if ($a->priority() == $b->priority()) {
-            return 0;
-        }
-
-        return ($a->priority() < $b->priority()) ? - 1 : 1;
+        $this->getInjectionContainer()->sortInjections();
     }
 
     /**

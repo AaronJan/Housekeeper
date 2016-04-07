@@ -20,8 +20,10 @@ use Housekeeper\Abilities\Cache\Individually;
 class GetCachedIfExistsBefore extends AbstractBase implements BasicInjectionContract,
                                                               BeforeInjectionContract
 {
+    /**
+     * @var int
+     */
     const PRIORITY = 50;
-
 
     /**
      * @return int
