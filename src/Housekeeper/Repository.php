@@ -591,6 +591,17 @@ abstract class Repository implements RepositoryContract
      * @param $value
      * @return $this
      */
+    public function offset($value)
+    {
+        $this->getCurrentPlan()->applyOffset($value);
+
+        return $this;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
     public function limit($value)
     {
         $this->getCurrentPlan()->applyLimit($value);

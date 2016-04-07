@@ -91,6 +91,22 @@ class Plan implements Contracts\Plan
      * @param $value
      * @return $this
      */
+    public function applyOffset($value)
+    {
+        /**
+         * Save to conditons.
+         */
+        $this->addCondition('offset', $value);
+
+        $this->model = $this->model->offset($value);
+
+        return $this;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
     public function applyLimit($value)
     {
         /**

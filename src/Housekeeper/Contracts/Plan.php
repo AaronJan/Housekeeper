@@ -35,6 +35,12 @@ interface Plan
      * @param $value
      * @return $this
      */
+    public function applyOffset($value);
+
+    /**
+     * @param $value
+     * @return $this
+     */
     public function applyLimit($value);
 
     /**

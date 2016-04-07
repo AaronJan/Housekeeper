@@ -52,6 +52,12 @@ interface Repository
      * @param $value
      * @return $this
      */
+    public function offset($value);
+
+    /**
+     * @param $value
+     * @return $this
+     */
     public function limit($value);
 
     /**
