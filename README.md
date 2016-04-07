@@ -8,7 +8,7 @@
 
 # Housekeeper - Laravel
 
-**`Housekeeper 2.1.*` is now in public beta, more works will be done soon.**
+**`Housekeeper 2.2.*` is now in public beta, more works will be done soon.**
 
 For version `0.9.x`, here are the [Documents](https://aaronjan.github.io/Housekeeper/0.9.x/).
 
