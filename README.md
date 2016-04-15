@@ -309,7 +309,7 @@ Is it cool?
 
 ### Injection & Booting
 
-Here a sequence diagram of method execution in `Housekeeper`:
+Here a sequence diagram of method execution in `Housekeeper` (**Core Flow** is the actual method logic):
 
 ![method execution in Housekeeper](https://aaronjan.github.io/Housekeeper/2.x.x/images/big-flowchart.png)
 
