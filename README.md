@@ -311,7 +311,7 @@ Is it cool?
 
 Here a sequence diagram of method execution in `Housekeeper`:
 
-![method execution in Housekeeper](https://aaronjan.github.io/Housekeeper/2.x.x/images/method-execution.png)
+![method execution in Housekeeper](https://aaronjan.github.io/Housekeeper/2.x.x/images/big-flowchart.png)
 
 `Housekeeper` allows you to **inject** logic (called `Injection`) into any `Flow`, in every `Flow`, the `Injections` that belong to the `Flow` will be executed. `Injection` is just like `Middleware` but with 3 types: `Before`, `After` and `Reset` (matching 3 different injectable `Flows`). Here is an example:
 
