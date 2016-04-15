@@ -16,9 +16,10 @@ interface After extends Basic
     /**
      * @param \Housekeeper\Contracts\Repository $repository
      * @param \Housekeeper\Contracts\Action     $action
+     * @param int                               $index
      * @param mixed                             $returnValue
      */
-    public function __construct(Repository $repository, Action $action, $returnValue);
+    public function __construct(Repository $repository, Action $action, $index, $returnValue);
 
     /**
      * @return mixed

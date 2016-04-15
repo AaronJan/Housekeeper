@@ -10,14 +10,16 @@ use Housekeeper\Contracts\Flow\Before as BeforeFlowContract;
  * Class ApplyCriteriasBefore
  *
  * @author   AaronJan <https://github.com/AaronJan/Housekeeper>
- * @package  Housekeeper\Injections\Adjustable
+ * @package  Housekeeper\Abilities\Adjustable\Injections
  */
 class ApplyCriteriasBefore implements BasicInjectionContract,
                                       BeforeInjectionContract
 {
+    /**
+     * @var int
+     */
     const PRIORITY = 10;
-
-
+    
     /**
      * @return int
      */
@@ -31,6 +33,11 @@ class ApplyCriteriasBefore implements BasicInjectionContract,
      */
     public function handle(BeforeFlowContract $beforeFlow)
     {
+        // Only affecting the first wrapped method
+        if ($beforeFlow->getIndex() != 1) {
+            return;
+        }
+
         /**
          * @var \Housekeeper\Contracts\Repository|\Housekeeper\Abilities\Adjustable $repository
          */

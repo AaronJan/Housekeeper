@@ -57,7 +57,7 @@ trait Adjustable
     /**
      * Get all criterias that this repository remembered.
      *
-     * @return array
+     * @return Criteria[]
      */
     public function getCriterias()
     {

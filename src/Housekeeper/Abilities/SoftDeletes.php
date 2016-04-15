@@ -4,6 +4,7 @@ namespace Housekeeper\Abilities;
 
 use Housekeeper\Contracts\Action as ActionContract;
 use Housekeeper\Action;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
@@ -44,7 +45,6 @@ trait SoftDeletes
         return $this;
     }
 
-
     /**
      * @param $id
      * @return bool|null
@@ -71,8 +71,10 @@ trait SoftDeletes
     
     /**
      * Restore model which is soft-deleted.
+     *
+     * @return bool|null
      */
-    public function restore()
+    public function restore($id)
     {
         return $this->simpleWrap(Action::UPDATE, [$this, '_restore']);
     }
@@ -80,10 +82,30 @@ trait SoftDeletes
     /**
      * @return bool|null
      */
-    protected function _restore()
+    protected function _restore($id)
     {
-        return $this->getModel()->restore();
+        /**
+         * @var $model Model|\Illuminate\Database\Eloquent\SoftDeletes
+         */
+        $model = $this->startWithTrashed()->find($id, [$this->getKeyName()]);
+
+        $model->restore();
+
+        return $model;
     }
+
+    /**
+     * @return string
+     */
+    abstract protected function getKeyName();
+
+    /**
+     * @param       $id
+     * @param array $columns
+     * @return mixed
+     * @throws \Exception
+     */
+    abstract public function find($id, $columns = ['*']);
 
     /**
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder

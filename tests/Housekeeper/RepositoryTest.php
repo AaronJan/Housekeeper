@@ -254,7 +254,6 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      * @depends testCallBootable
      * @depends testInitializeInNormal
      * @depends testInitializeExpectException
-     * @depends testSortAllInjections
      * @covers  Housekeeper\Repository::__construct
      */
     public function testConstruct()
@@ -668,7 +667,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers Housekeeper\Repository::findByField
-     * @covers Housekeeper\Repository::_findByField
+     * @covers Housekeeper\_findByField::_firstOrFailByField
      */
     public function testFindByField()
     {

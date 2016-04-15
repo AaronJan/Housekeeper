@@ -16,8 +16,9 @@ interface Before extends Basic
     /**
      * @param \Housekeeper\Contracts\Repository $repository
      * @param \Housekeeper\Contracts\Action     $action
+     * @param int                               $index
      */
-    public function __construct(Repository $repository, Action $action);
+    public function __construct(Repository $repository, Action $action, $index);
 
     /**
      * @return bool

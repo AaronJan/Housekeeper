@@ -24,15 +24,22 @@ class Reset implements ResetContract
      */
     protected $repository;
 
+    /**
+     * @var int
+     */
+    protected $index;
+
 
     /**
      * @param \Housekeeper\Contracts\Repository $repository
      * @param \Housekeeper\Contracts\Action     $action
+     * @param int                               $index
      */
-    public function __construct(Repository $repository, Action $action)
+    public function __construct(Repository $repository, Action $action, $index)
     {
         $this->repository = $repository;
         $this->action     = $action;
+        $this->index      = $index;
     }
 
     /**
@@ -49,5 +56,13 @@ class Reset implements ResetContract
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIndex()
+    {
+        return $this->index;
     }
 }

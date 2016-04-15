@@ -21,4 +21,9 @@ interface Basic
      * @return \Housekeeper\Action
      */
     public function getAction();
+
+    /**
+     * @return int
+     */
+    public function getIndex();
 }

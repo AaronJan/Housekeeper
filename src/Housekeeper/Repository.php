@@ -7,7 +7,6 @@ use Housekeeper\Flows\After as AfterFlow;
 use Housekeeper\Flows\Reset as ResetFlow;
 use Housekeeper\Exceptions\RepositoryException;
 use Housekeeper\Contracts\Action as ActionContract;
-use Housekeeper\Contracts\Injection\Basic as BasicInjectionContract;
 use Housekeeper\Contracts\Injection\Before as BeforeInjectionContract;
 use Housekeeper\Contracts\Injection\After as AfterInjectionContract;
 use Housekeeper\Contracts\Injection\Reset as ResetInjectionContract;
@@ -26,7 +25,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @copyright  (c) 2016, AaronJan
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package        Housekeeper
- * @version        2.2-beta
+ * @version        2.3
  */
 abstract class Repository implements RepositoryContract
 {
@@ -146,7 +145,7 @@ abstract class Repository implements RepositoryContract
     /**
      * Make a new Model instance.
      *
-     * @return mixed
+     * @return Model
      */
     protected function newModelInstance()
     {
@@ -266,9 +265,17 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
+     * @return int
+     */
+    private function getCurrentWrappedMethodIndex()
+    {
+        return count($this->plans);
+    }
+
+    /**
      * Get model instance from Plan.
      *
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     protected function getModel()
     {
@@ -289,7 +296,7 @@ abstract class Repository implements RepositoryContract
         /**
          * Make a Reset Flow object.
          */
-        $flow = new ResetFlow($this, $action);
+        $flow = new ResetFlow($this, $action, $this->getCurrentWrappedMethodIndex());
 
         /**
          * Execute all `Reset` Injections.
@@ -308,7 +315,7 @@ abstract class Repository implements RepositoryContract
         /**
          * Make a Before Flow ojbect.
          */
-        $flow = new BeforeFlow($this, $action);
+        $flow = new BeforeFlow($this, $action, $this->getCurrentWrappedMethodIndex());
 
         /**
          * Execute all `Before` Injections.
@@ -326,7 +333,7 @@ abstract class Repository implements RepositoryContract
     protected function after(Action $action, $returnValue)
     {
         // Make a After Flow ojbect.
-        $flow = new AfterFlow($this, $action, $returnValue);
+        $flow = new AfterFlow($this, $action, $this->getCurrentWrappedMethodIndex(), $returnValue);
 
         // Execute all `After` Injections.
         $this->getInjectionContainer()->handleAfterFlow($flow);
@@ -558,21 +565,21 @@ abstract class Repository implements RepositoryContract
 
     /**
      * @param      $id
-     * @param null $column
+     * @param null $primaryKeyName
      * @return mixed
      * @throws \Exception
      */
-    public function exists($id, $column = null)
+    public function exists($id, $primaryKeyName = null)
     {
         return $this->simpleWrap(Action::READ, [$this, '_exists']);
     }
 
     /**
      * @param      $id
-     * @param null $column
+     * @param null $primaryKeyName
      * @return bool
      */
-    protected function _exists($id, $column = null)
+    protected function _exists($id, $primaryKeyName = null)
     {
         /**
          * Fix auto-completion.
@@ -581,15 +588,33 @@ abstract class Repository implements RepositoryContract
          */
         $model = $this->getModel();
 
-        $column = ($column ?: $model->getKeyName());
+        $primaryKeyName = ($primaryKeyName ?: $model->getKeyName());
 
-        return $model->where($column, $id)->exists();
+        return $model->where($primaryKeyName, $id)->exists();
+    }
+    
+    /**
+     * @param string $columns
+     * @return int
+     */
+    public function count($columns = '*')
+    {
+        return $this->simpleWrap(Action::READ, [$this, '_count']);
+    }
+
+    /**
+     * @param string $columns
+     * @return int
+     */
+    protected function _count($columns = '*')
+    {
+        return $this->getModel()->count($columns);
     }
 
     /**
      * @param       $id
      * @param array $columns
-     * @return mixed
+     * @return Model
      * @throws \Exception
      */
     public function find($id, $columns = ['*'])
@@ -602,11 +627,11 @@ abstract class Repository implements RepositoryContract
      *
      * @param       $id
      * @param array $columns
-     * @return mixed|Model
+     * @return Model
      */
     protected function _find($id, $columns = ['*'])
     {
-        return $this->getModel()->find($id, $columns);
+        return $this->getModel()->findOrFail($id, $columns);
     }
 
     /**
@@ -636,7 +661,7 @@ abstract class Repository implements RepositoryContract
      * Eloquent.
      *
      * @param array $attributes
-     * @return mixed
+     * @return Model
      * @throws \Exception
      */
     public function create(array $attributes)
@@ -648,14 +673,12 @@ abstract class Repository implements RepositoryContract
      * Save a new entity in repository
      *
      * @param array $attributes
-     * @return mixed|Model
+     * @return Model
      */
     protected function _create(array $attributes)
     {
-        $model = $this->getModel()->newInstance($attributes);
-        /**
-         * @var Model $model
-         */
+        $model = $this->newModelInstance()->forceFill($attributes);
+
         $model->save();
 
         return $model;
@@ -690,7 +713,7 @@ abstract class Repository implements RepositoryContract
      *
      * @param mixed $id
      * @param array $attributes
-     * @return mixed
+     * @return Model
      */
     public function update($id, array $attributes)
     {
@@ -700,7 +723,7 @@ abstract class Repository implements RepositoryContract
     /**
      * @param mixed $id
      * @param array $attributes
-     * @return mixed|Model
+     * @return Model
      */
     protected function _update($id, array $attributes)
     {
@@ -708,11 +731,10 @@ abstract class Repository implements RepositoryContract
             $id = $id->getKey();
         }
 
-        /**
-         * @var Model $model
-         */
-        $model = $this->getModel()->findOrFail($id);
-        $model->fill($attributes);
+        $model = $this->getModel()
+            ->findOrFail($id)
+            ->forceFill($attributes);
+
         $model->save();
 
         return $model;
@@ -768,7 +790,7 @@ abstract class Repository implements RepositoryContract
      * @param       $field
      * @param null  $value
      * @param array $columns
-     * @return array|EloquentCollection|static[]
+     * @return array|EloquentCollection
      */
     public function getByField($field, $value = null, $columns = ['*'])
     {
@@ -779,7 +801,7 @@ abstract class Repository implements RepositoryContract
      * @param       $field
      * @param null  $value
      * @param array $columns
-     * @return array|EloquentCollection|static[]
+     * @return array|EloquentCollection
      */
     protected function _getByField($field, $value = null, $columns = ['*'])
     {
@@ -787,12 +809,14 @@ abstract class Repository implements RepositoryContract
     }
 
     /**
+     * @deprecated This is not a frequently used method.
+     *
      * Get one model by a simple equality query.
      *
      * @param       $field
      * @param null  $value
      * @param array $columns
-     * @return Model|static
+     * @return Model
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findByField($field, $value = null, $columns = ['*'])
@@ -804,17 +828,11 @@ abstract class Repository implements RepositoryContract
      * @param       $field
      * @param null  $value
      * @param array $columns
-     * @return Model|static
+     * @return Model
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     protected function _findByField($field, $value = null, $columns = ['*'])
     {
         return $this->getModel()->where($field, '=', $value)->firstOrFail($columns);
-    }
-
-
-    protected function debugMock($method, $arguments)
-    {
-        return call_user_func([$this, $method], $arguments);
     }
 }

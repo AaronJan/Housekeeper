@@ -23,11 +23,11 @@ class MakeRepositoryCommand extends GeneratorCommand
     protected $signature = 'housekeeper:make' .
     ' {name : The name of the repository}' .
     ' {--a|adjustable : Allow you to reuse queries}' .
-    ' {--cache= : Chose from 2 strategies to caching result: individually, statically}' .
-    ' {--ci : Short for "--cache=individually"}' .
+    ' {--cache= : Chose from 2 strategies to caching result: statically}' .
     ' {--cs : Short for "--cache=statically"}' .
     ' {--create= : Create a new model file for the repository.}' .
     ' {--e|eloquently : With frequently-used Eloquent-Style query methods}' .
+    ' {--g|guardable : Enable mass-assignment protection in model}' .
     ' {--metadata : Convert all result that implemented `Arrayable` to array automatically}' .
     ' {--model= : Specify the model used by the repository (Root Namespace "\App").}' .
     ' {--sd : Allow you to interact with the `SoftDeletes` trait of Eloquent.}' .
@@ -48,7 +48,7 @@ class MakeRepositoryCommand extends GeneratorCommand
     /**
      * @var array
      */
-    protected $cacheAbilities = ['individually', 'statically'];
+    protected $cacheAbilities = ['statically'];
 
 
     /**
@@ -159,12 +159,14 @@ class MakeRepositoryCommand extends GeneratorCommand
 
             $use .= "use Housekeeper\\Abilities\\Cache{$cache};\n";
             $traits[] = "Cache$cache";
-        } elseif ($this->option('ci')) {
-            $use .= "use Housekeeper\\Abilities\\CacheIndividually;\n";
-            $traits[] = 'CacheIndividually';
         } elseif ($this->option('cs')) {
             $use .= "use Housekeeper\\Abilities\\CacheStatically;\n";
             $traits[] = 'CacheStatically';
+        }
+
+        if ($this->option('guardable')) {
+            $use .= "use Housekeeper\\Abilities\\Guardable;\n";
+            $traits[] = "Guardable";
         }
 
         if ($this->option('metadata')) {

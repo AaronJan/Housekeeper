@@ -25,6 +25,11 @@ class Before implements BeforeContract
     protected $repository;
 
     /**
+     * @var int
+     */
+    protected $index;
+
+    /**
      * @var mixed
      */
     protected $returnValue;
@@ -33,13 +38,15 @@ class Before implements BeforeContract
     /**
      * @param \Housekeeper\Contracts\Repository $repository
      * @param \Housekeeper\Contracts\Action     $action
+     * @param int                               $index
      */
-    public function __construct(Repository $repository, Action $action)
+    public function __construct(Repository $repository, Action $action, $index)
     {
         $this->repository = $repository;
         $this->action     = $action;
+        $this->index      = $index;
     }
-
+    
     /**
      * @return \Housekeeper\Contracts\Action
      */
@@ -56,6 +63,14 @@ class Before implements BeforeContract
         return $this->repository;
     }
 
+    /**
+     * @return int
+     */
+    public function getIndex()
+    {
+        return $this->index;
+    }
+    
     /**
      * @return bool
      */
