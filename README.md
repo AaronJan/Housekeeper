@@ -29,6 +29,10 @@ Increasing unit test code coverage is a work in progress (lots of works), but th
 - [API](#api)
 - [Abilities](#abilities)
     - [Adjustable](#adjustable)
+    - [Eloquently](#eloquently)
+    - [CacheStatically](#cachestatically)
+    - [Guardable](#guardable)
+    - [SoftDeletes](#softdeletes)
 - [Issue](#issue)
 - [Lisence](#lisence)
 - [Credits](#credits)
@@ -97,7 +101,7 @@ After `Composer` finish running, add the HousekeeperServiceProvider to the provi
 Make a configuration file for `Housekeeper` could allow you to tweak things:
 
 ```
->$ artisan vendor:publish --provider=xxx --tag=config
+$ artisan vendor:publish --provider=Housekeeper\\Providers\\HousekeeperServiceProvider --tag=config
 ```
 
 It's done! Now you can make a repository:
@@ -176,9 +180,15 @@ class MyRepository extends Repository
 
 * `Housekeeper` has some `Abilities` (traits) that are out-of-the-box:
 
-    * Adjustable
+    * [Adjustable](#adjustable)
 
-    * CacheStatically
+    * [Eloquently](#eloquently)
+    
+    * [CacheStatically](#cachestatically)
+    
+    * [Guardable](#guardable)
+    
+    * [SoftDeletes](#softdeletes)
 
 
 * You have to write **two** methods for every method you meant to write (Recommended):
@@ -771,14 +781,14 @@ __Arguments__
 
 #### with($relations)
 
-Set the relationships that should be eager loaded.
+Set the relationships that should be eager loaded, like `Eloquent`.
 
 __Examples__
 
 ```php
 <?php
 
-
+$users = $userRepository->with('posts')->paginate(10);
 
 ```
 
@@ -1154,5 +1164,7 @@ Licensed under the [APACHE LISENCE 2.0](http://www.apache.org/licenses/LICENSE-2
 Thanks to [prettus/l5-repository](https://github.com/prettus/l5-repository) for inspiring.
 
 Thanks to [sunkey](https://github.com/sunkeyfong) for the awesome LOGOs!
+
+Thanks to [@DarKDinDoN](https://github.com/DarKDinDoN), [@Bruce Peng](https://github.com/ipengxh), (@FelipeUmpierre)[https://github.com/FelipeUmpierre] for your contributions!
 
 Thanks to [Laravel](https://github.com/laravel/framework) for making our life easier!
