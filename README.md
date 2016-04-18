@@ -1165,6 +1165,6 @@ Thanks to [prettus/l5-repository](https://github.com/prettus/l5-repository) for 
 
 Thanks to [sunkey](https://github.com/sunkeyfong) for the awesome LOGOs!
 
-Thanks to [@DarKDinDoN](https://github.com/DarKDinDoN), [@Bruce Peng](https://github.com/ipengxh), (@FelipeUmpierre)[https://github.com/FelipeUmpierre] for your contributions!
+Thanks to [@DarKDinDoN](https://github.com/DarKDinDoN), [@Bruce Peng](https://github.com/ipengxh), [@FelipeUmpierre](https://github.com/FelipeUmpierre) for your contributions!
 
 Thanks to [Laravel](https://github.com/laravel/framework) for making our life easier!
