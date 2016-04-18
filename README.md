@@ -76,9 +76,7 @@ then execute console command:
 $ composer install
 ```
 
-add single line of code to your `config/app.php` at `providers` for the handy console generator:
-
-After `Composer` finish running, add the HousekeeperServiceProvider to the providers in `config/app.php`:
+After `Composer` finish running, add the `HousekeeperServiceProvider` to the providers in `config/app.php`:
 
 ```php
 <?php
@@ -115,9 +113,9 @@ $ artisan housekeeper:make UserRepository
 
 If you have outstanding insight, this section will tell you how to use `Housekeeper` in the simplest words.
 
-* Don't write `class constructor`, use `boot` method instead, supports `Type-Hinting`.
+* Do not write `class constructor`, use `boot` method instead, supports `Type-Hinting`.
 
-* Any public method that name starts with **boot** and followed by an upper-case letter, for instance, **bootForInject**, then this method will be called during class initializing, also support `Type-Hinting`.
+* Any public method that name starts with **boot** and followed by an upper-case letter (for instance, **bootForInject**), then this method will be called during class initializing, also support `Type-Hinting`.
 
 * If you want to do something before/after some methods belong across multiple repository, encapsulate these logics as `Injections` then inject them into your repositorys.
 
@@ -1165,6 +1163,6 @@ Thanks to [prettus/l5-repository](https://github.com/prettus/l5-repository) for 
 
 Thanks to [sunkey](https://github.com/sunkeyfong) for the awesome LOGOs!
 
-Thanks to [@DarKDinDoN](https://github.com/DarKDinDoN), [@Bruce Peng](https://github.com/ipengxh), [@FelipeUmpierre](https://github.com/FelipeUmpierre) for your contributions!
+Thanks to [@DarKDinDoN](https://github.com/DarKDinDoN), [@Bruce Peng](https://github.com/ipengxh), [@FelipeUmpierre](https://github.com/FelipeUmpierre), [@rsdev000](https://github.com/rsdev000) for your contributions!
 
 Thanks to [Laravel](https://github.com/laravel/framework) for making our life easier!
