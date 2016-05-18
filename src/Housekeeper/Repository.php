@@ -744,7 +744,7 @@ abstract class Repository implements RepositoryContract
      * Retrieve first data of repository
      *
      * @param array $columns
-     * @return EloquentCollection
+     * @return Model
      */
     public function first($columns = ['*'])
     {
@@ -753,7 +753,7 @@ abstract class Repository implements RepositoryContract
 
     /**
      * @param array $columns
-     * @return EloquentCollection
+     * @return Model
      */
     protected function _first($columns = ['*'])
     {
