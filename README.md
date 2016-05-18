@@ -739,6 +739,17 @@ __Arguments__
 
 -----------------------------
 
+#### first($columns = ['*'])
+
+Execute the query and retrieve the first result.
+
+__Arguments__
+
+* `$columns`
+
+
+-----------------------------
+
 #### all($columns = ['*'])
 
 Execute the query as a "select" statement.

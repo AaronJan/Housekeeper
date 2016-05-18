@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @copyright  (c) 2016, AaronJan
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package        Housekeeper
- * @version        2.3
+ * @version        2.3.1
  */
 abstract class Repository implements RepositoryContract
 {
