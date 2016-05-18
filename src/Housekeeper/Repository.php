@@ -117,7 +117,7 @@ abstract class Repository implements RepositoryContract
             $this->getApp()->call([$this, static::BOOT_METHOD]);
         }
     }
-    
+
     /**
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
@@ -133,7 +133,7 @@ abstract class Repository implements RepositoryContract
     {
         return $this->app;
     }
-    
+
     /**
      * @return string
      */
@@ -141,7 +141,7 @@ abstract class Repository implements RepositoryContract
     {
         return $this->newModelInstance()->getKeyName();
     }
-    
+
     /**
      * Make a new Model instance.
      *
@@ -411,7 +411,7 @@ abstract class Repository implements RepositoryContract
             '\\Closure' :
             $function[1];
     }
-    
+
     /**
      * @param int|ActionContract $actionType
      * @param callable|null      $function
@@ -551,7 +551,7 @@ abstract class Repository implements RepositoryContract
 
         return $this;
     }
-    
+
     /**
      * @param $value
      * @return $this
@@ -592,7 +592,7 @@ abstract class Repository implements RepositoryContract
 
         return $model->where($primaryKeyName, $id)->exists();
     }
-    
+
     /**
      * @param string $columns
      * @return int
@@ -738,6 +738,26 @@ abstract class Repository implements RepositoryContract
         $model->save();
 
         return $model;
+    }
+
+    /**
+     * Retrieve first data of repository
+     *
+     * @param array $columns
+     * @return EloquentCollection
+     */
+    public function first($columns = ['*'])
+    {
+        return $this->simpleWrap(Action::READ, [$this, '_first']);
+    }
+
+    /**
+     * @param array $columns
+     * @return EloquentCollection
+     */
+    protected function _first($columns = ['*'])
+    {
+        return $this->getModel()->first($columns);
     }
 
     /**
