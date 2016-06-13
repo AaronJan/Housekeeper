@@ -4,7 +4,7 @@
  *
  * @author         AaronJan <https://github.com/AaronJan/Housekeeper>
  * @package        Housekeeper
- * @version        2.0-dev
+ * @version        2.*
  * @license        Apache 2.0
  * @copyright  (c) 2015, AaronJan
  * @link           https://github.com/AaronJan/Housekeeper
