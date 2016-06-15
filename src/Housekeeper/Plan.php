@@ -131,7 +131,8 @@ class Plan implements Contracts\Plan
         $this->addCondition('wheres', $wheres);
 
         foreach ($wheres as $key => $where) {
-            $this->model = call_user_func_array([$this->model, 'where'], $where);
+            $parameters  = ($where instanceof \Closure ? [$where] : $where);
+            $this->model = call_user_func_array([$this->model, 'where'], $parameters);
         }
 
         return $this;
